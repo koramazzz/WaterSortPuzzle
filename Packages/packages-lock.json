@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.borodar.rainbow-folders": {
+      "version": "file:com.borodar.rainbow-folders",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.inputsystem": {
       "version": "1.20.0",
       "depth": 0,

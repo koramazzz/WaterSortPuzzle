@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.borodar.rainbow-folders": "https://github.com/Borod4r/Rainbow-Folders-2.git?path=Assets/Plugins/Borodar/RainbowFolders#3aea959649c771299ce93958ff4d58b4a3874f37",
     "com.unity.inputsystem": "1.20.0",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.ugui": "2.0.0",
