@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8d342d38ae103540966b0e54b202c36, type: 3}
   m_Name: RainbowFoldersRuleset
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   Rules:
   - Type: 1
     Key: Assets/_Project
@@ -26,7 +26,7 @@ MonoBehaviour:
     IsBackgroundRecursive: 0
     IsHidden: 0
   - Type: 1
-    Key: Assets/_Project/ThirdPartyAssets
+    Key: Assets/_Project/Data
     Ordinal: 1
     Priority: 0
     IconType: 180
@@ -62,7 +62,7 @@ MonoBehaviour:
     IsBackgroundRecursive: 0
     IsHidden: 0
   - Type: 1
-    Key: Assets/_Project/Data
+    Key: Assets/_Project/ThirdPartyAssets
     Ordinal: 4
     Priority: 0
     IconType: 150
