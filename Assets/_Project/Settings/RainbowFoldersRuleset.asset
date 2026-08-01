@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d342d38ae103540966b0e54b202c36, type: 3}
+  m_Name: RainbowFoldersRuleset
+  m_EditorClassIdentifier:
+  Rules:
+  - Type: 1
+    Key: Assets/_Project
+    Ordinal: 0
+    Priority: 0
+    IconType: 2120
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 0
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/ThirdPartyAssets
+    Ordinal: 1
+    Priority: 0
+    IconType: 180
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Animations
+    Ordinal: 2
+    Priority: 0
+    IconType: 90
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Audio
+    Ordinal: 3
+    Priority: 0
+    IconType: 170
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Data
+    Ordinal: 4
+    Priority: 0
+    IconType: 150
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Editor
+    Ordinal: 5
+    Priority: 0
+    IconType: 540
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Fonts
+    Ordinal: 6
+    Priority: 0
+    IconType: 140
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Materials
+    Ordinal: 7
+    Priority: 0
+    IconType: 200
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Prefabs
+    Ordinal: 8
+    Priority: 0
+    IconType: 60
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Scenes
+    Ordinal: 9
+    Priority: 0
+    IconType: 230
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/ScriptableObjects
+    Ordinal: 10
+    Priority: 0
+    IconType: 110
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Scripts
+    Ordinal: 11
+    Priority: 0
+    IconType: 10
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Settings
+    Ordinal: 12
+    Priority: 0
+    IconType: 30
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Sprites
+    Ordinal: 13
+    Priority: 0
+    IconType: 120
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
+  - Type: 1
+    Key: Assets/_Project/Tests
+    Ordinal: 14
+    Priority: 0
+    IconType: 50
+    SmallIcon: {fileID: 0}
+    LargeIcon: {fileID: 0}
+    IsIconRecursive: 1
+    BackgroundType: 0
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
