@@ -1,0 +1,223 @@
+using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+using UnityEngine;
+using WaterSortPuzzle.Gameplay.Bottles;
+using WaterSortPuzzle.Levels;
+
+namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
+{
+    public sealed class BottleStateTests
+    {
+        private const string PartiallyFilledBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""blue""],
+          ""hiddenLiquidIndices"": [1]
+        }";
+
+        private const string EmptyBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [],
+          ""hiddenLiquidIndices"": []
+        }";
+
+        private const string VisiblePartiallyFilledBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""blue""],
+          ""hiddenLiquidIndices"": []
+        }";
+
+        private const string HiddenLowerBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""blue""],
+          ""hiddenLiquidIndices"": [0]
+        }";
+
+        [Test]
+        public void Constructor_WithInitialData_CreatesExpectedState()
+        {
+            BottleData initialData = Deserialize(PartiallyFilledBottleJson);
+
+            BottleState state = new BottleState(4, initialData);
+
+            Assert.That(state.Capacity, Is.EqualTo(4));
+            Assert.That(state.LiquidCount, Is.EqualTo(2));
+            Assert.That(state.EmptySpace, Is.EqualTo(2));
+            Assert.That(state.LiquidIdsBottomToTop, Is.EqualTo(
+                new[] { "red", "blue" }));
+            Assert.That(state.IsEmpty, Is.False);
+            Assert.That(state.IsFull, Is.False);
+            Assert.That(state.TopLiquidId, Is.EqualTo("blue"));
+            Assert.That(state.IsTopLiquidHidden, Is.True);
+            Assert.That(state.IsLiquidHidden(0), Is.False);
+            Assert.That(state.IsLiquidHidden(1), Is.True);
+        }
+
+        [Test]
+        public void Constructor_WithEmptyBottle_CreatesEmptyState()
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+
+            Assert.That(state.LiquidCount, Is.Zero);
+            Assert.That(state.EmptySpace, Is.EqualTo(4));
+            Assert.That(state.IsEmpty, Is.True);
+            Assert.That(state.IsFull, Is.False);
+            Assert.That(state.TopLiquidId, Is.Null);
+            Assert.That(state.IsTopLiquidHidden, Is.False);
+        }
+
+        [Test]
+        public void Constructor_WithFullBottle_CreatesFullState()
+        {
+            const string json = @"
+            {
+              ""liquidIdsBottomToTop"": [""red"", ""blue"", ""green"", ""yellow""],
+              ""hiddenLiquidIndices"": []
+            }";
+
+            BottleState state = new BottleState(4, Deserialize(json));
+
+            Assert.That(state.LiquidCount, Is.EqualTo(4));
+            Assert.That(state.EmptySpace, Is.Zero);
+            Assert.That(state.IsFull, Is.True);
+        }
+
+        [Test]
+        public void IsTopLiquidHidden_WithHiddenLowerLiquid_ReturnsFalse()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(HiddenLowerBottleJson));
+
+            Assert.That(state.IsTopLiquidHidden, Is.False);
+        }
+
+        [Test]
+        public void RemoveTopLiquid_WithNonEmptyBottle_RemovesAndReturnsTopLiquid()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(VisiblePartiallyFilledBottleJson));
+
+            string removedLiquidId = state.RemoveTopLiquid();
+
+            Assert.That(removedLiquidId, Is.EqualTo("blue"));
+            Assert.That(state.LiquidIdsBottomToTop, Is.EqualTo(new[] { "red" }));
+            Assert.That(state.LiquidCount, Is.EqualTo(1));
+            Assert.That(state.EmptySpace, Is.EqualTo(3));
+            Assert.That(state.TopLiquidId, Is.EqualTo("red"));
+        }
+
+        [Test]
+        public void RemoveTopLiquid_WithHiddenNextLiquid_RevealsNextLiquid()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(HiddenLowerBottleJson));
+
+            state.RemoveTopLiquid();
+
+            Assert.That(state.TopLiquidId, Is.EqualTo("red"));
+            Assert.That(state.IsTopLiquidHidden, Is.False);
+            Assert.That(state.IsLiquidHidden(0), Is.False);
+        }
+
+        [Test]
+        public void RemoveTopLiquid_WithEmptyBottle_ThrowsInvalidOperationException()
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+
+            Assert.Throws<InvalidOperationException>(() => state.RemoveTopLiquid());
+        }
+
+        [Test]
+        public void RevealTopLiquid_WithHiddenTop_RevealsAndReturnsTrue()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(PartiallyFilledBottleJson));
+
+            bool wasRevealed = state.RevealTopLiquid();
+
+            Assert.That(wasRevealed, Is.True);
+            Assert.That(state.IsTopLiquidHidden, Is.False);
+            Assert.That(state.RevealTopLiquid(), Is.False);
+        }
+
+        [Test]
+        public void RevealTopLiquid_WithVisibleTop_ReturnsFalse()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(VisiblePartiallyFilledBottleJson));
+
+            bool wasRevealed = state.RevealTopLiquid();
+
+            Assert.That(wasRevealed, Is.False);
+        }
+
+        [Test]
+        public void RevealTopLiquid_WithEmptyBottle_ReturnsFalse()
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+
+            bool wasRevealed = state.RevealTopLiquid();
+
+            Assert.That(wasRevealed, Is.False);
+        }
+
+        [TestCase(-1)]
+        [TestCase(2)]
+        public void IsLiquidHidden_WithOutOfRangeIndex_ThrowsArgumentOutOfRangeException(
+            int liquidIndex)
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(PartiallyFilledBottleJson));
+
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => state.IsLiquidHidden(liquidIndex));
+        }
+
+        [Test]
+        public void Constructor_WhenSourceChanges_DoesNotChangeState()
+        {
+            BottleData initialData = Deserialize(PartiallyFilledBottleJson);
+            BottleState state = new BottleState(4, initialData);
+            string[] sourceLiquidIds = (string[])initialData.LiquidIdsBottomToTop;
+            int[] sourceHiddenIndices = (int[])initialData.HiddenLiquidIndices;
+
+            sourceLiquidIds[1] = "green";
+            sourceHiddenIndices[0] = 0;
+
+            Assert.That(state.TopLiquidId, Is.EqualTo("blue"));
+            Assert.That(state.IsTopLiquidHidden, Is.True);
+        }
+
+        [Test]
+        public void LiquidIdsBottomToTop_WhenCastToList_RejectsChanges()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(PartiallyFilledBottleJson));
+            IList<string> exposedLiquidIds =
+                state.LiquidIdsBottomToTop as IList<string>;
+
+            Assert.That(exposedLiquidIds, Is.Not.Null);
+            Assert.Throws<NotSupportedException>(
+                () => exposedLiquidIds.Add("green"));
+        }
+
+        [Test]
+        public void Constructor_WithNullData_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new BottleState(4, null));
+        }
+
+        private static BottleData Deserialize(string json)
+        {
+            return JsonUtility.FromJson<BottleData>(json);
+        }
+    }
+}

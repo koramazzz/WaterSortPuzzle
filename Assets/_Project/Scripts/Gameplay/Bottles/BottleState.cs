@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using WaterSortPuzzle.Levels;
+
+namespace WaterSortPuzzle.Gameplay.Bottles
+{
+    public sealed class BottleState
+    {
+        private readonly List<string> liquidIdsBottomToTop;
+        private readonly IReadOnlyList<string> readOnlyLiquidIdsBottomToTop;
+        private readonly HashSet<int> hiddenLiquidIndices;
+
+        public BottleState(int capacity, BottleData initialData)
+        {
+            if (initialData == null)
+            {
+                throw new ArgumentNullException(nameof(initialData));
+            }
+
+            Capacity = capacity;
+            
+            liquidIdsBottomToTop = new List<string>(initialData.LiquidIdsBottomToTop);
+            
+            readOnlyLiquidIdsBottomToTop = liquidIdsBottomToTop.AsReadOnly();
+            
+            hiddenLiquidIndices = new HashSet<int>(initialData.HiddenLiquidIndices);
+        }
+
+        public int Capacity { get; }
+
+        public IReadOnlyList<string> LiquidIdsBottomToTop => readOnlyLiquidIdsBottomToTop;
+
+        public int LiquidCount => liquidIdsBottomToTop.Count;
+
+        public int EmptySpace => Capacity - LiquidCount;
+
+        public bool IsEmpty => LiquidCount == 0;
+
+        public bool IsFull => EmptySpace == 0;
+
+        public string TopLiquidId => IsEmpty ? null : liquidIdsBottomToTop[TopLiquidIndex];
+
+        public bool IsTopLiquidHidden => !IsEmpty && IsLiquidHidden(TopLiquidIndex);
+
+        private int TopLiquidIndex => LiquidCount - 1;
+
+        public bool IsLiquidHidden(int liquidIndex)
+        {
+            if (liquidIndex < 0 || liquidIndex >= LiquidCount)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(liquidIndex),
+                    liquidIndex,
+                    $"Liquid index must be between 0 and {LiquidCount - 1}.");
+            }
+
+            return hiddenLiquidIndices.Contains(liquidIndex);
+        }
+
+        public string RemoveTopLiquid()
+        {
+            if (IsEmpty)
+            {
+                throw new InvalidOperationException(
+                    "Cannot remove a liquid from an empty bottle.");
+            }
+
+            int removedLiquidIndex = TopLiquidIndex;
+            string removedLiquidId = liquidIdsBottomToTop[removedLiquidIndex];
+
+            liquidIdsBottomToTop.RemoveAt(removedLiquidIndex);
+            hiddenLiquidIndices.Remove(removedLiquidIndex);
+            RevealTopLiquid();
+
+            return removedLiquidId;
+        }
+
+        public bool RevealTopLiquid()
+        {
+            return !IsEmpty && hiddenLiquidIndices.Remove(TopLiquidIndex);
+        }
+    }
+}
