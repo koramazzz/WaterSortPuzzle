@@ -57,6 +57,29 @@ namespace WaterSortPuzzle.Gameplay.Bottles
             return hiddenLiquidIndices.Contains(liquidIndex);
         }
 
+        public void AddLiquid(string liquidId)
+        {
+            if (liquidId == null)
+            {
+                throw new ArgumentNullException(nameof(liquidId));
+            }
+
+            if (string.IsNullOrWhiteSpace(liquidId))
+            {
+                throw new ArgumentException(
+                    "Liquid ID cannot be empty or whitespace.",
+                    nameof(liquidId));
+            }
+
+            if (IsFull)
+            {
+                throw new InvalidOperationException(
+                    "Cannot add a liquid to a full bottle.");
+            }
+
+            liquidIdsBottomToTop.Add(liquidId);
+        }
+
         public string RemoveTopLiquid()
         {
             if (IsEmpty)

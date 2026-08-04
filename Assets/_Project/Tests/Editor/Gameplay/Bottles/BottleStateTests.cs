@@ -33,6 +33,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
           ""hiddenLiquidIndices"": [0]
         }";
 
+        private const string FullBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""blue"", ""green"", ""yellow""],
+          ""hiddenLiquidIndices"": []
+        }";
+
         [Test]
         public void Constructor_WithInitialData_CreatesExpectedState()
         {
@@ -69,17 +75,67 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         [Test]
         public void Constructor_WithFullBottle_CreatesFullState()
         {
-            const string json = @"
-            {
-              ""liquidIdsBottomToTop"": [""red"", ""blue"", ""green"", ""yellow""],
-              ""hiddenLiquidIndices"": []
-            }";
-
-            BottleState state = new BottleState(4, Deserialize(json));
+            BottleState state = new BottleState(4, Deserialize(FullBottleJson));
 
             Assert.That(state.LiquidCount, Is.EqualTo(4));
             Assert.That(state.EmptySpace, Is.Zero);
             Assert.That(state.IsFull, Is.True);
+        }
+
+        [Test]
+        public void AddLiquid_WithEmptyBottle_AddsVisibleTopLiquid()
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+            IReadOnlyList<string> exposedLiquidIds = state.LiquidIdsBottomToTop;
+
+            state.AddLiquid("green");
+
+            Assert.That(exposedLiquidIds, Is.EqualTo(new[] { "green" }));
+            Assert.That(state.LiquidCount, Is.EqualTo(1));
+            Assert.That(state.EmptySpace, Is.EqualTo(3));
+            Assert.That(state.TopLiquidId, Is.EqualTo("green"));
+            Assert.That(state.IsTopLiquidHidden, Is.False);
+        }
+
+        [Test]
+        public void AddLiquid_WithPartiallyFilledBottle_AppendsLiquidToTop()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(VisiblePartiallyFilledBottleJson));
+
+            state.AddLiquid("green");
+
+            Assert.That(
+                state.LiquidIdsBottomToTop,
+                Is.EqualTo(new[] { "red", "blue", "green" }));
+            Assert.That(state.TopLiquidId, Is.EqualTo("green"));
+        }
+
+        [Test]
+        public void AddLiquid_WithFullBottle_ThrowsInvalidOperationException()
+        {
+            BottleState state = new BottleState(4, Deserialize(FullBottleJson));
+
+            Assert.Throws<InvalidOperationException>(() => state.AddLiquid("red"));
+            Assert.That(state.LiquidCount, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void AddLiquid_WithNullId_ThrowsArgumentNullException()
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+
+            Assert.Throws<ArgumentNullException>(() => state.AddLiquid(null));
+        }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        public void AddLiquid_WithEmptyId_ThrowsArgumentException(string liquidId)
+        {
+            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
+
+            Assert.Throws<ArgumentException>(() => state.AddLiquid(liquidId));
         }
 
         [Test]
