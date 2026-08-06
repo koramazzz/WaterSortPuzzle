@@ -194,7 +194,7 @@ MonoBehaviour:
     IsBackgroundRecursive: 0
     IsHidden: 0
   - Type: 1
-    Key: Assets/_Project/Editor
+    Key: Assets/_Project/GameAssets
     Ordinal: 15
     Priority: 0
     IconType: 40
