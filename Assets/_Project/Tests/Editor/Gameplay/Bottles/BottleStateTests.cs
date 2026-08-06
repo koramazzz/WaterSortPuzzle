@@ -39,6 +39,18 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
           ""hiddenLiquidIndices"": []
         }";
 
+        private const string FullSingleColorBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""red"", ""red"", ""red""],
+          ""hiddenLiquidIndices"": []
+        }";
+
+        private const string PartiallyFilledSingleColorBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""red""],
+          ""hiddenLiquidIndices"": []
+        }";
+
         [Test]
         public void Constructor_WithInitialData_CreatesExpectedState()
         {
@@ -68,6 +80,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.EmptySpace, Is.EqualTo(4));
             Assert.That(state.IsEmpty, Is.True);
             Assert.That(state.IsFull, Is.False);
+            Assert.That(state.IsSorted, Is.True);
             Assert.That(state.TopLiquidId, Is.Null);
             Assert.That(state.IsTopLiquidHidden, Is.False);
         }
@@ -80,6 +93,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.LiquidCount, Is.EqualTo(4));
             Assert.That(state.EmptySpace, Is.Zero);
             Assert.That(state.IsFull, Is.True);
+            Assert.That(state.IsSorted, Is.False);
+        }
+
+        [Test]
+        public void IsSorted_WithFullSingleColorBottle_ReturnsTrue()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(FullSingleColorBottleJson));
+
+            Assert.That(state.IsSorted, Is.True);
+        }
+
+        [Test]
+        public void IsSorted_WithPartiallyFilledSingleColorBottle_ReturnsFalse()
+        {
+            BottleState state = new BottleState(
+                4,
+                Deserialize(PartiallyFilledSingleColorBottleJson));
+
+            Assert.That(state.IsSorted, Is.False);
         }
 
         [Test]

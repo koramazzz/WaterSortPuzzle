@@ -34,5 +34,21 @@ namespace WaterSortPuzzle.Gameplay.Levels
         public int BottleCapacity { get; }
 
         public IReadOnlyList<BottleState> Bottles => readOnlyBottles;
+
+        public bool IsCompleted
+        {
+            get
+            {
+                foreach (BottleState bottle in bottles)
+                {
+                    if (!bottle.IsSorted)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
     }
 }

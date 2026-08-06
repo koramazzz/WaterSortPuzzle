@@ -30,6 +30,26 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
           ]
         }";
 
+        private const string CompletedLevelJson = @"
+        {
+          ""levelNumber"": 12,
+          ""bottleCapacity"": 2,
+          ""bottles"": [
+            {
+              ""liquidIdsBottomToTop"": [""red"", ""red""],
+              ""hiddenLiquidIndices"": []
+            },
+            {
+              ""liquidIdsBottomToTop"": [""blue"", ""blue""],
+              ""hiddenLiquidIndices"": []
+            },
+            {
+              ""liquidIdsBottomToTop"": [],
+              ""hiddenLiquidIndices"": []
+            }
+          ]
+        }";
+
         [Test]
         public void Constructor_WithLevelData_CreatesExpectedLevelState()
         {
@@ -48,6 +68,15 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             Assert.That(state.Bottles[1].IsEmpty, Is.True);
             Assert.That(state.Bottles[2].LiquidCount, Is.EqualTo(3));
             Assert.That(state.Bottles[2].IsLiquidHidden(1), Is.True);
+            Assert.That(state.IsCompleted, Is.False);
+        }
+
+        [Test]
+        public void IsCompleted_WithSortedBottles_ReturnsTrue()
+        {
+            LevelState state = new LevelState(Deserialize(CompletedLevelJson));
+
+            Assert.That(state.IsCompleted, Is.True);
         }
 
         [Test]

@@ -38,6 +38,39 @@ namespace WaterSortPuzzle.Gameplay.Bottles
 
         public bool IsFull => EmptySpace == 0;
 
+        public bool IsSorted
+        {
+            get
+            {
+                if (IsEmpty)
+                {
+                    return true;
+                }
+
+                if (!IsFull)
+                {
+                    return false;
+                }
+
+                string firstLiquidId = liquidIdsBottomToTop[0];
+
+                for (int liquidIndex = 1;
+                     liquidIndex < LiquidCount;
+                     liquidIndex++)
+                {
+                    if (!string.Equals(
+                            liquidIdsBottomToTop[liquidIndex],
+                            firstLiquidId,
+                            StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public string TopLiquidId => IsEmpty ? null : liquidIdsBottomToTop[TopLiquidIndex];
 
         public bool IsTopLiquidHidden => !IsEmpty && IsLiquidHidden(TopLiquidIndex);
