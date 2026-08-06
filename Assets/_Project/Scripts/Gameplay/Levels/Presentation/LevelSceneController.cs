@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Levels.Loading;
 using WaterSortPuzzle.Levels.Sources;
 using WaterSortPuzzle.Progress;
@@ -11,6 +12,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private TMP_Text levelText;
         [SerializeField] private string levelTitleFormat;
+        [SerializeField] private BottleCollectionView bottleCollectionView;
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
@@ -30,6 +32,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             }
 
             levelText.SetText(levelTitleFormat, levelState.LevelNumber);
+            bottleCollectionView.Initialize(levelState.Bottles);
         }
     }
 }

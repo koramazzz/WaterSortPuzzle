@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 78703bca358294121b28fb478fb71368
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bottlePrefab: {fileID: 7812480537929102209, guid: 6b39812f2936b4307ac9cc4ec4294664, type: 3}
+  - colorPalette: {fileID: 11400000, guid: 5c74b59b2fc2a40ac8a2f34fa1b8c07a, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
