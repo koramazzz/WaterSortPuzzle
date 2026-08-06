@@ -10,43 +10,64 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
     public sealed class LevelCatalogLoaderTests
     {
         [Test]
-        public void Load_WithValidIndex_LoadsSelectedLevel()
+        public void TryLoad_WithAvailableLevel_LoadsNextLevel()
         {
             LevelFileCatalog catalog = FindCatalog();
             LevelCatalogLoader loader = new LevelCatalogLoader();
 
-            LevelState state = loader.Load(catalog, 0);
+            bool wasLoaded = loader.TryLoad(catalog, 0, out LevelState state);
 
+            Assert.That(wasLoaded, Is.True);
+            Assert.That(state, Is.Not.Null);
             Assert.That(state.LevelNumber, Is.EqualTo(1));
             Assert.That(state.BottleCapacity, Is.EqualTo(4));
             Assert.That(state.Bottles.Count, Is.EqualTo(5));
         }
 
         [Test]
-        public void Load_WithNullCatalog_ThrowsArgumentNullException()
+        public void TryLoad_WithNullCatalog_ThrowsArgumentNullException()
         {
             LevelCatalogLoader loader = new LevelCatalogLoader();
 
-            Assert.Throws<ArgumentNullException>(() => loader.Load(null, 0));
+            Assert.Throws<ArgumentNullException>(
+                () => loader.TryLoad(null, 0, out _));
         }
 
         [Test]
-        public void Load_WithNegativeIndex_ThrowsArgumentOutOfRangeException()
+        public void TryLoad_WithNegativeCompletedCount_ThrowsArgumentOutOfRangeException()
         {
             LevelCatalogLoader loader = new LevelCatalogLoader();
 
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => loader.Load(FindCatalog(), -1));
+                () => loader.TryLoad(FindCatalog(), -1, out _));
         }
 
         [Test]
-        public void Load_WithIndexEqualToCount_ThrowsArgumentOutOfRangeException()
+        public void TryLoad_WithAllLevelsCompleted_ReturnsFalse()
+        {
+            LevelFileCatalog catalog = FindCatalog();
+            LevelCatalogLoader loader = new LevelCatalogLoader();
+
+            bool wasLoaded = loader.TryLoad(
+                catalog,
+                catalog.LevelFiles.Count,
+                out LevelState state);
+
+            Assert.That(wasLoaded, Is.False);
+            Assert.That(state, Is.Null);
+        }
+
+        [Test]
+        public void TryLoad_WithCompletedCountAboveRange_ThrowsArgumentOutOfRangeException()
         {
             LevelFileCatalog catalog = FindCatalog();
             LevelCatalogLoader loader = new LevelCatalogLoader();
 
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => loader.Load(catalog, catalog.LevelFiles.Count));
+                () => loader.TryLoad(
+                    catalog,
+                    catalog.LevelFiles.Count + 1,
+                    out _));
         }
 
         private static LevelFileCatalog FindCatalog()

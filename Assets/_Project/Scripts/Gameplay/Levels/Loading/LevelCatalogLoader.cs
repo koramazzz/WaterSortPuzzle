@@ -8,31 +8,43 @@ namespace WaterSortPuzzle.Gameplay.Levels.Loading
     {
         private readonly LevelLoader levelLoader = new LevelLoader();
 
-        public LevelState Load(LevelFileCatalog catalog, int levelIndex)
+        public bool TryLoad(
+            LevelFileCatalog catalog,
+            int completedLevelCount,
+            out LevelState levelState)
         {
             if (catalog == null)
             {
                 throw new ArgumentNullException(nameof(catalog));
             }
 
-            if (levelIndex < 0 || levelIndex >= catalog.LevelFiles.Count)
+            if (completedLevelCount < 0 ||
+                completedLevelCount > catalog.LevelFiles.Count)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(levelIndex),
-                    levelIndex,
-                    $"Level index is outside the catalog range. " +
+                    nameof(completedLevelCount),
+                    completedLevelCount,
+                    $"Completed level count is outside the catalog range. " +
                     $"The catalog contains {catalog.LevelFiles.Count} level files.");
             }
 
-            TextAsset levelFile = catalog.LevelFiles[levelIndex];
+            if (completedLevelCount == catalog.LevelFiles.Count)
+            {
+                levelState = null;
+                return false;
+            }
+
+            TextAsset levelFile = catalog.LevelFiles[completedLevelCount];
 
             if (levelFile == null)
             {
                 throw new InvalidOperationException(
-                    $"Level catalog contains an empty file at index {levelIndex}.");
+                    $"Level catalog contains an empty file at index " +
+                    $"{completedLevelCount}.");
             }
 
-            return levelLoader.Load(levelFile);
+            levelState = levelLoader.Load(levelFile);
+            return true;
         }
     }
 }
