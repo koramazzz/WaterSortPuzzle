@@ -700,6 +700,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2031834026}
   - component: {fileID: 2031834027}
+  - component: {fileID: 2031834028}
   m_Layer: 5
   m_Name: BottleContainer
   m_TagString: Untagged
@@ -740,6 +741,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.BottleCollectionView
   bottlePrefab: {fileID: 7812480537929102209, guid: 6b39812f2936b4307ac9cc4ec4294664, type: 3}
   colorPalette: {fileID: 11400000, guid: 5c74b59b2fc2a40ac8a2f34fa1b8c07a, type: 2}
+  bottleGridLayout: {fileID: 2031834028}
+--- !u!114 &2031834028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031834025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca52c9ad24874d3bb609790c3a08f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout.BottleGridLayout
+  maximumColumnCount: 5
+  bottleAspectRatio: 0.4
+  spacing: {x: 40, y: 40}
+  padding:
+    m_Left: 40
+    m_Right: 40
+    m_Top: 300
+    m_Bottom: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

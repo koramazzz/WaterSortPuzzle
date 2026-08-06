@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {
@@ -8,6 +9,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         [SerializeField] private BottleView bottlePrefab;
         [SerializeField] private LiquidColorPalette colorPalette;
+        [SerializeField] private BottleGridLayout bottleGridLayout;
 
         public void Initialize(IReadOnlyList<BottleState> bottleStates)
         {
@@ -25,6 +27,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
                 bottleView.Initialize(bottleState, colorPalette);
             }
+
+            bottleGridLayout.Arrange(bottleStates.Count);
         }
     }
 }

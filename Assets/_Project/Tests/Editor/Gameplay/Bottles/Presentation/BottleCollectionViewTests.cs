@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
+using WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout;
 using WaterSortPuzzle.Gameplay.Levels;
 using WaterSortPuzzle.Levels;
 
@@ -21,14 +22,25 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             collectionObject = new GameObject(
                 "Bottle Collection",
                 typeof(RectTransform),
-                typeof(BottleCollectionView));
+                typeof(BottleCollectionView),
+                typeof(BottleGridLayout));
             view = collectionObject.GetComponent<BottleCollectionView>();
+
+            BottleGridLayout bottleGridLayout =
+                collectionObject.GetComponent<BottleGridLayout>();
+            SerializedObject serializedLayout =
+                new SerializedObject(bottleGridLayout);
+            serializedLayout.FindProperty("maximumColumnCount").intValue = 2;
+            serializedLayout.FindProperty("bottleAspectRatio").floatValue = 0.5f;
+            serializedLayout.ApplyModifiedPropertiesWithoutUndo();
 
             SerializedObject serializedView = new SerializedObject(view);
             serializedView.FindProperty("bottlePrefab").objectReferenceValue =
                 FindSinglePrefabComponent<BottleView>();
             serializedView.FindProperty("colorPalette").objectReferenceValue =
                 FindSingleAsset<LiquidColorPalette>();
+            serializedView.FindProperty("bottleGridLayout").objectReferenceValue =
+                bottleGridLayout;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -61,6 +73,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                     bottleTransform.GetComponentsInChildren<LiquidSlotView>(true),
                     Has.Length.EqualTo(levelState.BottleCapacity));
             }
+
+            AssertBottleLayout(0, new Vector2(-25f, 0f));
+            AssertBottleLayout(1, new Vector2(25f, 0f));
         }
 
         [Test]
@@ -73,6 +88,18 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         {
             LevelData levelData = JsonUtility.FromJson<LevelData>(LevelJson);
             return new LevelState(levelData);
+        }
+
+        private void AssertBottleLayout(
+            int bottleIndex,
+            Vector2 expectedPosition)
+        {
+            RectTransform bottle = (RectTransform)collectionObject
+                .transform
+                .GetChild(bottleIndex);
+
+            Assert.That(bottle.sizeDelta, Is.EqualTo(new Vector2(50f, 100f)));
+            Assert.That(bottle.anchoredPosition, Is.EqualTo(expectedPosition));
         }
 
         private static T FindSingleAsset<T>() where T : UnityEngine.Object
