@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using WaterSortPuzzle.Gameplay.Bottles.Presentation.Animations;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {
@@ -9,6 +10,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
+        [SerializeField] private BottleSelectionAnimator selectionAnimator;
 
         private readonly List<LiquidSlotView> liquidSlotsBottomToTop = new List<LiquidSlotView>();
 
@@ -53,6 +55,16 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         public void OnPointerClick(PointerEventData eventData)
         {
             Clicked?.Invoke(this);
+        }
+
+        public void AnimateSelection()
+        {
+            selectionAnimator.PlaySelection();
+        }
+
+        public void AnimateDeselection()
+        {
+            selectionAnimator.PlayDeselection();
         }
 
         private void CreateLiquidSlots(int capacity)

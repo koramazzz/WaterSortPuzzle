@@ -26,12 +26,19 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 selectedSourceView = interactionService.SelectedSource == null
                     ? null
                     : clickedBottleView;
+
+                if (selectedSourceView != null)
+                {
+                    selectedSourceView.AnimateSelection();
+                }
+
                 return;
             }
 
             BottleView sourceView = selectedSourceView;
             int pouredLiquidCount = interactionService.Select(clickedBottleView.State);
             selectedSourceView = null;
+            sourceView.AnimateDeselection();
 
             if (pouredLiquidCount == 0)
             {

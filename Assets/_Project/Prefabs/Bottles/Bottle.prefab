@@ -237,6 +237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 245989324070598529}
   - component: {fileID: 7812480537929102209}
+  - component: {fileID: 2054254541094945620}
   - component: {fileID: 6998802510842357335}
   - component: {fileID: 6307376787433622030}
   m_Layer: 5
@@ -281,6 +282,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.BottleView
   liquidContainer: {fileID: 5630545446090740336}
   liquidSlotPrefab: {fileID: 243542876677306787, guid: 6bca7278469ef427e81a2a3f9842f9ae, type: 3}
+  selectionAnimator: {fileID: 2054254541094945620}
+--- !u!114 &2054254541094945620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7535786716179343195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d7a3e5a3cd4c639c8e2e2d5ad9f482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.Animations.BottleSelectionAnimator
+  selectionLiftRatio: 0.25
+  selectionDuration: 0.25
+  selectionEase: 6
 --- !u!222 &6998802510842357335
 CanvasRenderer:
   m_ObjectHideFlags: 0
