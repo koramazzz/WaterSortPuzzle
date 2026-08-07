@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {
-    public sealed class BottleView : MonoBehaviour
+    public sealed class BottleView : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
@@ -13,6 +14,10 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
         private BottleState bottleState;
         private LiquidColorPalette colorPalette;
+
+        public event Action<BottleView> Clicked;
+
+        public BottleState State => bottleState;
 
         public void Initialize(
             BottleState state,
@@ -43,6 +48,11 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
                 liquidSlot.ShowLiquid(liquidColor, isHidden);
             }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Clicked?.Invoke(this);
         }
 
         private void CreateLiquidSlots(int capacity)

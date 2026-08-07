@@ -11,6 +11,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         [SerializeField] private LiquidColorPalette colorPalette;
         [SerializeField] private BottleGridLayout bottleGridLayout;
 
+        public event Action<BottleView> BottleClicked;
+
         public void Initialize(IReadOnlyList<BottleState> bottleStates)
         {
             if (bottleStates == null)
@@ -26,9 +28,15 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                     false);
 
                 bottleView.Initialize(bottleState, colorPalette);
+                bottleView.Clicked += HandleBottleClicked;
             }
 
             bottleGridLayout.Arrange(bottleStates.Count);
+        }
+
+        private void HandleBottleClicked(BottleView bottleView)
+        {
+            BottleClicked?.Invoke(bottleView);
         }
     }
 }

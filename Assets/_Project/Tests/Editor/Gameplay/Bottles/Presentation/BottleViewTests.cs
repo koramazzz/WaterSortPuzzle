@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
@@ -78,6 +79,16 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
+        public void Initialize_WithState_ExposesState()
+        {
+            BottleState state = CreateBottleState(4, EmptyBottleJson);
+
+            view.Initialize(state, colorPalette);
+
+            Assert.That(view.State, Is.SameAs(state));
+        }
+
+        [Test]
         public void Initialize_WithLiquids_DisplaysSlotsBottomToTop()
         {
             const int capacity = 4;
@@ -122,6 +133,17 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             Assert.That(
                 freedSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
                 Is.False);
+        }
+
+        [Test]
+        public void OnPointerClick_NotifiesSubscribers()
+        {
+            BottleView clickedView = null;
+            view.Clicked += bottleView => clickedView = bottleView;
+
+            view.OnPointerClick(new PointerEventData(null));
+
+            Assert.That(clickedView, Is.SameAs(view));
         }
 
         private void CreateLiquidSlotPrefab()

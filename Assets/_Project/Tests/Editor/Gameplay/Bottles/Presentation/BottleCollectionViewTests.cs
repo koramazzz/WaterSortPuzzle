@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout;
@@ -82,6 +83,23 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         public void Initialize_WithNullBottleCollection_ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => view.Initialize(null));
+        }
+
+        [Test]
+        public void Initialize_WhenBottleIsClicked_NotifiesSubscribers()
+        {
+            LevelState levelState = CreateLevelState();
+            view.Initialize(levelState.Bottles);
+            BottleView expectedBottle = collectionObject
+                .transform
+                .GetChild(0)
+                .GetComponent<BottleView>();
+            BottleView clickedBottle = null;
+            view.BottleClicked += bottleView => clickedBottle = bottleView;
+
+            expectedBottle.OnPointerClick(new PointerEventData(null));
+
+            Assert.That(clickedBottle, Is.SameAs(expectedBottle));
         }
 
         private static LevelState CreateLevelState()
