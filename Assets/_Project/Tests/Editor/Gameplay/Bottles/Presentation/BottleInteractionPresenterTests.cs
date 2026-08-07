@@ -98,7 +98,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             BottleView bottleView,
             int liquidIndex)
         {
-            Transform liquidContainer = bottleView.transform.Find("LiquidContainer");
+            Transform liquidContainer = bottleView
+                .GetComponentInChildren<VerticalLayoutGroup>()
+                .transform;
             int childIndex = liquidContainer.childCount - liquidIndex - 1;
             return liquidContainer.GetChild(childIndex).GetComponent<Image>();
         }
