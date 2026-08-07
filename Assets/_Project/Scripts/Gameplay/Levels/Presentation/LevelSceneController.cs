@@ -16,6 +16,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
+        private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
 
         private void Start()
         {
@@ -33,6 +34,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
             levelText.SetText(levelTitleFormat, levelState.LevelNumber);
             bottleCollectionView.Initialize(levelState.Bottles);
+            bottleInteractionPresenter.Initialize(bottleCollectionView);
         }
     }
 }
