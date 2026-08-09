@@ -1,0 +1,30 @@
+{
+  "levelNumber": 9,
+  "bottleCapacity": 4,
+  "bottles": [
+    {
+      "liquidIdsBottomToTop": ["red", "green", "blue", "yellow"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["green", "blue", "yellow", "purple"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["blue", "yellow", "purple", "red"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["yellow", "purple", "red", "green"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["purple", "red", "green", "blue"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": [],
+      "hiddenLiquidIndices": []
+    }
+  ]
+}

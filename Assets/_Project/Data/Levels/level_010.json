@@ -1,0 +1,38 @@
+{
+  "levelNumber": 10,
+  "bottleCapacity": 4,
+  "bottles": [
+    {
+      "liquidIdsBottomToTop": ["red", "yellow", "blue", "magenta"],
+      "hiddenLiquidIndices": [0, 2]
+    },
+    {
+      "liquidIdsBottomToTop": ["green", "purple", "red", "yellow"],
+      "hiddenLiquidIndices": [0, 2]
+    },
+    {
+      "liquidIdsBottomToTop": ["blue", "magenta", "green", "purple"],
+      "hiddenLiquidIndices": [1]
+    },
+    {
+      "liquidIdsBottomToTop": ["yellow", "red", "magenta", "green"],
+      "hiddenLiquidIndices": [0, 2]
+    },
+    {
+      "liquidIdsBottomToTop": ["purple", "blue", "yellow", "red"],
+      "hiddenLiquidIndices": [1]
+    },
+    {
+      "liquidIdsBottomToTop": ["magenta", "green", "purple", "blue"],
+      "hiddenLiquidIndices": [0, 2]
+    },
+    {
+      "liquidIdsBottomToTop": [],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": [],
+      "hiddenLiquidIndices": []
+    }
+  ]
+}

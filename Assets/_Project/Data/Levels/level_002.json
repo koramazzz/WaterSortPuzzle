@@ -1,0 +1,18 @@
+{
+  "levelNumber": 2,
+  "bottleCapacity": 3,
+  "bottles": [
+    {
+      "liquidIdsBottomToTop": ["red", "blue", "red"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["blue", "red", "blue"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": [],
+      "hiddenLiquidIndices": []
+    }
+  ]
+}

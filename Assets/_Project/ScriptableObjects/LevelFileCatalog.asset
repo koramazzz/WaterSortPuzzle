@@ -14,3 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Levels.Sources.LevelFileCatalog
   levelFiles:
   - {fileID: 4900000, guid: 5d9599dd8ac024f7181c759ae36699c4, type: 3}
+  - {fileID: 4900000, guid: a4d6bf94fa9a41c3b96f29e01c7c7f7d, type: 3}
+  - {fileID: 4900000, guid: 8dc1faabb7624e29b08befc44f1f0f4e, type: 3}
+  - {fileID: 4900000, guid: 3c5d25bd70b841d69542beb18d8c1e9b, type: 3}
+  - {fileID: 4900000, guid: b3e80d4037fa450ca7413b1095ca1737, type: 3}
+  - {fileID: 4900000, guid: 64953723dcf94955a2053b308233e5c3, type: 3}
+  - {fileID: 4900000, guid: 7db327327b054f47a3bc981e612512d5, type: 3}
+  - {fileID: 4900000, guid: 1b7bd08c565b411383220ad053c9d3c9, type: 3}
+  - {fileID: 4900000, guid: 813ccd4a43cc441884701025a2b30673, type: 3}
+  - {fileID: 4900000, guid: 3c249178112e49a9b48feb38d8cf80ac, type: 3}

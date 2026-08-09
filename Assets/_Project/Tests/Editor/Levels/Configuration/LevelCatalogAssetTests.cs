@@ -11,6 +11,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
 {
     public sealed class LevelCatalogAssetTests
     {
+        private const int FirstLevelNumber = 1;
+
         [Test]
         public void Catalog_ContainsUniqueValidLevelFiles()
         {
@@ -21,8 +23,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
 
             Assert.That(catalog.LevelFiles, Is.Not.Empty);
 
-            foreach (TextAsset levelFile in catalog.LevelFiles)
+            for (int levelIndex = 0;
+                 levelIndex < catalog.LevelFiles.Count;
+                 levelIndex++)
             {
+                TextAsset levelFile = catalog.LevelFiles[levelIndex];
+
                 Assert.That(levelFile, Is.Not.Null);
 
                 LevelData level = loader.Load(levelFile);
@@ -36,6 +42,10 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
                     levelNumbers.Add(level.LevelNumber),
                     Is.True,
                     $"Level number {level.LevelNumber} is duplicated.");
+                Assert.That(
+                    level.LevelNumber,
+                    Is.EqualTo(levelIndex + FirstLevelNumber),
+                    $"{levelFile.name} is not in level-number order.");
             }
         }
 
