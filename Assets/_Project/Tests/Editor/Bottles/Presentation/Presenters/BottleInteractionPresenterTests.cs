@@ -21,6 +21,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private GameObject collectionObject;
         private BottleCollectionView collectionView;
         private LevelState levelState;
+        private BottleInteractionPresenter presenter;
 
         [SetUp]
         public void SetUp()
@@ -53,7 +54,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             levelState = new LevelState(levelData);
             collectionView.Initialize(levelState.Bottles);
 
-            BottleInteractionPresenter presenter = new BottleInteractionPresenter();
+            presenter = new BottleInteractionPresenter();
             presenter.Initialize(collectionView);
         }
 
@@ -80,6 +81,31 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 Is.EqualTo(new[] { "blue" }));
             Assert.That(GetSlotFromBottom(sourceView, 1).enabled, Is.False);
             Assert.That(GetSlotFromBottom(destinationView, 0).enabled, Is.True);
+        }
+
+        [Test]
+        public void BottleClicks_WithValidDestination_RaisePourCompleted()
+        {
+            int completedPourCount = 0;
+            presenter.PourCompleted += () => completedPourCount++;
+
+            GetBottleView(0).OnPointerClick(new PointerEventData(null));
+            GetBottleView(1).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(completedPourCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void BottleClicks_WithInvalidDestination_DoNotRaisePourCompleted()
+        {
+            int completedPourCount = 0;
+            presenter.PourCompleted += () => completedPourCount++;
+            BottleView sourceView = GetBottleView(0);
+
+            sourceView.OnPointerClick(new PointerEventData(null));
+            sourceView.OnPointerClick(new PointerEventData(null));
+
+            Assert.That(completedPourCount, Is.Zero);
         }
 
         [Test]

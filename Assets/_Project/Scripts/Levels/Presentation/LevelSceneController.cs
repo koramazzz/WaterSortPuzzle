@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
@@ -17,6 +18,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
         private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
+        private readonly LevelOutcomeEvaluator levelOutcomeEvaluator = new LevelOutcomeEvaluator();
+
+        private LevelState levelState;
+
+        public event Action<LevelOutcome> LevelEnded;
 
         private void Start()
         {
@@ -26,7 +32,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             if (!levelCatalogLoader.TryLoad(
                     levelCatalog,
                     completedLevelCount,
-                    out LevelState levelState))
+                    out levelState))
             {
                 levelText.gameObject.SetActive(false);
                 return;
@@ -34,7 +40,20 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
             levelText.SetText(levelTitleFormat, levelState.LevelNumber);
             bottleCollectionView.Initialize(levelState.Bottles);
+            bottleInteractionPresenter.PourCompleted += HandlePourCompleted;
             bottleInteractionPresenter.Initialize(bottleCollectionView);
+        }
+
+        private void HandlePourCompleted()
+        {
+            LevelOutcome outcome = levelOutcomeEvaluator.Evaluate(levelState);
+
+            if (outcome == LevelOutcome.InProgress)
+            {
+                return;
+            }
+
+            LevelEnded?.Invoke(outcome);
         }
     }
 }

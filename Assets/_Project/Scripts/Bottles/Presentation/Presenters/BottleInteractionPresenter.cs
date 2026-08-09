@@ -8,6 +8,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
         private BottleView selectedSourceView;
 
+        public event Action PourCompleted;
+
         public void Initialize(BottleCollectionView bottleCollectionView)
         {
             if (bottleCollectionView == null)
@@ -47,6 +49,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             sourceView.Refresh();
             clickedBottleView.Refresh();
+            PourCompleted?.Invoke();
         }
     }
 }
