@@ -9,6 +9,141 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
     public sealed class BottlePourServiceTests
     {
         [Test]
+        public void CanPour_ToEmptyBottle_ReturnsTrueWithoutChangingBottles()
+        {
+            BottleState source = CreateBottle(
+                4,
+                new[] { "red", "blue" },
+                Array.Empty<int>());
+            BottleState destination = CreateEmptyBottle();
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(source, destination);
+
+            Assert.That(canPour, Is.True);
+            Assert.That(
+                source.LiquidIdsBottomToTop,
+                Is.EqualTo(new[] { "red", "blue" }));
+            Assert.That(destination.IsEmpty, Is.True);
+        }
+
+        [Test]
+        public void CanPour_ToMatchingBottle_ReturnsTrue()
+        {
+            BottleState source = CreateBottle(
+                4,
+                new[] { "blue" },
+                Array.Empty<int>());
+            BottleState destination = CreateBottle(
+                4,
+                new[] { "red", "blue" },
+                Array.Empty<int>());
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(source, destination);
+
+            Assert.That(canPour, Is.True);
+        }
+
+        [Test]
+        public void CanPour_WithEmptySource_ReturnsFalse()
+        {
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(
+                CreateEmptyBottle(),
+                CreateEmptyBottle());
+
+            Assert.That(canPour, Is.False);
+        }
+
+        [Test]
+        public void CanPour_WithFullDestination_ReturnsFalse()
+        {
+            BottleState source = CreateBottle(
+                4,
+                new[] { "blue" },
+                Array.Empty<int>());
+            BottleState destination = CreateBottle(
+                4,
+                new[] { "blue", "blue", "blue", "blue" },
+                Array.Empty<int>());
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(source, destination);
+
+            Assert.That(canPour, Is.False);
+        }
+
+        [Test]
+        public void CanPour_WhenTopGroupExceedsDestinationSpace_ReturnsFalse()
+        {
+            BottleState source = CreateBottle(
+                4,
+                new[] { "blue", "blue" },
+                Array.Empty<int>());
+            BottleState destination = CreateBottle(
+                4,
+                new[] { "red", "blue", "blue" },
+                Array.Empty<int>());
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(source, destination);
+
+            Assert.That(canPour, Is.False);
+        }
+
+        [Test]
+        public void CanPour_WithDifferentTopLiquids_ReturnsFalse()
+        {
+            BottleState source = CreateBottle(
+                4,
+                new[] { "blue" },
+                Array.Empty<int>());
+            BottleState destination = CreateBottle(
+                4,
+                new[] { "red" },
+                Array.Empty<int>());
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(source, destination);
+
+            Assert.That(canPour, Is.False);
+        }
+
+        [Test]
+        public void CanPour_ToSameBottle_ReturnsFalse()
+        {
+            BottleState bottle = CreateBottle(
+                4,
+                new[] { "blue" },
+                Array.Empty<int>());
+            BottlePourService service = new BottlePourService();
+
+            bool canPour = service.CanPour(bottle, bottle);
+
+            Assert.That(canPour, Is.False);
+        }
+
+        [Test]
+        public void CanPour_WithNullSource_ThrowsArgumentNullException()
+        {
+            BottlePourService service = new BottlePourService();
+
+            Assert.Throws<ArgumentNullException>(
+                () => service.CanPour(null, CreateEmptyBottle()));
+        }
+
+        [Test]
+        public void CanPour_WithNullDestination_ThrowsArgumentNullException()
+        {
+            BottlePourService service = new BottlePourService();
+
+            Assert.Throws<ArgumentNullException>(
+                () => service.CanPour(CreateEmptyBottle(), null));
+        }
+
+        [Test]
         public void Pour_ToEmptyBottle_MovesVisibleMatchingTopBlock()
         {
             BottleState source = CreateBottle(
@@ -50,7 +185,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
-        public void Pour_WithLimitedDestinationSpace_MovesOnlyAvailableAmount()
+        public void Pour_WhenTopGroupExceedsDestinationSpace_DoesNotChangeBottles()
         {
             BottleState source = CreateBottle(
                 4,
@@ -64,9 +199,13 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
 
             int pouredLiquidCount = service.Pour(source, destination);
 
-            Assert.That(pouredLiquidCount, Is.EqualTo(1));
-            Assert.That(source.LiquidCount, Is.EqualTo(2));
-            Assert.That(destination.IsFull, Is.True);
+            Assert.That(pouredLiquidCount, Is.Zero);
+            Assert.That(
+                source.LiquidIdsBottomToTop,
+                Is.EqualTo(new[] { "blue", "blue", "blue" }));
+            Assert.That(
+                destination.LiquidIdsBottomToTop,
+                Is.EqualTo(new[] { "red", "blue", "blue" }));
         }
 
         [Test]

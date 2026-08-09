@@ -6,16 +6,6 @@ namespace WaterSortPuzzle.Gameplay.Bottles
     {
         public int Pour(BottleState source, BottleState destination)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (destination == null)
-            {
-                throw new ArgumentNullException(nameof(destination));
-            }
-
             int pourAmount = CalculatePourAmount(source, destination);
 
             for (int liquidIndex = 0; liquidIndex < pourAmount; liquidIndex++)
@@ -26,10 +16,25 @@ namespace WaterSortPuzzle.Gameplay.Bottles
             return pourAmount;
         }
 
+        public bool CanPour(BottleState source, BottleState destination)
+        {
+            return CalculatePourAmount(source, destination) > 0;
+        }
+
         private static int CalculatePourAmount(
             BottleState source,
             BottleState destination)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
             if (ReferenceEquals(source, destination) ||
                 source.IsEmpty ||
                 destination.IsFull)
@@ -51,7 +56,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles
             int pourAmount = 0;
 
             for (int sourceIndex = source.LiquidCount - 1;
-                 sourceIndex >= 0 && pourAmount < destination.EmptySpace;
+                 sourceIndex >= 0;
                  sourceIndex--)
             {
                 if (source.IsLiquidHidden(sourceIndex) ||
@@ -66,7 +71,9 @@ namespace WaterSortPuzzle.Gameplay.Bottles
                 pourAmount++;
             }
 
-            return pourAmount;
+            return pourAmount <= destination.EmptySpace
+                ? pourAmount
+                : 0;
         }
     }
 }
