@@ -624,6 +624,7 @@ GameObject:
   m_Component:
   - component: {fileID: 410616518}
   - component: {fileID: 410616519}
+  - component: {fileID: 410616520}
   m_Layer: 0
   m_Name: LevelController
   m_TagString: Untagged
@@ -662,6 +663,22 @@ MonoBehaviour:
   levelText: {fileID: 1330557901}
   levelTitleFormat: Level {0}
   bottleCollectionView: {fileID: 2031834027}
+--- !u!114 &410616520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410616517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71b026820637249148ac67de8d2bf025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Levels.Presentation.LevelOutcomeView
+  levelSceneController: {fileID: 410616519}
+  outcomeRoot: {fileID: 1811069439}
+  winPanel: {fileID: 1672985444}
+  losePanel: {fileID: 811580608}
 --- !u!1 &440155928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2545,7 +2562,7 @@ GameObject:
   - component: {fileID: 1811069442}
   - component: {fileID: 1811069441}
   m_Layer: 5
-  m_Name: Outcome
+  m_Name: OutcomeRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
