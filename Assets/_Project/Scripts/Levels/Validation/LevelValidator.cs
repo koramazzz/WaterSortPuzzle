@@ -151,6 +151,12 @@ namespace WaterSortPuzzle.Levels.Validation
                         $"{bottleContext} contains hidden liquid index {hiddenLiquidIndex}, " +
                         $"but its valid range is 0 to {liquidIds.Count - 1}.");
                 }
+                else if (liquidIds != null &&
+                         hiddenLiquidIndex == liquidIds.Count - 1)
+                {
+                    errors.Add(
+                        $"{bottleContext}'s top liquid cannot be hidden.");
+                }
             }
         }
     }

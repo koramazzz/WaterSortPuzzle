@@ -30,7 +30,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
                     Is.EqualTo(new[] { "red", "blue" }));
                 Assert.That(
                     level.Bottles[0].HiddenLiquidIndices,
-                    Is.EqualTo(new[] { 1 }));
+                    Is.EqualTo(new[] { 0 }));
             }
             finally
             {

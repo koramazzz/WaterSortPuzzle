@@ -97,19 +97,19 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             view.Initialize(state, colorPalette);
 
             LiquidSlotView bottomSlot = GetSlotFromBottom(0, capacity);
-            LiquidSlotView hiddenSlot = GetSlotFromBottom(1, capacity);
+            LiquidSlotView visibleSlot = GetSlotFromBottom(1, capacity);
             LiquidSlotView emptyTopSlot = GetSlotFromBottom(3, capacity);
 
-            Assert.That(bottomSlot.GetComponent<Image>().color, Is.EqualTo(Color.red));
-            Assert.That(bottomSlot.GetComponent<Image>().enabled, Is.True);
+            Assert.That(bottomSlot.GetComponent<Image>().enabled, Is.False);
             Assert.That(
                 bottomSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
-                Is.False);
-
-            Assert.That(hiddenSlot.GetComponent<Image>().enabled, Is.False);
-            Assert.That(
-                hiddenSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
                 Is.True);
+
+            Assert.That(visibleSlot.GetComponent<Image>().color, Is.EqualTo(Color.blue));
+            Assert.That(visibleSlot.GetComponent<Image>().enabled, Is.True);
+            Assert.That(
+                visibleSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
+                Is.False);
 
             Assert.That(emptyTopSlot.GetComponent<Image>().enabled, Is.False);
             Assert.That(
@@ -217,7 +217,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private const string FilledBottleJson = @"
         {
           ""liquidIdsBottomToTop"": [""red"", ""blue""],
-          ""hiddenLiquidIndices"": [1]
+          ""hiddenLiquidIndices"": [0]
         }";
 
         private const string VisibleBottleJson = @"

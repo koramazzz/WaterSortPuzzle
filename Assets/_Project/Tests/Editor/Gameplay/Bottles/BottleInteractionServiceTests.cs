@@ -33,20 +33,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
-        public void Select_WithHiddenTopBottle_DoesNotSelectSource()
-        {
-            BottleState hiddenBottle = CreateBottle(
-                new[] { "blue" },
-                new[] { 0 });
-            BottleInteractionService service = new BottleInteractionService();
-
-            int pouredLiquidCount = service.Select(hiddenBottle);
-
-            Assert.That(pouredLiquidCount, Is.Zero);
-            Assert.That(service.SelectedSource, Is.Null);
-        }
-
-        [Test]
         public void Select_WithSelectedSource_PoursAndClearsSelection()
         {
             BottleState source = CreateBottle(new[] { "blue", "blue" });

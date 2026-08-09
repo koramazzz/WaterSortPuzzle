@@ -97,11 +97,11 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
-              ""bottleCapacity"": 2,
+              ""bottleCapacity"": 3,
               ""bottles"": [
                 {
-                  ""liquidIdsBottomToTop"": [""red"", ""blue""],
-                  ""hiddenLiquidIndices"": [1, 1]
+                  ""liquidIdsBottomToTop"": [""red"", ""blue"", ""green""],
+                  ""hiddenLiquidIndices"": [0, 0]
                 }
               ]
             }";
@@ -109,7 +109,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             IReadOnlyList<string> errors = Validate(json);
 
             Assert.That(errors.Count, Is.EqualTo(1));
-            Assert.That(errors[0], Does.Contain("duplicate hidden liquid index 1"));
+            Assert.That(errors[0], Does.Contain("duplicate hidden liquid index 0"));
         }
 
         [Test]
@@ -152,6 +152,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
 
             Assert.That(errors.Count, Is.EqualTo(1));
             Assert.That(errors[0], Does.Contain("bottle has no liquids"));
+        }
+
+        [Test]
+        public void Validate_WithHiddenTopLiquid_ReturnsTopLiquidError()
+        {
+            const string json = @"
+            {
+              ""levelNumber"": 1,
+              ""bottleCapacity"": 2,
+              ""bottles"": [
+                {
+                  ""liquidIdsBottomToTop"": [""red"", ""blue""],
+                  ""hiddenLiquidIndices"": [1]
+                }
+              ]
+            }";
+
+            IReadOnlyList<string> errors = Validate(json);
+
+            Assert.That(errors.Count, Is.EqualTo(1));
+            Assert.That(errors[0], Does.Contain("top liquid cannot be hidden"));
         }
 
         private static IReadOnlyList<string> Validate(string json)

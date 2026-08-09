@@ -9,7 +9,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
           ""bottles"": [
             {
               ""liquidIdsBottomToTop"": [""red"", ""blue""],
-              ""hiddenLiquidIndices"": [1]
+              ""hiddenLiquidIndices"": [0]
             },
             {
               ""liquidIdsBottomToTop"": [],

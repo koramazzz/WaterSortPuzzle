@@ -32,9 +32,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles
         {
             if (ReferenceEquals(source, destination) ||
                 source.IsEmpty ||
-                source.IsTopLiquidHidden ||
-                destination.IsFull ||
-                (!destination.IsEmpty && destination.IsTopLiquidHidden))
+                destination.IsFull)
             {
                 return 0;
             }

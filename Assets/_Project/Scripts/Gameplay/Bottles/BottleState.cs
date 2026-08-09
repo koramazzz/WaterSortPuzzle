@@ -73,8 +73,6 @@ namespace WaterSortPuzzle.Gameplay.Bottles
 
         public string TopLiquidId => IsEmpty ? null : liquidIdsBottomToTop[TopLiquidIndex];
 
-        public bool IsTopLiquidHidden => !IsEmpty && IsLiquidHidden(TopLiquidIndex);
-
         private int TopLiquidIndex => LiquidCount - 1;
 
         public bool IsLiquidHidden(int liquidIndex)
@@ -131,9 +129,12 @@ namespace WaterSortPuzzle.Gameplay.Bottles
             return removedLiquidId;
         }
 
-        public bool RevealTopLiquid()
+        private void RevealTopLiquid()
         {
-            return !IsEmpty && hiddenLiquidIndices.Remove(TopLiquidIndex);
+            if (!IsEmpty)
+            {
+                hiddenLiquidIndices.Remove(TopLiquidIndex);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         private const string PartiallyFilledBottleJson = @"
         {
           ""liquidIdsBottomToTop"": [""red"", ""blue""],
-          ""hiddenLiquidIndices"": [1]
+          ""hiddenLiquidIndices"": [0]
         }";
 
         private const string EmptyBottleJson = @"
@@ -66,9 +66,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.IsEmpty, Is.False);
             Assert.That(state.IsFull, Is.False);
             Assert.That(state.TopLiquidId, Is.EqualTo("blue"));
-            Assert.That(state.IsTopLiquidHidden, Is.True);
-            Assert.That(state.IsLiquidHidden(0), Is.False);
-            Assert.That(state.IsLiquidHidden(1), Is.True);
+            Assert.That(state.IsLiquidHidden(0), Is.True);
+            Assert.That(state.IsLiquidHidden(1), Is.False);
         }
 
         [Test]
@@ -82,7 +81,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.IsFull, Is.False);
             Assert.That(state.IsSorted, Is.True);
             Assert.That(state.TopLiquidId, Is.Null);
-            Assert.That(state.IsTopLiquidHidden, Is.False);
         }
 
         [Test]
@@ -128,7 +126,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.LiquidCount, Is.EqualTo(1));
             Assert.That(state.EmptySpace, Is.EqualTo(3));
             Assert.That(state.TopLiquidId, Is.EqualTo("green"));
-            Assert.That(state.IsTopLiquidHidden, Is.False);
         }
 
         [Test]
@@ -173,16 +170,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
-        public void IsTopLiquidHidden_WithHiddenLowerLiquid_ReturnsFalse()
-        {
-            BottleState state = new BottleState(
-                4,
-                Deserialize(HiddenLowerBottleJson));
-
-            Assert.That(state.IsTopLiquidHidden, Is.False);
-        }
-
-        [Test]
         public void RemoveTopLiquid_WithNonEmptyBottle_RemovesAndReturnsTopLiquid()
         {
             BottleState state = new BottleState(
@@ -208,7 +195,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             state.RemoveTopLiquid();
 
             Assert.That(state.TopLiquidId, Is.EqualTo("red"));
-            Assert.That(state.IsTopLiquidHidden, Is.False);
             Assert.That(state.IsLiquidHidden(0), Is.False);
         }
 
@@ -218,42 +204,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
 
             Assert.Throws<InvalidOperationException>(() => state.RemoveTopLiquid());
-        }
-
-        [Test]
-        public void RevealTopLiquid_WithHiddenTop_RevealsAndReturnsTrue()
-        {
-            BottleState state = new BottleState(
-                4,
-                Deserialize(PartiallyFilledBottleJson));
-
-            bool wasRevealed = state.RevealTopLiquid();
-
-            Assert.That(wasRevealed, Is.True);
-            Assert.That(state.IsTopLiquidHidden, Is.False);
-            Assert.That(state.RevealTopLiquid(), Is.False);
-        }
-
-        [Test]
-        public void RevealTopLiquid_WithVisibleTop_ReturnsFalse()
-        {
-            BottleState state = new BottleState(
-                4,
-                Deserialize(VisiblePartiallyFilledBottleJson));
-
-            bool wasRevealed = state.RevealTopLiquid();
-
-            Assert.That(wasRevealed, Is.False);
-        }
-
-        [Test]
-        public void RevealTopLiquid_WithEmptyBottle_ReturnsFalse()
-        {
-            BottleState state = new BottleState(4, Deserialize(EmptyBottleJson));
-
-            bool wasRevealed = state.RevealTopLiquid();
-
-            Assert.That(wasRevealed, Is.False);
         }
 
         [TestCase(-1)]
@@ -278,10 +228,11 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             int[] sourceHiddenIndices = (int[])initialData.HiddenLiquidIndices;
 
             sourceLiquidIds[1] = "green";
-            sourceHiddenIndices[0] = 0;
+            sourceHiddenIndices[0] = 1;
 
             Assert.That(state.TopLiquidId, Is.EqualTo("blue"));
-            Assert.That(state.IsTopLiquidHidden, Is.True);
+            Assert.That(state.IsLiquidHidden(0), Is.True);
+            Assert.That(state.IsLiquidHidden(1), Is.False);
         }
 
         [Test]

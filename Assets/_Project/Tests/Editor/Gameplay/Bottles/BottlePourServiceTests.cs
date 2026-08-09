@@ -139,43 +139,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
-        public void Pour_WithHiddenSourceTop_DoesNotChangeBottles()
-        {
-            BottleState source = CreateBottle(
-                4,
-                new[] { "blue" },
-                new[] { 0 });
-            BottleState destination = CreateEmptyBottle();
-            BottlePourService service = new BottlePourService();
-
-            int pouredLiquidCount = service.Pour(source, destination);
-
-            Assert.That(pouredLiquidCount, Is.Zero);
-            Assert.That(source.IsTopLiquidHidden, Is.True);
-            Assert.That(destination.IsEmpty, Is.True);
-        }
-
-        [Test]
-        public void Pour_WithHiddenDestinationTop_DoesNotChangeBottles()
-        {
-            BottleState source = CreateBottle(
-                4,
-                new[] { "blue" },
-                Array.Empty<int>());
-            BottleState destination = CreateBottle(
-                4,
-                new[] { "blue" },
-                new[] { 0 });
-            BottlePourService service = new BottlePourService();
-
-            int pouredLiquidCount = service.Pour(source, destination);
-
-            Assert.That(pouredLiquidCount, Is.Zero);
-            Assert.That(source.LiquidCount, Is.EqualTo(1));
-            Assert.That(destination.IsTopLiquidHidden, Is.True);
-        }
-
-        [Test]
         public void Pour_WhenHiddenLiquidIsExposed_StopsAndRevealsLiquid()
         {
             BottleState source = CreateBottle(
@@ -190,7 +153,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(pouredLiquidCount, Is.EqualTo(1));
             Assert.That(source.LiquidCount, Is.EqualTo(1));
             Assert.That(source.TopLiquidId, Is.EqualTo("blue"));
-            Assert.That(source.IsTopLiquidHidden, Is.False);
+            Assert.That(source.IsLiquidHidden(0), Is.False);
             Assert.That(destination.LiquidCount, Is.EqualTo(1));
         }
 
