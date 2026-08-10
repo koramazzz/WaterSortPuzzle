@@ -2962,13 +2962,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ca52c9ad24874d3bb609790c3a08f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout.BottleGridLayout
-  maximumColumnCount: 5
+  maximumColumnCount: 4
   bottleAspectRatio: 0.4
   spacing: {x: 40, y: 40}
   padding:
     m_Left: 40
     m_Right: 40
-    m_Top: 300
+    m_Top: 200
     m_Bottom: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -3,23 +3,35 @@
   "bottleCapacity": 4,
   "bottles": [
     {
-      "liquidIdsBottomToTop": ["red", "green", "blue", "yellow"],
-      "hiddenLiquidIndices": []
+      "liquidIdsBottomToTop": ["yellow", "purple", "green", "red"],
+      "hiddenLiquidIndices": [0, 1]
     },
     {
-      "liquidIdsBottomToTop": ["green", "blue", "yellow", "purple"],
-      "hiddenLiquidIndices": []
+      "liquidIdsBottomToTop": ["yellow", "orange", "purple", "magenta"],
+      "hiddenLiquidIndices": [1]
     },
     {
-      "liquidIdsBottomToTop": ["blue", "yellow", "purple", "red"],
-      "hiddenLiquidIndices": []
+      "liquidIdsBottomToTop": ["blue", "orange", "green", "magenta"],
+      "hiddenLiquidIndices": [0, 2]
     },
     {
-      "liquidIdsBottomToTop": ["yellow", "purple", "red", "green"],
-      "hiddenLiquidIndices": []
+      "liquidIdsBottomToTop": ["green", "orange", "purple", "blue"],
+      "hiddenLiquidIndices": [0]
     },
     {
-      "liquidIdsBottomToTop": ["purple", "red", "green", "blue"],
+      "liquidIdsBottomToTop": ["blue", "red", "magenta", "yellow"],
+      "hiddenLiquidIndices": [1, 2]
+    },
+    {
+      "liquidIdsBottomToTop": ["green", "red", "purple", "yellow"],
+      "hiddenLiquidIndices": [0, 1]
+    },
+    {
+      "liquidIdsBottomToTop": ["magenta", "orange", "blue", "red"],
+      "hiddenLiquidIndices": [2]
+    },
+    {
+      "liquidIdsBottomToTop": [],
       "hiddenLiquidIndices": []
     },
     {

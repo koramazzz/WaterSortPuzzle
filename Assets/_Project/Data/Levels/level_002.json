@@ -1,13 +1,21 @@
 {
   "levelNumber": 2,
-  "bottleCapacity": 3,
+  "bottleCapacity": 4,
   "bottles": [
     {
-      "liquidIdsBottomToTop": ["red", "blue", "red"],
+      "liquidIdsBottomToTop": ["red", "blue", "green", "red"],
+      "hiddenLiquidIndices": [1]
+    },
+    {
+      "liquidIdsBottomToTop": ["green", "red", "blue", "green"],
+      "hiddenLiquidIndices": [2]
+    },
+    {
+      "liquidIdsBottomToTop": ["blue", "green", "red", "blue"],
       "hiddenLiquidIndices": []
     },
     {
-      "liquidIdsBottomToTop": ["blue", "red", "blue"],
+      "liquidIdsBottomToTop": [],
       "hiddenLiquidIndices": []
     },
     {
