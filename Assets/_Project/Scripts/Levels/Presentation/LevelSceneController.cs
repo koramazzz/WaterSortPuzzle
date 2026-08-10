@@ -68,12 +68,25 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             LevelEnded?.Invoke(outcome);
         }
 
-
         public void LoadNextLevel()
         {
-            string sceneName = completedLevelCount == levelCount ? mainSceneName : gameObject.scene.name;
+            if (completedLevelCount == levelCount)
+            {
+                SceneManager.LoadScene(mainSceneName);
+                return;
+            }
 
-            SceneManager.LoadScene(sceneName);
+            ReloadLevelScene();
+        }
+
+        public void RetryLevel()
+        {
+            ReloadLevelScene();
+        }
+
+        private void ReloadLevelScene()
+        {
+            SceneManager.LoadScene(gameObject.scene.name);
         }
     }
 }
