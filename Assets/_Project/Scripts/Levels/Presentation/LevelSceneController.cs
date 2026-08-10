@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Levels.Loading;
 using WaterSortPuzzle.Levels.Sources;
@@ -10,24 +11,29 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 {
     public sealed class LevelSceneController : MonoBehaviour
     {
+        private const int CompletedLevelCountIncrement = 1;
+
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private TMP_Text levelText;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private BottleCollectionView bottleCollectionView;
+        [SerializeField] private string mainSceneName;
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
         private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
         private readonly LevelOutcomeEvaluator levelOutcomeEvaluator = new LevelOutcomeEvaluator();
 
+        private int completedLevelCount;
+        private int levelCount;
         private LevelState levelState;
 
         public event Action<LevelOutcome> LevelEnded;
 
         private void Start()
         {
-            int levelCount = levelCatalog.LevelFiles.Count;
-            int completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
+            levelCount = levelCatalog.LevelFiles.Count;
+            completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
 
             if (!levelCatalogLoader.TryLoad(
                     levelCatalog,
@@ -53,7 +59,21 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
                 return;
             }
 
+            if (outcome == LevelOutcome.Completed)
+            {
+                completedLevelCount += CompletedLevelCountIncrement;
+                progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
+            }
+
             LevelEnded?.Invoke(outcome);
+        }
+
+
+        public void LoadNextLevel()
+        {
+            string sceneName = completedLevelCount == levelCount ? mainSceneName : gameObject.scene.name;
+
+            SceneManager.LoadScene(sceneName);
         }
     }
 }
