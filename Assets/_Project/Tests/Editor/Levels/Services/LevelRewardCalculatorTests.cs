@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using WaterSortPuzzle.Configuration;
 using WaterSortPuzzle.Levels;
 using WaterSortPuzzle.Levels.Rewards;
 
@@ -7,6 +8,23 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
 {
     public sealed class LevelRewardCalculatorTests
     {
+        [TestCase(LevelDifficulty.Easy, 1)]
+        [TestCase(LevelDifficulty.Medium, 2)]
+        [TestCase(LevelDifficulty.Hard, 3)]
+        public void CalculateGoldReward_UsesConfiguredBaseReward(
+            LevelDifficulty difficulty,
+            int expectedMultiplier)
+        {
+            LevelRewardCalculator calculator = new LevelRewardCalculator();
+
+            int reward = calculator.CalculateGoldReward(difficulty);
+
+            Assert.That(
+                reward,
+                Is.EqualTo(
+                    GameBalance.BaseGoldReward * expectedMultiplier));
+        }
+
         [TestCase(LevelDifficulty.Easy, 50)]
         [TestCase(LevelDifficulty.Medium, 100)]
         [TestCase(LevelDifficulty.Hard, 150)]

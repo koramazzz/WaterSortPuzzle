@@ -2,9 +2,9 @@ using NUnit.Framework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using WaterSortPuzzle.Configuration;
 using WaterSortPuzzle.Gameplay.Levels;
 using WaterSortPuzzle.Gameplay.Levels.Presentation;
-using WaterSortPuzzle.Levels.Rewards;
 
 namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
 {
@@ -91,7 +91,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
                 Assert.That(
                     goldRewardText.text,
                     Is.EqualTo(
-                        $"+{LevelRewardCalculator.BaseGoldReward}"));
+                        $"+{GameBalance.BaseGoldReward}"));
             }
         }
     }

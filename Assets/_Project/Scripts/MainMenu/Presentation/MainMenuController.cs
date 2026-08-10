@@ -15,20 +15,19 @@ namespace WaterSortPuzzle.MainMenu.Presentation
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private Button playButton;
         [SerializeField] private TMP_Text playButtonText;
-        [SerializeField] private PlayerResourcesHudView resourcesHud;
+        [SerializeField] private PlayerResourcesHudController resourcesHud;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private string completedTitle;
         [SerializeField] private string levelSceneName;
 
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
-        private readonly PlayerPrefsGoldStore goldStore = new PlayerPrefsGoldStore();
+        private bool isCompleted;
 
         private void Start()
         {
             int levelCount = levelCatalog.LevelFiles.Count;
             int completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
-            bool isCompleted = completedLevelCount == levelCount;
-            resourcesHud.ShowGold(goldStore.LoadGold());
+            isCompleted = completedLevelCount == levelCount;
 
             playButton.interactable = !isCompleted;
 
@@ -44,6 +43,18 @@ namespace WaterSortPuzzle.MainMenu.Presentation
 
         public void Play()
         {
+            if (isCompleted)
+            {
+                return;
+            }
+
+            PlayerResources resources = resourcesHud.Refresh();
+
+            if (resources.Lives == 0)
+            {
+                return;
+            }
+
             SceneManager.LoadScene(levelSceneName);
         }
     }

@@ -698,7 +698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Levels.Presentation.LevelSceneController
   levelCatalog: {fileID: 11400000, guid: b94aa14e07beb407caec8dd1601c8871, type: 2}
   levelText: {fileID: 1330557901}
-  resourcesHud: {fileID: 2018571842}
+  resourcesHud: {fileID: 991322707}
   levelTitleFormat: Level {0}
   bottleCollectionView: {fileID: 2031834027}
   mainSceneName: MainScene
@@ -1703,6 +1703,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
+--- !u!114 &991322707 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4614289698559978658, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
+  m_PrefabInstance: {fileID: 991322706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2213508330aec4776820f0abc521fd86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Progress.Presentation.PlayerResourcesHudController
 --- !u!1 &1042618321
 GameObject:
   m_ObjectHideFlags: 0
@@ -3534,17 +3545,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1502302923263215337, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
   m_PrefabInstance: {fileID: 991322706}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2018571842 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6149229679883694685, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
-  m_PrefabInstance: {fileID: 991322706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fa7d0e3c4144fb3b72128e6ef1a94d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Progress.Presentation.PlayerResourcesHudView
 --- !u!1 &2031834025
 GameObject:
   m_ObjectHideFlags: 0
@@ -3759,6 +3759,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1581542248}
-  - {fileID: 410616518}
-  - {fileID: 1321386333}
   - {fileID: 1249695168}
+  - {fileID: 1321386333}
+  - {fileID: 410616518}

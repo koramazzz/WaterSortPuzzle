@@ -3,6 +3,8 @@ using NUnit.Framework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using WaterSortPuzzle.Configuration;
+using WaterSortPuzzle.Progress;
 using WaterSortPuzzle.Progress.Presentation;
 
 namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
@@ -39,7 +41,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
             serializedView.FindProperty("lifeTimeText")
                 .objectReferenceValue = lifeTimeText;
             serializedView.FindProperty("fullLivesText").stringValue = "FULL";
-            serializedView.FindProperty("maximumLives").intValue = 5;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -61,11 +62,23 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
         }
 
         [Test]
+        public void Show_WithResources_UpdatesEveryText()
+        {
+            view.Show(new PlayerResources(150, 3, 249));
+
+            Assert.That(goldText.text, Is.EqualTo("150"));
+            Assert.That(lifeCountText.text, Is.EqualTo("3"));
+            Assert.That(lifeTimeText.text, Is.EqualTo("04:09"));
+        }
+
+        [Test]
         public void ShowLives_WithMaximumLives_ShowsCountAndFullText()
         {
-            view.ShowLives(5, 0);
+            view.ShowLives(GameBalance.MaximumLives, 0);
 
-            Assert.That(lifeCountText.text, Is.EqualTo("5"));
+            Assert.That(
+                lifeCountText.text,
+                Is.EqualTo(GameBalance.MaximumLives.ToString()));
             Assert.That(lifeTimeText.text, Is.EqualTo("FULL"));
         }
 
@@ -79,26 +92,13 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
         }
 
         [Test]
-        public void ShowLives_UsesConfiguredMaximumLives()
-        {
-            SerializedObject serializedView = new SerializedObject(view);
-            serializedView.FindProperty("maximumLives").intValue = 3;
-            serializedView.ApplyModifiedPropertiesWithoutUndo();
-
-            view.ShowLives(3, 0);
-
-            Assert.That(lifeCountText.text, Is.EqualTo("3"));
-            Assert.That(lifeTimeText.text, Is.EqualTo("FULL"));
-        }
-
-        [Test]
-        public void ShowValues_WithNegativeValue_Throws()
+        public void ShowValues_WithInvalidValue_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => view.ShowGold(-1));
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => view.ShowLives(-1, 0));
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => view.ShowLives(6, 0));
+                () => view.ShowLives(GameBalance.MaximumLives + 1, 0));
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => view.ShowLives(1, -1));
         }

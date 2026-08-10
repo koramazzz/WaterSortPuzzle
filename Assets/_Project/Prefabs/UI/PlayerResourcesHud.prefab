@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1502302923263215337}
   - component: {fileID: 4450357333919637254}
+  - component: {fileID: 4614289698559978658}
   - component: {fileID: 6149229679883694685}
   m_Layer: 5
   m_Name: PlayerResourcesHud
@@ -47,6 +48,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 573513787687852453}
   m_CullTransparentMesh: 1
+--- !u!114 &4614289698559978658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573513787687852453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2213508330aec4776820f0abc521fd86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Progress.Presentation.PlayerResourcesHudController
+  resourcesHudView: {fileID: 6149229679883694685}
 --- !u!114 &6149229679883694685
 MonoBehaviour:
   m_ObjectHideFlags: 0

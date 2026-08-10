@@ -1,14 +1,15 @@
 using System;
+using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Levels.Rewards
 {
     public sealed class LevelRewardCalculator
     {
-        public const int BaseGoldReward = 50;
-
         public int CalculateGoldReward(LevelDifficulty difficulty)
         {
-            return CalculateGoldReward(BaseGoldReward, difficulty);
+            return CalculateGoldReward(
+                GameBalance.BaseGoldReward,
+                difficulty);
         }
 
         public int CalculateGoldReward(

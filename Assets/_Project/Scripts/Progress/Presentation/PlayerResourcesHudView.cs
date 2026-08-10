@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Progress.Presentation
 {
@@ -10,7 +11,17 @@ namespace WaterSortPuzzle.Progress.Presentation
         [SerializeField] private TMP_Text lifeCountText;
         [SerializeField] private TMP_Text lifeTimeText;
         [SerializeField] private string fullLivesText;
-        [SerializeField, Min(1)] private int maximumLives;
+
+        public void Show(PlayerResources resources)
+        {
+            if (resources == null)
+            {
+                throw new ArgumentNullException(nameof(resources));
+            }
+
+            ShowGold(resources.Gold);
+            ShowLives(resources.Lives, resources.SecondsUntilNextLife);
+        }
 
         public void ShowGold(int gold)
         {
@@ -26,7 +37,7 @@ namespace WaterSortPuzzle.Progress.Presentation
             int lives,
             int secondsUntilNextLife)
         {
-            if (lives < 0 || lives > maximumLives)
+            if (lives < 0 || lives > GameBalance.MaximumLives)
             {
                 throw new ArgumentOutOfRangeException(nameof(lives));
             }
@@ -39,7 +50,7 @@ namespace WaterSortPuzzle.Progress.Presentation
 
             lifeCountText.SetText(lives.ToString());
 
-            if (lives == maximumLives)
+            if (lives == GameBalance.MaximumLives)
             {
                 lifeTimeText.SetText(fullLivesText);
                 return;

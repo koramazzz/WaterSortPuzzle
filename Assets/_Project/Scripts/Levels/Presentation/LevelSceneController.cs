@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WaterSortPuzzle.Configuration;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Levels.Loading;
 using WaterSortPuzzle.Levels.Rewards;
@@ -17,14 +18,13 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private TMP_Text levelText;
-        [SerializeField] private PlayerResourcesHudView resourcesHud;
+        [SerializeField] private PlayerResourcesHudController resourcesHud;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private BottleCollectionView bottleCollectionView;
         [SerializeField] private string mainSceneName;
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
-        private readonly PlayerPrefsGoldStore goldStore = new PlayerPrefsGoldStore();
         private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
         private readonly LevelOutcomeEvaluator levelOutcomeEvaluator = new LevelOutcomeEvaluator();
         private readonly LevelRewardCalculator levelRewardCalculator = new LevelRewardCalculator();
@@ -33,7 +33,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         private int levelCount;
         private LevelState levelState;
         private bool hasEnded;
-        private int winGoldReward = LevelRewardCalculator.BaseGoldReward;
+        private int winGoldReward = GameBalance.BaseGoldReward;
 
         public event Action<LevelOutcome> LevelEnded;
 
@@ -43,7 +43,6 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         {
             levelCount = levelCatalog.LevelFiles.Count;
             completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
-            resourcesHud.ShowGold(goldStore.LoadGold());
 
             if (!levelCatalogLoader.TryLoad(
                     levelCatalog,
@@ -81,7 +80,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             {
                 completedLevelCount += CompletedLevelCountIncrement;
                 progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
-                resourcesHud.ShowGold(goldStore.AddGold(WinGoldReward));
+                resourcesHud.AddGold(WinGoldReward);
+            }
+            else if (outcome == LevelOutcome.Failed)
+            {
+                resourcesHud.ConsumeLife();
             }
 
             LevelEnded?.Invoke(outcome);
@@ -100,6 +103,13 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         public void RetryLevel()
         {
+            PlayerResources resources = resourcesHud.Refresh();
+
+            if (resources.Lives == 0)
+            {
+                return;
+            }
+
             ReloadLevelScene();
         }
 
