@@ -72,7 +72,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         {
             if (completedLevelCount == levelCount)
             {
-                SceneManager.LoadScene(mainSceneName);
+                ReturnToMainMenu();
                 return;
             }
 
@@ -82,6 +82,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         public void RetryLevel()
         {
             ReloadLevelScene();
+        }
+
+        public void ReturnToMainMenu()
+        {
+            SceneManager.LoadScene(mainSceneName);
         }
 
         private void ReloadLevelScene()
