@@ -29,11 +29,34 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
         }
 
         [Test]
+        public void Validate_WithUnknownDifficulty_ReturnsDifficultyError()
+        {
+            const string json = @"
+            {
+              ""levelNumber"": 1,
+              ""difficulty"": 0,
+              ""bottleCapacity"": 2,
+              ""bottles"": [
+                {
+                  ""liquidIdsBottomToTop"": [""red"", ""blue""],
+                  ""hiddenLiquidIndices"": []
+                }
+              ]
+            }";
+
+            IReadOnlyList<string> errors = Validate(json);
+
+            Assert.That(errors.Count, Is.EqualTo(1));
+            Assert.That(errors[0], Does.Contain("valid difficulty"));
+        }
+
+        [Test]
         public void Validate_WithInvalidLevelProperties_ReturnsAllErrors()
         {
             const string json = @"
             {
               ""levelNumber"": 0,
+          ""difficulty"": 1,
               ""bottleCapacity"": 0,
               ""bottles"": []
             }";
@@ -55,6 +78,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -76,6 +100,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -97,6 +122,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 3,
               ""bottles"": [
                 {
@@ -118,6 +144,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -139,6 +166,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -160,6 +188,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {

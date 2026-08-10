@@ -1,8 +1,10 @@
 using NUnit.Framework;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using WaterSortPuzzle.Gameplay.Levels;
 using WaterSortPuzzle.Gameplay.Levels.Presentation;
+using WaterSortPuzzle.Levels.Rewards;
 
 namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
 {
@@ -12,6 +14,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
         private GameObject outcomeRoot;
         private GameObject winPanel;
         private GameObject losePanel;
+        private GameObject goldRewardTextObject;
+        private TMP_Text goldRewardText;
         private LevelOutcomeView outcomeView;
 
         [SetUp]
@@ -25,6 +29,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             outcomeRoot = new GameObject("Outcome");
             winPanel = new GameObject("WinPanel");
             losePanel = new GameObject("LosePanel");
+            goldRewardTextObject = new GameObject(
+                "GoldRewardText",
+                typeof(RectTransform),
+                typeof(CanvasRenderer));
+            goldRewardText =
+                goldRewardTextObject.AddComponent<TextMeshProUGUI>();
 
             SerializedObject serializedView = new SerializedObject(outcomeView);
             serializedView.FindProperty("levelSceneController")
@@ -35,6 +45,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
                 winPanel;
             serializedView.FindProperty("losePanel").objectReferenceValue =
                 losePanel;
+            serializedView.FindProperty("goldRewardText")
+                .objectReferenceValue = goldRewardText;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
             controllerObject.SetActive(true);
         }
@@ -46,6 +58,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             Object.DestroyImmediate(outcomeRoot);
             Object.DestroyImmediate(winPanel);
             Object.DestroyImmediate(losePanel);
+            Object.DestroyImmediate(goldRewardTextObject);
         }
 
         [TestCase(LevelOutcome.InProgress, false, false, false)]
@@ -72,6 +85,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             Assert.That(
                 losePanel.activeSelf,
                 Is.EqualTo(expectedLoseVisibility));
+
+            if (outcome == LevelOutcome.Completed)
+            {
+                Assert.That(
+                    goldRewardText.text,
+                    Is.EqualTo(
+                        $"+{LevelRewardCalculator.BaseGoldReward}"));
+            }
         }
     }
 }

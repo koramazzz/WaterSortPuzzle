@@ -27,6 +27,13 @@ namespace WaterSortPuzzle.Levels.Validation
                 errors.Add($"{levelContext} must have a positive bottle capacity.");
             }
 
+            if (!Enum.IsDefined(
+                    typeof(LevelDifficulty),
+                    level.Difficulty))
+            {
+                errors.Add($"{levelContext} must have a valid difficulty.");
+            }
+
             ValidateBottles(level, levelContext, errors);
 
             return errors.AsReadOnly();

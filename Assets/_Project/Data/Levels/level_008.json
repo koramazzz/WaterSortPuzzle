@@ -1,6 +1,7 @@
 {
   "levelNumber": 8,
   "bottleCapacity": 4,
+  "difficulty": 2,
   "bottles": [
     {
       "liquidIdsBottomToTop": ["green", "yellow", "red", "blue"],

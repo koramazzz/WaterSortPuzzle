@@ -218,6 +218,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private const string LevelJson = @"
         {
           ""levelNumber"": 1,
+          ""difficulty"": 1,
           ""bottleCapacity"": 2,
           ""bottles"": [
             {

@@ -20,8 +20,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             Assert.That(wasLoaded, Is.True);
             Assert.That(state, Is.Not.Null);
             Assert.That(state.LevelNumber, Is.EqualTo(1));
-            Assert.That(state.BottleCapacity, Is.EqualTo(4));
-            Assert.That(state.Bottles.Count, Is.EqualTo(5));
+            Assert.That(state.BottleCapacity, Is.EqualTo(3));
+            Assert.That(state.Bottles.Count, Is.EqualTo(3));
         }
 
         [Test]

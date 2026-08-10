@@ -19,6 +19,7 @@ namespace WaterSortPuzzle.Gameplay.Levels
 
             LevelNumber = initialData.LevelNumber;
             BottleCapacity = initialData.BottleCapacity;
+            Difficulty = initialData.Difficulty;
             bottles = new List<BottleState>(initialData.Bottles.Count);
 
             foreach (BottleData bottleData in initialData.Bottles)
@@ -32,6 +33,8 @@ namespace WaterSortPuzzle.Gameplay.Levels
         public int LevelNumber { get; }
 
         public int BottleCapacity { get; }
+
+        public LevelDifficulty Difficulty { get; }
 
         public IReadOnlyList<BottleState> Bottles => readOnlyBottles;
 

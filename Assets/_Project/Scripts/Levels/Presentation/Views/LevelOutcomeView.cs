@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace WaterSortPuzzle.Gameplay.Levels.Presentation
@@ -8,6 +9,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         [SerializeField] private GameObject outcomeRoot;
         [SerializeField] private GameObject winPanel;
         [SerializeField] private GameObject losePanel;
+        [SerializeField] private TMP_Text goldRewardText;
 
         private void OnEnable()
         {
@@ -23,6 +25,12 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         {
             bool isCompleted = outcome == LevelOutcome.Completed;
             bool isFailed = outcome == LevelOutcome.Failed;
+
+            if (isCompleted)
+            {
+                goldRewardText.SetText(
+                    $"+{levelSceneController.WinGoldReward}");
+            }
 
             winPanel.SetActive(isCompleted);
             losePanel.SetActive(isFailed);

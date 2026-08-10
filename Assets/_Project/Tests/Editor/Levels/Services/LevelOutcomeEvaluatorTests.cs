@@ -14,6 +14,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -38,6 +39,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 4,
               ""bottles"": [
                 {
@@ -62,6 +64,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -90,6 +93,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 2,
               ""bottles"": [
                 {
@@ -118,6 +122,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 1,
+          ""difficulty"": 1,
               ""bottleCapacity"": 4,
               ""bottles"": [
                 {

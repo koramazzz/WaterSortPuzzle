@@ -13,6 +13,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
         private const string LevelJson = @"
         {
           ""levelNumber"": 11,
+          ""difficulty"": 1,
           ""bottleCapacity"": 5,
           ""bottles"": [
             {
@@ -33,6 +34,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
         private const string CompletedLevelJson = @"
         {
           ""levelNumber"": 12,
+          ""difficulty"": 1,
           ""bottleCapacity"": 2,
           ""bottles"": [
             {
@@ -59,6 +61,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
 
             Assert.That(state.LevelNumber, Is.EqualTo(11));
             Assert.That(state.BottleCapacity, Is.EqualTo(5));
+            Assert.That(state.Difficulty, Is.EqualTo(LevelDifficulty.Easy));
             Assert.That(state.Bottles.Count, Is.EqualTo(3));
             Assert.That(
                 state.Bottles[0].LiquidIdsBottomToTop,

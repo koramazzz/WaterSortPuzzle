@@ -5,6 +5,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Levels
         internal const string ValidLevel = @"
         {
           ""levelNumber"": 7,
+          ""difficulty"": 1,
           ""bottleCapacity"": 4,
           ""bottles"": [
             {

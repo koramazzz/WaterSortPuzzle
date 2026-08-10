@@ -1,21 +1,26 @@
 {
   "levelNumber": 4,
   "bottleCapacity": 4,
+  "difficulty": 1,
   "bottles": [
     {
-      "liquidIdsBottomToTop": ["red", "green", "blue", "yellow"],
+      "liquidIdsBottomToTop": ["blue", "yellow", "green", "purple"],
       "hiddenLiquidIndices": []
     },
     {
-      "liquidIdsBottomToTop": ["green", "blue", "yellow", "red"],
+      "liquidIdsBottomToTop": ["yellow", "purple", "red", "green"],
       "hiddenLiquidIndices": []
     },
     {
-      "liquidIdsBottomToTop": ["blue", "yellow", "red", "green"],
+      "liquidIdsBottomToTop": ["purple", "green", "blue", "red"],
       "hiddenLiquidIndices": []
     },
     {
-      "liquidIdsBottomToTop": ["yellow", "red", "green", "blue"],
+      "liquidIdsBottomToTop": ["yellow", "green", "red", "blue"],
+      "hiddenLiquidIndices": []
+    },
+    {
+      "liquidIdsBottomToTop": ["yellow", "blue", "purple", "red"],
       "hiddenLiquidIndices": []
     },
     {

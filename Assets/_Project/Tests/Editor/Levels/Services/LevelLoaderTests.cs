@@ -14,6 +14,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 7,
+          ""difficulty"": 1,
               ""bottleCapacity"": 4,
               ""bottles"": [
                 {
@@ -56,6 +57,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
             const string json = @"
             {
               ""levelNumber"": 0,
+          ""difficulty"": 1,
               ""bottleCapacity"": 0,
               ""bottles"": []
             }";

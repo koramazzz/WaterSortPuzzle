@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Levels.Loading;
+using WaterSortPuzzle.Levels.Rewards;
 using WaterSortPuzzle.Levels.Sources;
 using WaterSortPuzzle.Progress;
 
@@ -15,25 +16,33 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private TMP_Text levelText;
+        [SerializeField] private TMP_Text goldText;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private BottleCollectionView bottleCollectionView;
         [SerializeField] private string mainSceneName;
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
+        private readonly PlayerPrefsGoldStore goldStore = new PlayerPrefsGoldStore();
         private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
         private readonly LevelOutcomeEvaluator levelOutcomeEvaluator = new LevelOutcomeEvaluator();
+        private readonly LevelRewardCalculator levelRewardCalculator = new LevelRewardCalculator();
 
         private int completedLevelCount;
         private int levelCount;
         private LevelState levelState;
+        private bool hasEnded;
+        private int winGoldReward = LevelRewardCalculator.BaseGoldReward;
 
         public event Action<LevelOutcome> LevelEnded;
+
+        public int WinGoldReward => winGoldReward;
 
         private void Start()
         {
             levelCount = levelCatalog.LevelFiles.Count;
             completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
+            UpdateGoldText(goldStore.LoadGold());
 
             if (!levelCatalogLoader.TryLoad(
                     levelCatalog,
@@ -45,6 +54,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             }
 
             levelText.SetText(levelTitleFormat, levelState.LevelNumber);
+            winGoldReward = levelRewardCalculator.CalculateGoldReward(levelState.Difficulty);
             bottleCollectionView.Initialize(levelState.Bottles);
             bottleInteractionPresenter.PourCompleted += HandlePourCompleted;
             bottleInteractionPresenter.Initialize(bottleCollectionView);
@@ -52,6 +62,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         private void HandlePourCompleted()
         {
+            if (hasEnded)
+            {
+                return;
+            }
+
             LevelOutcome outcome = levelOutcomeEvaluator.Evaluate(levelState);
 
             if (outcome == LevelOutcome.InProgress)
@@ -59,10 +74,13 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
                 return;
             }
 
+            hasEnded = true;
+
             if (outcome == LevelOutcome.Completed)
             {
                 completedLevelCount += CompletedLevelCountIncrement;
                 progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
+                UpdateGoldText(goldStore.AddGold(WinGoldReward));
             }
 
             LevelEnded?.Invoke(outcome);
@@ -92,6 +110,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         private void ReloadLevelScene()
         {
             SceneManager.LoadScene(gameObject.scene.name);
+        }
+
+        private void UpdateGoldText(int gold)
+        {
+            goldText.SetText(gold.ToString());
         }
     }
 }
