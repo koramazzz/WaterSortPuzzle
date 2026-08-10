@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WaterSortPuzzle.Levels.Sources;
 using WaterSortPuzzle.Progress;
+using WaterSortPuzzle.Progress.Presentation;
 
 namespace WaterSortPuzzle.MainMenu.Presentation
 {
@@ -14,17 +15,20 @@ namespace WaterSortPuzzle.MainMenu.Presentation
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private Button playButton;
         [SerializeField] private TMP_Text playButtonText;
+        [SerializeField] private PlayerResourcesHudView resourcesHud;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private string completedTitle;
         [SerializeField] private string levelSceneName;
 
         private readonly PlayerPrefsLevelProgressStore progressStore = new PlayerPrefsLevelProgressStore();
+        private readonly PlayerPrefsGoldStore goldStore = new PlayerPrefsGoldStore();
 
         private void Start()
         {
             int levelCount = levelCatalog.LevelFiles.Count;
             int completedLevelCount = progressStore.LoadCompletedLevelCount(levelCount);
             bool isCompleted = completedLevelCount == levelCount;
+            resourcesHud.ShowGold(goldStore.LoadGold());
 
             playButton.interactable = !isCompleted;
 
