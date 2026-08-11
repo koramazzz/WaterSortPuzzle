@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace WaterSortPuzzle.Gameplay.Bottles.Presentation.Animations
+namespace WaterSortPuzzle.Animations
 {
     public sealed class BottleSelectionAnimator : MonoBehaviour
     {

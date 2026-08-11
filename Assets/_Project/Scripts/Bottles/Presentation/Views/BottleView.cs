@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using WaterSortPuzzle.Gameplay.Bottles.Presentation.Animations;
+using WaterSortPuzzle.Animations;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {

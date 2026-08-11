@@ -2,9 +2,9 @@ using DG.Tweening;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using WaterSortPuzzle.Gameplay.Bottles.Presentation.Animations;
+using WaterSortPuzzle.Animations;
 
-namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation.Animations
+namespace WaterSortPuzzle.Tests.EditMode.Animations
 {
     public sealed class BottleSelectionAnimatorTests
     {
