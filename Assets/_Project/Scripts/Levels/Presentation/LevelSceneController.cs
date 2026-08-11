@@ -107,6 +107,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
             if (resources.Lives == 0)
             {
+                resourcesHud.PlayInsufficientFeedback(PlayerResourceType.Life);
                 return;
             }
 

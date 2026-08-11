@@ -58,6 +58,7 @@ namespace WaterSortPuzzle.MainMenu.Presentation
 
             if (resources.Lives == 0)
             {
+                resourcesHud.PlayInsufficientFeedback(PlayerResourceType.Life);
                 return;
             }
 

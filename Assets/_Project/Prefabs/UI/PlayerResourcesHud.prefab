@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4450357333919637254}
   - component: {fileID: 4614289698559978658}
   - component: {fileID: 6149229679883694685}
+  - component: {fileID: 6121517715540741120}
   m_Layer: 5
   m_Name: PlayerResourcesHud
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Progress.Presentation.PlayerResourcesHudController
   resourcesHudView: {fileID: 6149229679883694685}
+  hudAnimator: {fileID: 6121517715540741120}
 --- !u!114 &6149229679883694685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,6 +79,26 @@ MonoBehaviour:
   lifeCountText: {fileID: 867589486983481420}
   lifeTimeText: {fileID: 2721272520703658369}
   fullLivesText: FULL
+--- !u!114 &6121517715540741120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573513787687852453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 326dba3713304999969e6a5c026bdb7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.HudFeedbackAnimator
+  goldHud: {fileID: 4453932680987710098}
+  lifeHud: {fileID: 7003911583898367007}
+  changedScaleMultiplier: 1.1
+  changedPhaseDuration: 0.1
+  changedEase: 6
+  insufficientScaleMultiplier: 1.25
+  insufficientPhaseDuration: 0.07
+  insufficientEase: 27
 --- !u!1 &1083520226906873857
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,7 +276,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 50
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 77f8f775b1e784e17a03f5bba8850a02, type: 2}
   m_sharedMaterial: {fileID: 1516646434184098655, guid: 77f8f775b1e784e17a03f5bba8850a02, type: 2}
@@ -281,7 +303,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.5
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
