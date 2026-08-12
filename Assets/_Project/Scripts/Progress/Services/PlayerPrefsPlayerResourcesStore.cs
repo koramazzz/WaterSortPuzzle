@@ -109,6 +109,46 @@ namespace WaterSortPuzzle.Progress
                 currentUnixTimeSeconds);
         }
 
+#if UNITY_EDITOR
+        public PlayerResources SetResources(int gold, int lives)
+        {
+            return SetResources(
+                gold,
+                lives,
+                DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        }
+
+        public PlayerResources SetResources(
+            int gold,
+            int lives,
+            long currentUnixTimeSeconds)
+        {
+            if (gold < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(gold));
+            }
+
+            if (lives < 0 || lives > GameBalance.MaximumLives)
+            {
+                throw new ArgumentOutOfRangeException(nameof(lives));
+            }
+
+            PlayerResources current = Load(currentUnixTimeSeconds);
+            long nextLifeTimestamp = GetNextLifeTimestamp(
+                current.Lives,
+                lives,
+                currentUnixTimeSeconds);
+
+            Save(gold, lives, nextLifeTimestamp);
+
+            return CreateResources(
+                gold,
+                lives,
+                nextLifeTimestamp,
+                currentUnixTimeSeconds);
+        }
+#endif
+
         public PlayerResources ConsumeLife()
         {
             return ConsumeLife(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
@@ -137,6 +177,50 @@ namespace WaterSortPuzzle.Progress
                 nextLifeTimestamp,
                 currentUnixTimeSeconds);
         }
+
+#if UNITY_EDITOR
+        public PlayerResources ResetLifeRefillTimer()
+        {
+            return ResetLifeRefillTimer(
+                DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        }
+
+        public PlayerResources ResetLifeRefillTimer(
+            long currentUnixTimeSeconds)
+        {
+            PlayerResources current = Load(currentUnixTimeSeconds);
+
+            if (current.Lives == GameBalance.MaximumLives)
+            {
+                return current;
+            }
+
+            long nextLifeTimestamp =
+                currentUnixTimeSeconds +
+                GameBalance.LifeRefillDurationSeconds;
+
+            Save(current.Gold, current.Lives, nextLifeTimestamp);
+
+            return CreateResources(
+                current.Gold,
+                current.Lives,
+                nextLifeTimestamp,
+                currentUnixTimeSeconds);
+        }
+
+        public PlayerResources ResetToDefaults()
+        {
+            PlayerPrefs.DeleteKey(GoldKey);
+            PlayerPrefs.DeleteKey(LivesKey);
+            PlayerPrefs.DeleteKey(NextLifeTimestampKey);
+            PlayerPrefs.Save();
+
+            return new PlayerResources(
+                GameBalance.InitialGold,
+                GameBalance.MaximumLives,
+                0);
+        }
+#endif
 
         private static PlayerResources CreateResources(
             int gold,
@@ -168,6 +252,24 @@ namespace WaterSortPuzzle.Progress
                 ? timestamp
                 : 0;
         }
+
+#if UNITY_EDITOR
+        private static long GetNextLifeTimestamp(
+            int currentLives,
+            int updatedLives,
+            long currentUnixTimeSeconds)
+        {
+            if (updatedLives == GameBalance.MaximumLives)
+            {
+                return 0;
+            }
+
+            return currentLives == GameBalance.MaximumLives
+                ? currentUnixTimeSeconds +
+                  GameBalance.LifeRefillDurationSeconds
+                : LoadNextLifeTimestamp();
+        }
+#endif
 
         private static void Save(
             int gold,

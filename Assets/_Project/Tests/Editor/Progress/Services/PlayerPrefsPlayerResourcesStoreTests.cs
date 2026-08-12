@@ -95,6 +95,81 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress
         }
 
         [Test]
+        public void SetResources_WithValidValues_PersistsResources()
+        {
+            PlayerPrefsPlayerResourcesStore writer = CreateStore();
+
+            writer.SetResources(150, 3, CurrentTime);
+            PlayerResources resources = CreateStore().Load(CurrentTime);
+
+            Assert.That(resources.Gold, Is.EqualTo(150));
+            Assert.That(resources.Lives, Is.EqualTo(3));
+            Assert.That(
+                resources.SecondsUntilNextLife,
+                Is.EqualTo(GameBalance.LifeRefillDurationSeconds));
+        }
+
+        [Test]
+        public void SetResources_WhileRefilling_PreservesRefillTimer()
+        {
+            PlayerPrefsPlayerResourcesStore store = CreateStore();
+            store.ConsumeLife(CurrentTime);
+
+            PlayerResources resources = store.SetResources(
+                150,
+                GameBalance.MaximumLives - 2,
+                CurrentTime + 60);
+
+            Assert.That(resources.Gold, Is.EqualTo(150));
+            Assert.That(
+                resources.Lives,
+                Is.EqualTo(GameBalance.MaximumLives - 2));
+            Assert.That(
+                resources.SecondsUntilNextLife,
+                Is.EqualTo(
+                    GameBalance.LifeRefillDurationSeconds - 60));
+        }
+
+        [Test]
+        public void SetResources_ToMaximumLives_ClearsRefillTimer()
+        {
+            PlayerPrefsPlayerResourcesStore store = CreateStore();
+            store.ConsumeLife(CurrentTime);
+
+            PlayerResources resources = store.SetResources(
+                150,
+                GameBalance.MaximumLives,
+                CurrentTime);
+
+            Assert.That(
+                resources.Lives,
+                Is.EqualTo(GameBalance.MaximumLives));
+            Assert.That(resources.SecondsUntilNextLife, Is.Zero);
+            Assert.That(PlayerPrefs.HasKey(NextLifeTimestampKey), Is.False);
+        }
+
+        [Test]
+        public void SetResources_WithNegativeGold_Throws()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => CreateStore().SetResources(
+                    -1,
+                    GameBalance.MaximumLives,
+                    CurrentTime));
+        }
+
+        [TestCase(-1)]
+        [TestCase(GameBalance.MaximumLives + 1)]
+        public void SetResources_WithOutOfRangeLives_Throws(int lives)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => CreateStore().SetResources(
+                    GameBalance.InitialGold,
+                    lives,
+                    CurrentTime));
+        }
+
+        [Test]
         public void ConsumeLife_FromMaximum_StartsRefillTimer()
         {
             PlayerResources resources = CreateStore().ConsumeLife(CurrentTime);
@@ -187,6 +262,56 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress
             PlayerResources resources = store.Load(CurrentTime);
 
             Assert.That(resources.Lives, Is.Zero);
+        }
+
+        [Test]
+        public void ResetLifeRefillTimer_WhileRefilling_RestartsTimer()
+        {
+            PlayerPrefsPlayerResourcesStore store = CreateStore();
+            store.ConsumeLife(CurrentTime);
+
+            PlayerResources resources = store.ResetLifeRefillTimer(
+                CurrentTime + 60);
+
+            Assert.That(
+                resources.Lives,
+                Is.EqualTo(GameBalance.MaximumLives - 1));
+            Assert.That(
+                resources.SecondsUntilNextLife,
+                Is.EqualTo(GameBalance.LifeRefillDurationSeconds));
+        }
+
+        [Test]
+        public void ResetLifeRefillTimer_WithMaximumLives_KeepsTimerStopped()
+        {
+            PlayerResources resources = CreateStore().ResetLifeRefillTimer(
+                CurrentTime);
+
+            Assert.That(
+                resources.Lives,
+                Is.EqualTo(GameBalance.MaximumLives));
+            Assert.That(resources.SecondsUntilNextLife, Is.Zero);
+            Assert.That(PlayerPrefs.HasKey(NextLifeTimestampKey), Is.False);
+        }
+
+        [Test]
+        public void ResetToDefaults_RemovesSavedResources()
+        {
+            PlayerPrefsPlayerResourcesStore store = CreateStore();
+            store.SetResources(150, 2, CurrentTime);
+
+            PlayerResources resources = store.ResetToDefaults();
+
+            Assert.That(
+                resources.Gold,
+                Is.EqualTo(GameBalance.InitialGold));
+            Assert.That(
+                resources.Lives,
+                Is.EqualTo(GameBalance.MaximumLives));
+            Assert.That(resources.SecondsUntilNextLife, Is.Zero);
+            Assert.That(PlayerPrefs.HasKey(GoldKey), Is.False);
+            Assert.That(PlayerPrefs.HasKey(LivesKey), Is.False);
+            Assert.That(PlayerPrefs.HasKey(NextLifeTimestampKey), Is.False);
         }
 
         private static PlayerPrefsPlayerResourcesStore CreateStore()

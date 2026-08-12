@@ -8,7 +8,7 @@ namespace WaterSortPuzzle.Editor.Levels
     public sealed class LevelProgressEditorWindow : EditorWindow
     {
         private const string WindowTitle = "Level Progress";
-        private const string MenuPath = "Set Level/" + WindowTitle;
+        private const string MenuPath = DeveloperToolsMenu.RootPath + "/" + WindowTitle;
         private const string CatalogSearchFilter = "t:LevelFileCatalog";
         private const int FirstLevelIndex = 0;
         private const int FirstLevelNumber = 1;
