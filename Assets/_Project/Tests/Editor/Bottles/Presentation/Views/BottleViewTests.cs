@@ -14,6 +14,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
     {
         private GameObject bottleObject;
         private RectTransform liquidContainer;
+        private GameObject capVisual;
         private GameObject slotPrefabObject;
         private LiquidSlotView slotPrefab;
         private LiquidColorPalette colorPalette;
@@ -30,6 +31,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             containerObject.transform.SetParent(bottleObject.transform);
             liquidContainer = containerObject.GetComponent<RectTransform>();
 
+            capVisual = new GameObject("Cap Visual");
+            capVisual.transform.SetParent(bottleObject.transform);
+
             CreateLiquidSlotPrefab();
             colorPalette = CreateColorPalette();
             view = bottleObject.AddComponent<BottleView>();
@@ -39,6 +43,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 liquidContainer;
             serializedView.FindProperty("liquidSlotPrefab").objectReferenceValue =
                 slotPrefab;
+            serializedView.FindProperty("capVisual").objectReferenceValue =
+                capVisual;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -136,6 +142,42 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
+        public void Initialize_WithCompletedBottle_ShowsStopper()
+        {
+            BottleState state = CreateBottleState(4, CompletedBottleJson);
+
+            view.Initialize(state, colorPalette);
+
+            Assert.That(capVisual.activeSelf, Is.True);
+        }
+
+        [Test]
+        public void Refresh_AfterBottleBecomesCompleted_ShowsStopper()
+        {
+            BottleState state = CreateBottleState(
+                4,
+                PartiallyFilledSingleColorBottleJson);
+            view.Initialize(state, colorPalette);
+
+            state.AddLiquid("red");
+            view.Refresh();
+
+            Assert.That(state.IsCompleted, Is.True);
+            Assert.That(capVisual.activeSelf, Is.True);
+        }
+
+        [TestCase(EmptyBottleJson)]
+        [TestCase(VisibleBottleJson)]
+        public void Initialize_WithIncompleteBottle_HidesStopper(string json)
+        {
+            BottleState state = CreateBottleState(4, json);
+
+            view.Initialize(state, colorPalette);
+
+            Assert.That(capVisual.activeSelf, Is.False);
+        }
+
+        [Test]
         public void OnPointerClick_NotifiesSubscribers()
         {
             BottleView clickedView = null;
@@ -223,6 +265,18 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private const string VisibleBottleJson = @"
         {
           ""liquidIdsBottomToTop"": [""red"", ""blue""],
+          ""hiddenLiquidIndices"": []
+        }";
+
+        private const string CompletedBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""red"", ""red"", ""red""],
+          ""hiddenLiquidIndices"": []
+        }";
+
+        private const string PartiallyFilledSingleColorBottleJson = @"
+        {
+          ""liquidIdsBottomToTop"": [""red"", ""red"", ""red""],
           ""hiddenLiquidIndices"": []
         }";
     }

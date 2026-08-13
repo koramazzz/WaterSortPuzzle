@@ -17,7 +17,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles
 
             if (SelectedSource == null)
             {
-                if (!bottle.IsEmpty)
+                if (!bottle.IsEmpty && !bottle.IsCompleted)
                 {
                     SelectedSource = bottle;
                 }

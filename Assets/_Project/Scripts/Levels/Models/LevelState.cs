@@ -44,7 +44,7 @@ namespace WaterSortPuzzle.Gameplay.Levels
             {
                 foreach (BottleState bottle in bottles)
                 {
-                    if (!bottle.IsSorted)
+                    if (!bottle.IsEmpty && !bottle.IsCompleted)
                     {
                         return false;
                     }

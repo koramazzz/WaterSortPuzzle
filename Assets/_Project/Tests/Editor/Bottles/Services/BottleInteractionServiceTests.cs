@@ -33,6 +33,20 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
+        public void Select_WithCompletedBottle_DoesNotSelectSource()
+        {
+            BottleState completedBottle = CreateBottle(
+                new[] { "blue", "blue", "blue", "blue" });
+            BottleInteractionService service = new BottleInteractionService();
+
+            int pouredLiquidCount = service.Select(completedBottle);
+
+            Assert.That(completedBottle.IsCompleted, Is.True);
+            Assert.That(pouredLiquidCount, Is.Zero);
+            Assert.That(service.SelectedSource, Is.Null);
+        }
+
+        [Test]
         public void Select_WithSelectedSource_PoursAndClearsSelection()
         {
             BottleState source = CreateBottle(new[] { "blue", "blue" });

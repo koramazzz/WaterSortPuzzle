@@ -10,6 +10,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
+        [SerializeField] private GameObject capVisual;
         [SerializeField] private BottleSelectionAnimator selectionAnimator;
 
         private readonly List<LiquidSlotView> liquidSlotsBottomToTop = new List<LiquidSlotView>();
@@ -50,6 +51,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
                 liquidSlot.ShowLiquid(liquidColor, isHidden);
             }
+
+            capVisual.SetActive(bottleState.IsCompleted);
         }
 
         public void OnPointerClick(PointerEventData eventData)

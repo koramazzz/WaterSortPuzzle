@@ -38,16 +38,11 @@ namespace WaterSortPuzzle.Gameplay.Bottles
 
         public bool IsFull => EmptySpace == 0;
 
-        public bool IsSorted
+        public bool IsCompleted
         {
             get
             {
-                if (IsEmpty)
-                {
-                    return true;
-                }
-
-                if (!IsFull)
+                if (IsEmpty || !IsFull)
                 {
                     return false;
                 }

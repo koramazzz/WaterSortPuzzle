@@ -79,7 +79,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.EmptySpace, Is.EqualTo(4));
             Assert.That(state.IsEmpty, Is.True);
             Assert.That(state.IsFull, Is.False);
-            Assert.That(state.IsSorted, Is.True);
+            Assert.That(state.IsCompleted, Is.False);
             Assert.That(state.TopLiquidId, Is.Null);
         }
 
@@ -91,27 +91,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
             Assert.That(state.LiquidCount, Is.EqualTo(4));
             Assert.That(state.EmptySpace, Is.Zero);
             Assert.That(state.IsFull, Is.True);
-            Assert.That(state.IsSorted, Is.False);
+            Assert.That(state.IsCompleted, Is.False);
         }
 
         [Test]
-        public void IsSorted_WithFullSingleColorBottle_ReturnsTrue()
+        public void IsCompleted_WithFullSingleColorBottle_ReturnsTrue()
         {
             BottleState state = new BottleState(
                 4,
                 Deserialize(FullSingleColorBottleJson));
 
-            Assert.That(state.IsSorted, Is.True);
+            Assert.That(state.IsCompleted, Is.True);
         }
 
         [Test]
-        public void IsSorted_WithPartiallyFilledSingleColorBottle_ReturnsFalse()
+        public void IsCompleted_WithPartiallyFilledSingleColorBottle_ReturnsFalse()
         {
             BottleState state = new BottleState(
                 4,
                 Deserialize(PartiallyFilledSingleColorBottleJson));
 
-            Assert.That(state.IsSorted, Is.False);
+            Assert.That(state.IsCompleted, Is.False);
         }
 
         [Test]

@@ -75,7 +75,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
         }
 
         [Test]
-        public void IsCompleted_WithSortedBottles_ReturnsTrue()
+        public void IsCompleted_WithEmptyOrCompletedBottles_ReturnsTrue()
         {
             LevelState state = new LevelState(Deserialize(CompletedLevelJson));
 
