@@ -10,7 +10,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
-        [SerializeField] private BottleCapAnimator capAnimator;
+        [SerializeField] private BottleCompletionAnimator completionAnimator;
         [SerializeField] private BottleSelectionAnimator selectionAnimator;
 
         private readonly List<LiquidSlotView> liquidSlotsBottomToTop = new List<LiquidSlotView>();
@@ -31,7 +31,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             CreateLiquidSlots(bottleState.Capacity);
             RefreshLiquids();
-            capAnimator.Hide();
+            completionAnimator.Hide();
         }
 
         public void Refresh()
@@ -40,11 +40,11 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             if (bottleState.IsCompleted)
             {
-                capAnimator.PlayClosing();
+                completionAnimator.PlayCompletion();
                 return;
             }
 
-            capAnimator.Hide();
+            completionAnimator.Hide();
         }
 
         public void OnPointerClick(PointerEventData eventData)

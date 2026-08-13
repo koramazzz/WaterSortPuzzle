@@ -40,13 +40,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Animations
         [TearDown]
         public void TearDown()
         {
+            DOTween.Kill(capTransform);
             Object.DestroyImmediate(bottleObject);
         }
 
         [Test]
         public void PlayClosing_MovesCapFromOffsetToRestingPosition()
         {
-            animator.PlayClosing();
+            animator.PlayClosing(null);
 
             Assert.That(capTransform.gameObject.activeSelf, Is.True);
             Assert.That(
@@ -63,15 +64,30 @@ namespace WaterSortPuzzle.Tests.EditMode.Animations
         [Test]
         public void Hide_DuringClosing_HidesCapAtRestingPosition()
         {
-            animator.PlayClosing();
+            bool wasNotified = false;
+            animator.PlayClosing(() => wasNotified = true);
 
             animator.Hide();
+            DOTween.Complete(capTransform);
 
             Assert.That(capTransform.gameObject.activeSelf, Is.False);
             Assert.That(
                 capTransform.anchoredPosition,
                 Is.EqualTo(new Vector2(5f, 10f)));
-            Assert.That(DOTween.IsTweening(capTransform), Is.False);
+            Assert.That(wasNotified, Is.False);
+        }
+
+        [Test]
+        public void PlayClosing_AfterCapReachesRestingPosition_NotifiesCaller()
+        {
+            bool wasNotified = false;
+            animator.PlayClosing(() => wasNotified = true);
+
+            Assert.That(wasNotified, Is.False);
+
+            DOTween.Complete(capTransform);
+
+            Assert.That(wasNotified, Is.True);
         }
     }
 }

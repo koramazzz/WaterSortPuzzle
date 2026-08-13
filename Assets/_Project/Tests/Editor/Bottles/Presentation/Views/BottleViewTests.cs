@@ -1,4 +1,5 @@
 using System;
+using Coffee.UIExtensions;
 using DG.Tweening;
 using NUnit.Framework;
 using UnityEditor;
@@ -18,7 +19,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private RectTransform liquidContainer;
         private GameObject capVisual;
         private RectTransform capTransform;
-        private BottleCapAnimator capAnimator;
+        private BottleCompletionAnimator completionAnimator;
+        private UIParticle completionSparkle;
         private GameObject slotPrefabObject;
         private LiquidSlotView slotPrefab;
         private LiquidColorPalette colorPalette;
@@ -43,7 +45,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             capTransform.sizeDelta = new Vector2(50f, 20f);
             capVisual.SetActive(false);
 
-            capAnimator = bottleObject.AddComponent<BottleCapAnimator>();
+            BottleCapAnimator capAnimator =
+                bottleObject.AddComponent<BottleCapAnimator>();
             SerializedObject serializedCapAnimator =
                 new SerializedObject(capAnimator);
             serializedCapAnimator.FindProperty("capVisual")
@@ -54,6 +57,23 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 .floatValue = 1f;
             serializedCapAnimator.ApplyModifiedPropertiesWithoutUndo();
 
+            GameObject effectObject = new GameObject(
+                "CompletionSparkle",
+                typeof(RectTransform),
+                typeof(UIParticle));
+            effectObject.transform.SetParent(bottleObject.transform, false);
+            completionSparkle = effectObject.GetComponent<UIParticle>();
+
+            completionAnimator =
+                bottleObject.AddComponent<BottleCompletionAnimator>();
+            SerializedObject serializedCompletionAnimator =
+                new SerializedObject(completionAnimator);
+            serializedCompletionAnimator.FindProperty("capAnimator")
+                .objectReferenceValue = capAnimator;
+            serializedCompletionAnimator.FindProperty("completionSparkle")
+                .objectReferenceValue = completionSparkle;
+            serializedCompletionAnimator.ApplyModifiedPropertiesWithoutUndo();
+
             CreateLiquidSlotPrefab();
             colorPalette = CreateColorPalette();
             view = bottleObject.AddComponent<BottleView>();
@@ -63,8 +83,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 liquidContainer;
             serializedView.FindProperty("liquidSlotPrefab").objectReferenceValue =
                 slotPrefab;
-            serializedView.FindProperty("capAnimator").objectReferenceValue =
-                capAnimator;
+            serializedView.FindProperty("completionAnimator").objectReferenceValue =
+                completionAnimator;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -162,7 +182,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
-        public void Refresh_AfterBottleBecomesCompleted_PlaysCapClosing()
+        public void Refresh_AfterBottleBecomesCompleted_PlaysCompletion()
         {
             BottleState state = CreateBottleState(
                 4,
@@ -175,6 +195,11 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             Assert.That(state.IsCompleted, Is.True);
             Assert.That(capVisual.activeSelf, Is.True);
             Assert.That(DOTween.IsTweening(capTransform), Is.True);
+            Assert.That(completionSparkle.isPaused, Is.True);
+
+            DOTween.Complete(capTransform);
+
+            Assert.That(completionSparkle.isPaused, Is.False);
         }
 
         [TestCase(EmptyBottleJson)]
@@ -187,6 +212,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
 
             Assert.That(capVisual.activeSelf, Is.False);
             Assert.That(DOTween.IsTweening(capTransform), Is.False);
+            Assert.That(completionSparkle.isPaused, Is.True);
         }
 
         [Test]
@@ -198,6 +224,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
 
             Assert.That(capVisual.activeSelf, Is.False);
             Assert.That(DOTween.IsTweening(capTransform), Is.False);
+            Assert.That(completionSparkle.isPaused, Is.True);
         }
 
         [Test]

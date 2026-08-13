@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -10,7 +11,6 @@ namespace WaterSortPuzzle.Animations
         [SerializeField, Min(0f)] private float closingDuration;
         [SerializeField] private Ease closingEase;
 
-        private Tween closingTween;
         private Vector2 restingPosition;
         private bool hasRestingPosition;
 
@@ -20,23 +20,24 @@ namespace WaterSortPuzzle.Animations
             capVisual.gameObject.SetActive(false);
         }
 
-        public void PlayClosing()
+        public void PlayClosing(Action closed)
         {
             StopClosingAnimation();
             capVisual.gameObject.SetActive(true);
 
             capVisual.anchoredPosition = restingPosition + Vector2.up * capVisual.rect.height * closingStartOffsetRatio;
 
-            closingTween = capVisual
+            capVisual
                 .DOAnchorPos(restingPosition, closingDuration)
                 .SetEase(closingEase)
+                .OnComplete(() => closed?.Invoke())
                 .SetLink(gameObject);
         }
 
         private void StopClosingAnimation()
         {
             CaptureRestingPosition();
-            closingTween?.Kill();
+            capVisual.DOKill();
             capVisual.anchoredPosition = restingPosition;
         }
 
