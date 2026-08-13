@@ -1,9 +1,11 @@
 using System;
+using DG.Tweening;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using WaterSortPuzzle.Animations;
 using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Levels;
@@ -15,6 +17,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private GameObject bottleObject;
         private RectTransform liquidContainer;
         private GameObject capVisual;
+        private RectTransform capTransform;
+        private BottleCapAnimator capAnimator;
         private GameObject slotPrefabObject;
         private LiquidSlotView slotPrefab;
         private LiquidColorPalette colorPalette;
@@ -31,8 +35,24 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             containerObject.transform.SetParent(bottleObject.transform);
             liquidContainer = containerObject.GetComponent<RectTransform>();
 
-            capVisual = new GameObject("Cap Visual");
-            capVisual.transform.SetParent(bottleObject.transform);
+            capVisual = new GameObject(
+                "Cap Visual",
+                typeof(RectTransform));
+            capTransform = capVisual.GetComponent<RectTransform>();
+            capTransform.SetParent(bottleObject.transform, false);
+            capTransform.sizeDelta = new Vector2(50f, 20f);
+            capVisual.SetActive(false);
+
+            capAnimator = bottleObject.AddComponent<BottleCapAnimator>();
+            SerializedObject serializedCapAnimator =
+                new SerializedObject(capAnimator);
+            serializedCapAnimator.FindProperty("capVisual")
+                .objectReferenceValue = capTransform;
+            serializedCapAnimator.FindProperty("closingStartOffsetRatio")
+                .floatValue = 1f;
+            serializedCapAnimator.FindProperty("closingDuration")
+                .floatValue = 1f;
+            serializedCapAnimator.ApplyModifiedPropertiesWithoutUndo();
 
             CreateLiquidSlotPrefab();
             colorPalette = CreateColorPalette();
@@ -43,8 +63,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 liquidContainer;
             serializedView.FindProperty("liquidSlotPrefab").objectReferenceValue =
                 slotPrefab;
-            serializedView.FindProperty("capVisual").objectReferenceValue =
-                capVisual;
+            serializedView.FindProperty("capAnimator").objectReferenceValue =
+                capAnimator;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -142,17 +162,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
-        public void Initialize_WithCompletedBottle_ShowsStopper()
-        {
-            BottleState state = CreateBottleState(4, CompletedBottleJson);
-
-            view.Initialize(state, colorPalette);
-
-            Assert.That(capVisual.activeSelf, Is.True);
-        }
-
-        [Test]
-        public void Refresh_AfterBottleBecomesCompleted_ShowsStopper()
+        public void Refresh_AfterBottleBecomesCompleted_PlaysCapClosing()
         {
             BottleState state = CreateBottleState(
                 4,
@@ -164,17 +174,30 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
 
             Assert.That(state.IsCompleted, Is.True);
             Assert.That(capVisual.activeSelf, Is.True);
+            Assert.That(DOTween.IsTweening(capTransform), Is.True);
         }
 
         [TestCase(EmptyBottleJson)]
         [TestCase(VisibleBottleJson)]
-        public void Initialize_WithIncompleteBottle_HidesStopper(string json)
+        public void Initialize_WithIncompleteBottle_HidesCap(string json)
         {
             BottleState state = CreateBottleState(4, json);
 
             view.Initialize(state, colorPalette);
 
             Assert.That(capVisual.activeSelf, Is.False);
+            Assert.That(DOTween.IsTweening(capTransform), Is.False);
+        }
+
+        [Test]
+        public void Initialize_WithCompletedBottle_HidesCap()
+        {
+            BottleState state = CreateBottleState(4, CompletedBottleJson);
+
+            view.Initialize(state, colorPalette);
+
+            Assert.That(capVisual.activeSelf, Is.False);
+            Assert.That(DOTween.IsTweening(capTransform), Is.False);
         }
 
         [Test]

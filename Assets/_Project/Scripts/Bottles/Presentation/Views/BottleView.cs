@@ -10,7 +10,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
-        [SerializeField] private GameObject capVisual;
+        [SerializeField] private BottleCapAnimator capAnimator;
         [SerializeField] private BottleSelectionAnimator selectionAnimator;
 
         private readonly List<LiquidSlotView> liquidSlotsBottomToTop = new List<LiquidSlotView>();
@@ -30,10 +30,39 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             colorPalette = palette ?? throw new ArgumentNullException(nameof(palette));
 
             CreateLiquidSlots(bottleState.Capacity);
-            Refresh();
+            RefreshLiquids();
+            capAnimator.Hide();
         }
 
         public void Refresh()
+        {
+            RefreshLiquids();
+
+            if (bottleState.IsCompleted)
+            {
+                capAnimator.PlayClosing();
+                return;
+            }
+
+            capAnimator.Hide();
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Clicked?.Invoke(this);
+        }
+
+        public void AnimateSelection()
+        {
+            selectionAnimator.PlaySelection();
+        }
+
+        public void AnimateDeselection()
+        {
+            selectionAnimator.PlayDeselection();
+        }
+
+        private void RefreshLiquids()
         {
             for (int liquidIndex = 0; liquidIndex < bottleState.Capacity; liquidIndex++)
             {
@@ -51,23 +80,6 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
                 liquidSlot.ShowLiquid(liquidColor, isHidden);
             }
-
-            capVisual.SetActive(bottleState.IsCompleted);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            Clicked?.Invoke(this);
-        }
-
-        public void AnimateSelection()
-        {
-            selectionAnimator.PlaySelection();
-        }
-
-        public void AnimateDeselection()
-        {
-            selectionAnimator.PlayDeselection();
         }
 
         private void CreateLiquidSlots(int capacity)
