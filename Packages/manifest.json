@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.borodar.rainbow-folders": "https://github.com/Borod4r/Rainbow-Folders-2.git?path=Assets/Plugins/Borodar/RainbowFolders#3aea959649c771299ce93958ff4d58b4a3874f37",
+    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#4.13.3",
     "com.unity.ide.visualstudio": "2.0.27",
     "com.unity.inputsystem": "1.20.0",
     "com.unity.multiplayer.center": "1.0.1",
