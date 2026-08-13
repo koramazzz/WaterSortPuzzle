@@ -1,10 +1,11 @@
 {
   "dependencies": {
     "com.borodar.rainbow-folders": {
-      "version": "file:com.borodar.rainbow-folders",
+      "version": "https://github.com/Borod4r/Rainbow-Folders-2.git?path=Assets/Plugins/Borodar/RainbowFolders#3aea959649c771299ce93958ff4d58b4a3874f37",
       "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "3aea959649c771299ce93958ff4d58b4a3874f37"
     },
     "com.coffee.ui-particle": {
       "version": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#4.13.3",
