@@ -10,10 +10,9 @@ namespace WaterSortPuzzle.Editor.Progress
     {
         private const string WindowTitle = "Player Resources";
         private const string MenuPath = DeveloperToolsMenu.RootPath + "/" + WindowTitle;
-        private const int MinimumGold = 0;
-        private const int MinimumLives = 0;
-
-        private readonly PlayerPrefsPlayerResourcesStore resourcesStore = new PlayerPrefsPlayerResourcesStore();
+        private readonly PlayerResourcesEditorService resourcesService =
+            new PlayerResourcesEditorService(
+                new PlayerPrefsPlayerResourcesStore());
 
         private int selectedGold;
         private int selectedLives;
@@ -29,12 +28,12 @@ namespace WaterSortPuzzle.Editor.Progress
 
         private void OnEnable()
         {
-            SynchronizeSelection(resourcesStore.Load());
+            SynchronizeSelection(resourcesService.Load());
         }
 
         private void OnGUI()
         {
-            PlayerResources savedResources = resourcesStore.Load();
+            PlayerResources savedResources = resourcesService.Load();
 
             DrawSavedState(savedResources);
             EditorGUILayout.Space();
@@ -68,9 +67,15 @@ namespace WaterSortPuzzle.Editor.Progress
         {
             EditorGUILayout.LabelField("Selected State", EditorStyles.boldLabel);
 
-            selectedGold = Mathf.Max(MinimumGold, EditorGUILayout.IntField("Gold", selectedGold));
+            selectedGold = Mathf.Max(
+                GameBalance.MinimumGold,
+                EditorGUILayout.IntField("Gold", selectedGold));
 
-            selectedLives = EditorGUILayout.IntSlider("Lives", selectedLives, MinimumLives, GameBalance.MaximumLives);
+            selectedLives = EditorGUILayout.IntSlider(
+                "Lives",
+                selectedLives,
+                GameBalance.MinimumLives,
+                GameBalance.MaximumLives);
 
             bool hasChanges =
                 selectedGold != savedResources.Gold ||
@@ -81,7 +86,7 @@ namespace WaterSortPuzzle.Editor.Progress
                 if (GUILayout.Button("Save Resources"))
                 {
                     PlayerResources updatedResources =
-                        resourcesStore.SetResources(
+                        resourcesService.SetResources(
                             selectedGold,
                             selectedLives);
 
@@ -103,7 +108,7 @@ namespace WaterSortPuzzle.Editor.Progress
                 if (GUILayout.Button("Reset Life Refill Timer"))
                 {
                     PlayerResources updatedResources =
-                        resourcesStore.ResetLifeRefillTimer();
+                        resourcesService.ResetLifeRefillTimer();
 
                     SynchronizeSelection(updatedResources);
                     ShowNotification(
@@ -133,7 +138,7 @@ namespace WaterSortPuzzle.Editor.Progress
             }
 
             PlayerResources defaultResources =
-                resourcesStore.ResetToDefaults();
+                resourcesService.ResetToDefaults();
 
             SynchronizeSelection(defaultResources);
             ShowNotification(new GUIContent("Reset resources"));

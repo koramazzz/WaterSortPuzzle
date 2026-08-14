@@ -1,5 +1,6 @@
 using UnityEngine;
 using WaterSortPuzzle.Animations;
+using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Progress.Presentation
 {
@@ -10,14 +11,14 @@ namespace WaterSortPuzzle.Progress.Presentation
         [SerializeField] private PlayerResourcesHudView resourcesHudView;
         [SerializeField] private HudFeedbackAnimator hudAnimator;
 
-        private readonly PlayerPrefsPlayerResourcesStore resourcesStore =
-            new PlayerPrefsPlayerResourcesStore();
+        private readonly PlayerResourcesService resourcesService =
+            new PlayerResourcesService(new PlayerPrefsPlayerResourcesStore());
 
         private float nextRefreshTime;
 
         private void Start()
         {
-            RefreshOnSchedule();
+            RefreshHudOnSchedule();
         }
 
         private void Update()
@@ -27,42 +28,77 @@ namespace WaterSortPuzzle.Progress.Presentation
                 return;
             }
 
-            RefreshOnSchedule();
+            RefreshHudOnSchedule();
         }
 
-        public PlayerResources Refresh()
+        public void RewardGold(int amount)
         {
-            return Show(resourcesStore.Load());
-        }
-
-        public PlayerResources AddGold(int amount)
-        {
-            PlayerResources resources = Show(resourcesStore.AddGold(amount));
+            Show(resourcesService.AddGold(amount));
             hudAnimator.PlayChanged(PlayerResourceType.Gold);
+        }
+
+        public bool TrySpendGold(int amount)
+        {
+            bool spent = resourcesService.TrySpendGold(amount, out PlayerResources resources);
+
+            Show(resources);
+            PlayTransactionFeedback(spent, PlayerResourceType.Gold);
+
+            return spent;
+        }
+
+        public bool TryConsumeLife()
+        {
+            bool consumed = resourcesService.TryConsumeLife(out PlayerResources resources);
+
+            Show(resources);
+            PlayTransactionFeedback(consumed, PlayerResourceType.Life);
+
+            return consumed;
+        }
+
+        public bool CheckLifeAvailability()
+        {
+            PlayerResources resources = LoadAndShow();
+
+            bool hasAvailableLife = resources.Lives > GameBalance.MinimumLives;
+
+            if (!hasAvailableLife)
+            {
+                hudAnimator.PlayInsufficient(PlayerResourceType.Life);
+            }
+
+            return hasAvailableLife;
+        }
+
+        private void Show(PlayerResources resources)
+        {
+            resourcesHudView.Show(resources);
+        }
+
+        private PlayerResources LoadAndShow()
+        {
+            PlayerResources resources = resourcesService.Load();
+            Show(resources);
             return resources;
         }
 
-        public PlayerResources ConsumeLife()
+        private void PlayTransactionFeedback(
+            bool succeeded,
+            PlayerResourceType resourceType)
         {
-            PlayerResources resources = Show(resourcesStore.ConsumeLife());
-            hudAnimator.PlayChanged(PlayerResourceType.Life);
-            return resources;
-        }
+            if (succeeded)
+            {
+                hudAnimator.PlayChanged(resourceType);
+                return;
+            }
 
-        public void PlayInsufficientFeedback(PlayerResourceType resourceType)
-        {
             hudAnimator.PlayInsufficient(resourceType);
         }
 
-        private PlayerResources Show(PlayerResources resources)
+        private void RefreshHudOnSchedule()
         {
-            resourcesHudView.Show(resources);
-            return resources;
-        }
-
-        private void RefreshOnSchedule()
-        {
-            Refresh();
+            LoadAndShow();
             nextRefreshTime = Time.unscaledTime + RefreshIntervalSeconds;
         }
     }

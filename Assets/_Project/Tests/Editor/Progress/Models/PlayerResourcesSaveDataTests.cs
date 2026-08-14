@@ -5,23 +5,24 @@ using WaterSortPuzzle.Progress;
 
 namespace WaterSortPuzzle.Tests.EditMode.Progress
 {
-    public sealed class PlayerResourcesTests
+    public sealed class PlayerResourcesSaveDataTests
     {
         [Test]
-        public void Constructor_WithValidValues_StoresResources()
+        public void Constructor_WithValidValues_StoresSaveData()
         {
-            PlayerResources resources = new PlayerResources(100, 3, 120);
+            PlayerResourcesSaveData saveData =
+                new PlayerResourcesSaveData(100, 3, 2500);
 
-            Assert.That(resources.Gold, Is.EqualTo(100));
-            Assert.That(resources.Lives, Is.EqualTo(3));
-            Assert.That(resources.SecondsUntilNextLife, Is.EqualTo(120));
+            Assert.That(saveData.Gold, Is.EqualTo(100));
+            Assert.That(saveData.Lives, Is.EqualTo(3));
+            Assert.That(saveData.NextLifeTimestamp, Is.EqualTo(2500));
         }
 
         [Test]
         public void Constructor_WithNegativeGold_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => new PlayerResources(-1, 1, 1));
+                () => new PlayerResourcesSaveData(-1, 1, 1));
         }
 
         [TestCase(-1)]
@@ -29,14 +30,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress
         public void Constructor_WithOutOfRangeLives_Throws(int lives)
         {
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => new PlayerResources(1, lives, 1));
+                () => new PlayerResourcesSaveData(1, lives, 1));
         }
 
         [Test]
-        public void Constructor_WithNegativeRefillSeconds_Throws()
+        public void Constructor_WithNegativeTimestamp_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => new PlayerResources(1, 1, -1));
+                () => new PlayerResourcesSaveData(1, 1, -1));
         }
     }
 }

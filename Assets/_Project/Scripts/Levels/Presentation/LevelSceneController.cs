@@ -80,11 +80,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             {
                 completedLevelCount += CompletedLevelCountIncrement;
                 progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
-                resourcesHud.AddGold(WinGoldReward);
+                resourcesHud.RewardGold(WinGoldReward);
             }
             else if (outcome == LevelOutcome.Failed)
             {
-                resourcesHud.ConsumeLife();
+                resourcesHud.TryConsumeLife();
             }
 
             LevelEnded?.Invoke(outcome);
@@ -103,11 +103,8 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         public void RetryLevel()
         {
-            PlayerResources resources = resourcesHud.Refresh();
-
-            if (resources.Lives == 0)
+            if (!resourcesHud.CheckLifeAvailability())
             {
-                resourcesHud.PlayInsufficientFeedback(PlayerResourceType.Life);
                 return;
             }
 

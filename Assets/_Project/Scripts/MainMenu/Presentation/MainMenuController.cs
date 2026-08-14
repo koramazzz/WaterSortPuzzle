@@ -54,11 +54,8 @@ namespace WaterSortPuzzle.MainMenu.Presentation
                 return;
             }
 
-            PlayerResources resources = resourcesHud.Refresh();
-
-            if (resources.Lives == 0)
+            if (!resourcesHud.CheckLifeAvailability())
             {
-                resourcesHud.PlayInsufficientFeedback(PlayerResourceType.Life);
                 return;
             }
 

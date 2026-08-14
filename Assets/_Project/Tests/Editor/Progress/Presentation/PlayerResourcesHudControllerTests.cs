@@ -100,16 +100,11 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
         }
 
         [Test]
-        public void Refresh_UpdatesEveryDisplayedResource()
+        public void CheckLifeAvailability_WithLife_UpdatesDisplayedResources()
         {
-            PlayerResources resources = controller.Refresh();
+            bool hasAvailableLife = controller.CheckLifeAvailability();
 
-            Assert.That(
-                resources.Gold,
-                Is.EqualTo(GameBalance.InitialGold));
-            Assert.That(
-                resources.Lives,
-                Is.EqualTo(GameBalance.MaximumLives));
+            Assert.That(hasAvailableLife, Is.True);
             Assert.That(
                 goldText.text,
                 Is.EqualTo(GameBalance.InitialGold.ToString()));
@@ -120,29 +115,26 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
         }
 
         [Test]
-        public void AddGold_PersistsAndDisplaysUpdatedGold()
+        public void RewardGold_PersistsAndDisplaysUpdatedGold()
         {
-            PlayerResources resources = controller.AddGold(50);
+            controller.RewardGold(50);
 
             int expectedGold = GameBalance.InitialGold + 50;
 
-            Assert.That(resources.Gold, Is.EqualTo(expectedGold));
             Assert.That(goldText.text, Is.EqualTo(expectedGold.ToString()));
             Assert.That(
-                new PlayerPrefsPlayerResourcesStore().Load().Gold,
+                LoadSavedResources().Gold,
                 Is.EqualTo(expectedGold));
             Assert.That(DOTween.IsTweening(goldHudTransform), Is.True);
             Assert.That(DOTween.IsTweening(lifeHudTransform), Is.False);
         }
 
         [Test]
-        public void ConsumeLife_PersistsAndDisplaysUpdatedLives()
+        public void TryConsumeLife_WithLife_PersistsAndDisplaysUpdatedLives()
         {
-            PlayerResources resources = controller.ConsumeLife();
+            bool consumed = controller.TryConsumeLife();
 
-            Assert.That(
-                resources.Lives,
-                Is.EqualTo(GameBalance.MaximumLives - 1));
+            Assert.That(consumed, Is.True);
             Assert.That(
                 lifeCountText.text,
                 Is.EqualTo((GameBalance.MaximumLives - 1).ToString()));
@@ -151,30 +143,71 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
                 Is.EqualTo(
                     $"{GameBalance.LifeRefillDurationSeconds / 60:00}:00"));
             Assert.That(
-                new PlayerPrefsPlayerResourcesStore().Load().Lives,
+                LoadSavedResources().Lives,
                 Is.EqualTo(GameBalance.MaximumLives - 1));
             Assert.That(DOTween.IsTweening(lifeHudTransform), Is.True);
             Assert.That(DOTween.IsTweening(goldHudTransform), Is.False);
         }
 
-        [TestCase(PlayerResourceType.Gold)]
-        [TestCase(PlayerResourceType.Life)]
-        public void PlayInsufficientFeedback_AnimatesRequestedResource(
-            PlayerResourceType resourceType)
+        [Test]
+        public void TryConsumeLife_WithoutLives_PlaysInsufficientFeedback()
         {
-            controller.PlayInsufficientFeedback(resourceType);
+            PlayerPrefs.SetInt(LivesKey, GameBalance.MinimumLives);
 
-            RectTransform expectedHud =
-                resourceType == PlayerResourceType.Gold
-                    ? goldHudTransform
-                    : lifeHudTransform;
-            RectTransform unchangedHud =
-                resourceType == PlayerResourceType.Gold
-                    ? lifeHudTransform
-                    : goldHudTransform;
+            bool consumed = controller.TryConsumeLife();
 
-            Assert.That(DOTween.IsTweening(expectedHud), Is.True);
-            Assert.That(DOTween.IsTweening(unchangedHud), Is.False);
+            Assert.That(consumed, Is.False);
+            Assert.That(
+                lifeCountText.text,
+                Is.EqualTo(GameBalance.MinimumLives.ToString()));
+            Assert.That(
+                LoadSavedResources().Lives,
+                Is.EqualTo(GameBalance.MinimumLives));
+            Assert.That(DOTween.IsTweening(lifeHudTransform), Is.True);
+            Assert.That(DOTween.IsTweening(goldHudTransform), Is.False);
+        }
+
+        [Test]
+        public void TrySpendGold_WithEnoughGold_PersistsAndDisplaysGold()
+        {
+            PlayerPrefs.SetInt(GoldKey, 100);
+
+            bool spent = controller.TrySpendGold(60);
+
+            Assert.That(spent, Is.True);
+            Assert.That(goldText.text, Is.EqualTo("40"));
+            Assert.That(LoadSavedResources().Gold, Is.EqualTo(40));
+            Assert.That(DOTween.IsTweening(goldHudTransform), Is.True);
+            Assert.That(DOTween.IsTweening(lifeHudTransform), Is.False);
+        }
+
+        [Test]
+        public void TrySpendGold_WithoutEnoughGold_PlaysInsufficientFeedback()
+        {
+            PlayerPrefs.SetInt(GoldKey, 50);
+
+            bool spent = controller.TrySpendGold(60);
+
+            Assert.That(spent, Is.False);
+            Assert.That(goldText.text, Is.EqualTo("50"));
+            Assert.That(LoadSavedResources().Gold, Is.EqualTo(50));
+            Assert.That(DOTween.IsTweening(goldHudTransform), Is.True);
+            Assert.That(DOTween.IsTweening(lifeHudTransform), Is.False);
+        }
+
+        [Test]
+        public void CheckLifeAvailability_WithoutLife_PlaysFeedback()
+        {
+            PlayerPrefs.SetInt(LivesKey, GameBalance.MinimumLives);
+
+            bool hasAvailableLife = controller.CheckLifeAvailability();
+
+            Assert.That(hasAvailableLife, Is.False);
+            Assert.That(
+                lifeCountText.text,
+                Is.EqualTo(GameBalance.MinimumLives.ToString()));
+            Assert.That(DOTween.IsTweening(lifeHudTransform), Is.True);
+            Assert.That(DOTween.IsTweening(goldHudTransform), Is.False);
         }
 
         private void SavePlayerPrefs()
@@ -194,6 +227,13 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
             PlayerPrefs.DeleteKey(GoldKey);
             PlayerPrefs.DeleteKey(LivesKey);
             PlayerPrefs.DeleteKey(NextLifeTimestampKey);
+        }
+
+        private static PlayerResources LoadSavedResources()
+        {
+            return new PlayerResourcesService(
+                    new PlayerPrefsPlayerResourcesStore())
+                .Load();
         }
 
         private void RestorePlayerPrefs()

@@ -3,12 +3,13 @@ using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Progress
 {
-    public sealed class PlayerResources
+    public sealed class PlayerResourcesSaveData
     {
-        public PlayerResources(
+
+        public PlayerResourcesSaveData(
             int gold,
             int lives,
-            int secondsUntilNextLife)
+            long nextLifeTimestamp)
         {
             if (gold < GameBalance.MinimumGold)
             {
@@ -20,20 +21,20 @@ namespace WaterSortPuzzle.Progress
                 throw new ArgumentOutOfRangeException(nameof(lives));
             }
 
-            if (secondsUntilNextLife < 0)
+            if (nextLifeTimestamp < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(secondsUntilNextLife));
+                throw new ArgumentOutOfRangeException(nameof(nextLifeTimestamp));
             }
 
             Gold = gold;
             Lives = lives;
-            SecondsUntilNextLife = secondsUntilNextLife;
+            NextLifeTimestamp = nextLifeTimestamp;
         }
 
         public int Gold { get; }
 
         public int Lives { get; }
 
-        public int SecondsUntilNextLife { get; }
+        public long NextLifeTimestamp { get; }
     }
 }
