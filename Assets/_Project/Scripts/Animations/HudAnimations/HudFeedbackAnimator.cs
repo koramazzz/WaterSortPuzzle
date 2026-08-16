@@ -7,11 +7,16 @@ namespace WaterSortPuzzle.Animations
 {
     public sealed class HudFeedbackAnimator : MonoBehaviour
     {
+        [Header("HUD References")]
         [SerializeField] private RectTransform goldHud;
         [SerializeField] private RectTransform lifeHud;
+
+        [Header("Changed Feedback")]
         [SerializeField, Min(1f)] private float changedScaleMultiplier;
         [SerializeField, Min(0f)] private float changedPhaseDuration;
         [SerializeField] private Ease changedEase;
+
+        [Header("Insufficient Feedback")]
         [SerializeField, Min(1f)] private float insufficientScaleMultiplier;
         [SerializeField, Min(0f)] private float insufficientPhaseDuration;
         [SerializeField] private Ease insufficientEase;

@@ -7,7 +7,10 @@ namespace WaterSortPuzzle.Progress.Presentation
 {
     public sealed class PlayerResourcesHudView : MonoBehaviour
     {
+        [Header("Gold")]
         [SerializeField] private TMP_Text goldText;
+
+        [Header("Lives")]
         [SerializeField] private TMP_Text lifeCountText;
         [SerializeField] private TMP_Text lifeTimeText;
         [SerializeField] private string fullLivesText;

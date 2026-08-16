@@ -12,13 +12,20 @@ namespace WaterSortPuzzle.MainMenu.Presentation
 {
     public sealed class MainMenuController : MonoBehaviour
     {
+        [Header("Level")]
         [SerializeField] private LevelFileCatalog levelCatalog;
+        [SerializeField] private LevelDifficultyBadgeView difficultyBadge;
+
+        [Header("Play Button")]
         [SerializeField] private Button playButton;
         [SerializeField] private TMP_Text playButtonText;
-        [SerializeField] private LevelDifficultyBadgeView difficultyBadge;
-        [SerializeField] private PlayerResourcesHudController resourcesHud;
         [SerializeField] private string levelTitleFormat;
         [SerializeField] private string completedTitle;
+
+        [Header("Player Resources")]
+        [SerializeField] private PlayerResourcesHudController resourcesHud;
+
+        [Header("Navigation")]
         [SerializeField] private string levelSceneName;
 
         private readonly LevelDataLoader levelDataLoader = new LevelDataLoader();

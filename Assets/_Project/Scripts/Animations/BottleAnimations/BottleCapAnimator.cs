@@ -6,7 +6,10 @@ namespace WaterSortPuzzle.Animations
 {
     public sealed class BottleCapAnimator : MonoBehaviour
     {
+        [Header("Visual")]
         [SerializeField] private RectTransform capVisual;
+
+        [Header("Closing Animation")]
         [SerializeField, Min(0f)] private float closingStartOffsetRatio;
         [SerializeField, Min(0f)] private float closingDuration;
         [SerializeField] private Ease closingEase;

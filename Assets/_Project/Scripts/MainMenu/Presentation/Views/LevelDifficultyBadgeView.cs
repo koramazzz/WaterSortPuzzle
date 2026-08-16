@@ -6,7 +6,10 @@ namespace WaterSortPuzzle.MainMenu.Presentation
 {
     public sealed class LevelDifficultyBadgeView : MonoBehaviour
     {
+        [Header("Badge")]
         [SerializeField] private Image badgeImage;
+
+        [Header("Difficulty Sprites")]
         [SerializeField] private Sprite easyBadge;
         [SerializeField] private Sprite mediumBadge;
         [SerializeField] private Sprite hardBadge;

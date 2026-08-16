@@ -8,8 +8,11 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {
     public sealed class BottleView : MonoBehaviour, IPointerClickHandler
     {
+        [Header("Liquid")]
         [SerializeField] private RectTransform liquidContainer;
         [SerializeField] private LiquidSlotView liquidSlotPrefab;
+
+        [Header("Animation")]
         [SerializeField] private BottleCompletionAnimator completionAnimator;
         [SerializeField] private BottleSelectionAnimator selectionAnimator;
 
