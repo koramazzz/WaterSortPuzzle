@@ -19,6 +19,10 @@ namespace WaterSortPuzzle.Tests.EditMode.Configuration
                 Is.GreaterThanOrEqualTo(GameBalance.MinimumGold));
             Assert.That(GameBalance.LifeRefillDurationSeconds, Is.Positive);
             Assert.That(GameBalance.BaseGoldReward, Is.Positive);
+            Assert.That(
+                GameBalance.MaximumBottleAdditionsPerLevel,
+                Is.Positive);
+            Assert.That(GameBalance.AddBottleGoldCost, Is.Positive);
         }
     }
 }

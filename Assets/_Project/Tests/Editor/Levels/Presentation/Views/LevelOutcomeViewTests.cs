@@ -14,8 +14,11 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
         private GameObject outcomeRoot;
         private GameObject winPanel;
         private GameObject losePanel;
+        private GameObject addBottleButton;
         private GameObject goldRewardTextObject;
         private TMP_Text goldRewardText;
+        private GameObject addBottleGoldCostTextObject;
+        private TMP_Text addBottleGoldCostText;
         private LevelOutcomeView outcomeView;
 
         [SetUp]
@@ -29,12 +32,19 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             outcomeRoot = new GameObject("Outcome");
             winPanel = new GameObject("WinPanel");
             losePanel = new GameObject("LosePanel");
+            addBottleButton = new GameObject("AddBottleButton");
             goldRewardTextObject = new GameObject(
                 "GoldRewardText",
                 typeof(RectTransform),
                 typeof(CanvasRenderer));
             goldRewardText =
                 goldRewardTextObject.AddComponent<TextMeshProUGUI>();
+            addBottleGoldCostTextObject = new GameObject(
+                "AddBottleGoldCostText",
+                typeof(RectTransform),
+                typeof(CanvasRenderer));
+            addBottleGoldCostText =
+                addBottleGoldCostTextObject.AddComponent<TextMeshProUGUI>();
 
             SerializedObject serializedView = new SerializedObject(outcomeView);
             serializedView.FindProperty("levelSceneController")
@@ -47,6 +57,10 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
                 losePanel;
             serializedView.FindProperty("goldRewardText")
                 .objectReferenceValue = goldRewardText;
+            serializedView.FindProperty("addBottleButton")
+                .objectReferenceValue = addBottleButton;
+            serializedView.FindProperty("addBottleGoldCostText")
+                .objectReferenceValue = addBottleGoldCostText;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
             controllerObject.SetActive(true);
         }
@@ -58,7 +72,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             Object.DestroyImmediate(outcomeRoot);
             Object.DestroyImmediate(winPanel);
             Object.DestroyImmediate(losePanel);
+            Object.DestroyImmediate(addBottleButton);
             Object.DestroyImmediate(goldRewardTextObject);
+            Object.DestroyImmediate(addBottleGoldCostTextObject);
         }
 
         [TestCase(LevelOutcome.InProgress, false, false, false)]
@@ -85,6 +101,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
             Assert.That(
                 losePanel.activeSelf,
                 Is.EqualTo(expectedLoseVisibility));
+            Assert.That(
+                addBottleButton.activeSelf,
+                Is.EqualTo(expectedLoseVisibility));
 
             if (outcome == LevelOutcome.Completed)
             {
@@ -92,6 +111,16 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels.Presentation
                     goldRewardText.text,
                     Is.EqualTo(
                         $"+{GameBalance.BaseGoldReward}"));
+            }
+
+            if (outcome == LevelOutcome.Failed)
+            {
+                Assert.That(
+                    addBottleGoldCostText.text,
+                    Is.EqualTo(
+                        GameBalance
+                            .AddBottleGoldCost
+                            .ToString()));
             }
         }
     }

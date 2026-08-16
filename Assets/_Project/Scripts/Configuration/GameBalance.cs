@@ -8,5 +8,7 @@ namespace WaterSortPuzzle.Configuration
         public const int InitialGold = MinimumGold;
         public const int LifeRefillDurationSeconds = 30 * 60;
         public const int BaseGoldReward = 50;
+        public const int MaximumBottleAdditionsPerLevel = 1;
+        public const int AddBottleGoldCost = BaseGoldReward * 4;
     }
 }

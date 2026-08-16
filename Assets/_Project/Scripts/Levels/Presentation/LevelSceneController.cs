@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WaterSortPuzzle.Configuration;
+using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Levels.Loading;
 using WaterSortPuzzle.Levels.Rewards;
@@ -16,11 +17,16 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
     {
         private const int CompletedLevelCountIncrement = 1;
 
+        [Header("Level")]
         [SerializeField] private LevelFileCatalog levelCatalog;
         [SerializeField] private TMP_Text levelText;
-        [SerializeField] private PlayerResourcesHudController resourcesHud;
         [SerializeField] private string levelTitleFormat;
+
+        [Header("Gameplay")]
         [SerializeField] private BottleCollectionView bottleCollectionView;
+        [SerializeField] private PlayerResourcesHudController resourcesHud;
+
+        [Header("Navigation")]
         [SerializeField] private string mainSceneName;
 
         private readonly LevelCatalogLoader levelCatalogLoader = new LevelCatalogLoader();
@@ -28,16 +34,21 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         private readonly BottleInteractionPresenter bottleInteractionPresenter = new BottleInteractionPresenter();
         private readonly LevelOutcomeEvaluator levelOutcomeEvaluator = new LevelOutcomeEvaluator();
         private readonly LevelRewardCalculator levelRewardCalculator = new LevelRewardCalculator();
+        private readonly BottleAdditionProgress bottleAdditionProgress = new BottleAdditionProgress();
 
         private int completedLevelCount;
         private int levelCount;
         private LevelState levelState;
-        private bool hasEnded;
+        private LevelOutcome currentOutcome;
         private int winGoldReward = GameBalance.BaseGoldReward;
 
-        public event Action<LevelOutcome> LevelEnded;
+        public event Action<LevelOutcome> OutcomeChanged;
 
         public int WinGoldReward => winGoldReward;
+
+        public bool HasAvailableBottleAddition => bottleAdditionProgress.CanAddBottle;
+
+        public int AddBottleGoldCost => GameBalance.AddBottleGoldCost;
 
         private void Start()
         {
@@ -62,32 +73,66 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         private void HandlePourCompleted()
         {
-            if (hasEnded)
+            LevelOutcome evaluatedOutcome = levelOutcomeEvaluator.Evaluate(levelState);
+
+            if (evaluatedOutcome == currentOutcome)
             {
                 return;
             }
 
-            LevelOutcome outcome = levelOutcomeEvaluator.Evaluate(levelState);
+            ApplyOutcome(evaluatedOutcome);
+        }
 
-            if (outcome == LevelOutcome.InProgress)
+        private void ApplyOutcome(LevelOutcome outcome)
+        {
+            currentOutcome = outcome;
+
+            switch (outcome)
+            {
+                case LevelOutcome.Completed:
+                    CompleteLevel();
+                    break;
+
+                case LevelOutcome.Failed:
+                    FailLevel();
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(outcome), outcome, null);
+            }
+
+            OutcomeChanged?.Invoke(outcome);
+        }
+
+        private void CompleteLevel()
+        {
+            completedLevelCount += CompletedLevelCountIncrement;
+            progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
+            resourcesHud.RewardGold(WinGoldReward);
+        }
+
+        private void FailLevel()
+        {
+            resourcesHud.TryConsumeLife();
+        }
+
+        public void AddBottle()
+        {
+            if (currentOutcome != LevelOutcome.Failed || !bottleAdditionProgress.CanAddBottle)
             {
                 return;
             }
 
-            hasEnded = true;
-
-            if (outcome == LevelOutcome.Completed)
+            if (!resourcesHud.TrySpendGold(AddBottleGoldCost))
             {
-                completedLevelCount += CompletedLevelCountIncrement;
-                progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
-                resourcesHud.RewardGold(WinGoldReward);
-            }
-            else if (outcome == LevelOutcome.Failed)
-            {
-                resourcesHud.TryConsumeLife();
+                return;
             }
 
-            LevelEnded?.Invoke(outcome);
+            BottleState addedBottle = levelState.AddEmptyBottle();
+            bottleCollectionView.AddBottle(addedBottle);
+            bottleAdditionProgress.RecordBottleAdded();
+            currentOutcome = LevelOutcome.InProgress;
+            OutcomeChanged?.Invoke(currentOutcome);
         }
 
         public void LoadNextLevel()

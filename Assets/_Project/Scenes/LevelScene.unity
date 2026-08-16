@@ -146,18 +146,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 24387610}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 704125843}
   - {fileID: 178157475}
-  m_Father: {fileID: 811580609}
+  m_Father: {fileID: 226079599}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: -170}
+  m_AnchoredPosition: {x: -200, y: 0}
   m_SizeDelta: {x: 390, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &24387612
@@ -225,7 +225,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 24387614}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 410616519}
+        m_TargetAssemblyTypeName: WaterSortPuzzle.Gameplay.Levels.Presentation.LevelSceneController,
+          Assembly-CSharp
+        m_MethodName: AddBottle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &24387614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,6 +490,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 178157474}
   m_CullTransparentMesh: 1
+--- !u!1 &226079598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 226079599}
+  - component: {fileID: 226079600}
+  m_Layer: 5
+  m_Name: ActionButtons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &226079599
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226079598}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 24387611}
+  - {fileID: 739081873}
+  m_Father: {fileID: 811580609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -200}
+  m_SizeDelta: {x: 0, y: 200}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &226079600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226079598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &291101928
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,9 +738,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Levels.Presentation.LevelSceneController
   levelCatalog: {fileID: 11400000, guid: b94aa14e07beb407caec8dd1601c8871, type: 2}
   levelText: {fileID: 1330557901}
-  resourcesHud: {fileID: 991322707}
   levelTitleFormat: Level {0}
   bottleCollectionView: {fileID: 2031834027}
+  resourcesHud: {fileID: 991322707}
   mainSceneName: MainScene
 --- !u!114 &410616520
 MonoBehaviour:
@@ -682,6 +759,8 @@ MonoBehaviour:
   winPanel: {fileID: 1672985444}
   losePanel: {fileID: 811580608}
   goldRewardText: {fileID: 1141904751}
+  addBottleButton: {fileID: 24387610}
+  addBottleGoldCostText: {fileID: 985452418}
 --- !u!1 &440155928
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,17 +1062,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 739081872}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 291101929}
-  m_Father: {fileID: 811580609}
+  m_Father: {fileID: 226079599}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 200, y: -170}
+  m_AnchoredPosition: {x: 200, y: 0}
   m_SizeDelta: {x: 380, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &739081874
@@ -1218,9 +1297,8 @@ RectTransform:
   m_Children:
   - {fileID: 1811069450}
   - {fileID: 1184168593}
-  - {fileID: 739081873}
-  - {fileID: 24387611}
   - {fileID: 1642265586}
+  - {fileID: 226079599}
   m_Father: {fileID: 1811069440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1240,7 +1318,7 @@ GameObject:
   - component: {fileID: 985452419}
   - component: {fileID: 985452418}
   m_Layer: 5
-  m_Name: GoldText
+  m_Name: AddBottleGoldCostText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3041,6 +3119,7 @@ GameObject:
   - component: {fileID: 2031834026}
   - component: {fileID: 2031834027}
   - component: {fileID: 2031834028}
+  - component: {fileID: 2031834029}
   m_Layer: 5
   m_Name: BottleContainer
   m_TagString: Untagged
@@ -3102,6 +3181,21 @@ MonoBehaviour:
     m_Right: 40
     m_Top: 200
     m_Bottom: 100
+  additionAnimator: {fileID: 2031834029}
+--- !u!114 &2031834029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031834025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4f29d16c7a843a0b18e5624fd09c731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.BottleGridLayoutAnimator
+  additionDuration: 0.35
+  additionEase: 9
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
