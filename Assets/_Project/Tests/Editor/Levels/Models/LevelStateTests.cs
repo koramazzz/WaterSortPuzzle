@@ -83,6 +83,20 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Levels
         }
 
         [Test]
+        public void AddEmptyBottle_AppendsEmptyBottleWithLevelCapacity()
+        {
+            LevelState state = new LevelState(Deserialize(LevelJson));
+            int initialBottleCount = state.Bottles.Count;
+
+            BottleState addedBottle = state.AddEmptyBottle();
+
+            Assert.That(state.Bottles.Count, Is.EqualTo(initialBottleCount + 1));
+            Assert.That(state.Bottles[initialBottleCount], Is.SameAs(addedBottle));
+            Assert.That(addedBottle.Capacity, Is.EqualTo(state.BottleCapacity));
+            Assert.That(addedBottle.IsEmpty, Is.True);
+        }
+
+        [Test]
         public void Constructor_WhenSourceBottleArrayChanges_DoesNotChangeState()
         {
             LevelData levelData = Deserialize(LevelJson);

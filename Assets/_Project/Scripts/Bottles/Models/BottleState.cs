@@ -10,20 +10,23 @@ namespace WaterSortPuzzle.Gameplay.Bottles
         private readonly IReadOnlyList<string> readOnlyLiquidIdsBottomToTop;
         private readonly HashSet<int> hiddenLiquidIndices;
 
-        public BottleState(int capacity, BottleData initialData)
+        public BottleState(int capacity)
+        {
+            Capacity = capacity;
+            liquidIdsBottomToTop = new List<string>();
+            readOnlyLiquidIdsBottomToTop = liquidIdsBottomToTop.AsReadOnly();
+            hiddenLiquidIndices = new HashSet<int>();
+        }
+
+        public BottleState(int capacity, BottleData initialData) : this(capacity)
         {
             if (initialData == null)
             {
                 throw new ArgumentNullException(nameof(initialData));
             }
 
-            Capacity = capacity;
-            
-            liquidIdsBottomToTop = new List<string>(initialData.LiquidIdsBottomToTop);
-            
-            readOnlyLiquidIdsBottomToTop = liquidIdsBottomToTop.AsReadOnly();
-            
-            hiddenLiquidIndices = new HashSet<int>(initialData.HiddenLiquidIndices);
+            liquidIdsBottomToTop.AddRange(initialData.LiquidIdsBottomToTop);
+            hiddenLiquidIndices.UnionWith(initialData.HiddenLiquidIndices);
         }
 
         public int Capacity { get; }

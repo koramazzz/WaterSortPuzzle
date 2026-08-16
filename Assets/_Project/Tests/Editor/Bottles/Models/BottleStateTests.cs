@@ -84,6 +84,16 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles
         }
 
         [Test]
+        public void Constructor_WithoutInitialData_CreatesEmptyState()
+        {
+            BottleState state = new BottleState(4);
+
+            Assert.That(state.Capacity, Is.EqualTo(4));
+            Assert.That(state.LiquidCount, Is.Zero);
+            Assert.That(state.IsEmpty, Is.True);
+        }
+
+        [Test]
         public void Constructor_WithFullBottle_CreatesFullState()
         {
             BottleState state = new BottleState(4, Deserialize(FullBottleJson));

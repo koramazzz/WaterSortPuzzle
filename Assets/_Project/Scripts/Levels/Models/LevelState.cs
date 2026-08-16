@@ -38,6 +38,13 @@ namespace WaterSortPuzzle.Gameplay.Levels
 
         public IReadOnlyList<BottleState> Bottles => readOnlyBottles;
 
+        public BottleState AddEmptyBottle()
+        {
+            BottleState bottle = new BottleState(BottleCapacity);
+            bottles.Add(bottle);
+            return bottle;
+        }
+
         public bool IsCompleted
         {
             get
