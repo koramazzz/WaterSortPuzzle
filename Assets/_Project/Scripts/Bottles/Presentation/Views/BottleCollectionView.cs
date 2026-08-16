@@ -22,21 +22,38 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             foreach (BottleState bottleState in bottleStates)
             {
-                BottleView bottleView = Instantiate(
-                    bottlePrefab,
-                    transform,
-                    false);
-
-                bottleView.Initialize(bottleState, colorPalette);
-                bottleView.Clicked += HandleBottleClicked;
+                CreateBottleView(bottleState);
             }
 
             bottleGridLayout.Arrange(bottleStates.Count);
         }
 
+        public void AddBottle(BottleState bottleState)
+        {
+            if (bottleState == null)
+            {
+                throw new ArgumentNullException(nameof(bottleState));
+            }
+
+            BottleView bottleView = CreateBottleView(bottleState);
+            bottleGridLayout.AnimateBottleAddition((RectTransform)bottleView.transform);
+        }
+
         private void HandleBottleClicked(BottleView bottleView)
         {
             BottleClicked?.Invoke(bottleView);
+        }
+
+        private BottleView CreateBottleView(BottleState bottleState)
+        {
+            BottleView bottleView = Instantiate(
+                bottlePrefab,
+                transform,
+                false);
+
+            bottleView.Initialize(bottleState, colorPalette);
+            bottleView.Clicked += HandleBottleClicked;
+            return bottleView;
         }
     }
 }

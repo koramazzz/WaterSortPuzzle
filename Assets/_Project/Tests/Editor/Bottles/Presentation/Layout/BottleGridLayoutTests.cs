@@ -31,10 +31,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation.Layout
 
             for (int index = 0; index < 5; index++)
             {
-                GameObject bottle = new GameObject(
-                    $"Bottle {index}",
-                    typeof(RectTransform));
-                bottle.transform.SetParent(container, false);
+                CreateBottle($"Bottle {index}");
             }
         }
 
@@ -73,6 +70,15 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation.Layout
             Assert.That(
                 bottle.anchoredPosition.y,
                 Is.EqualTo(expectedPosition.y).Within(0.001f));
+        }
+
+        private RectTransform CreateBottle(string name)
+        {
+            GameObject bottle = new GameObject(
+                name,
+                typeof(RectTransform));
+            bottle.transform.SetParent(container, false);
+            return bottle.GetComponent<RectTransform>();
         }
     }
 }

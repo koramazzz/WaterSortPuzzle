@@ -24,6 +24,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation.Layout
             Assert.That(result.ColumnCount, Is.EqualTo(3));
             Assert.That(result.CellSize.x, Is.EqualTo(145f).Within(0.001f));
             Assert.That(result.CellSize.y, Is.EqualTo(290f).Within(0.001f));
+            Assert.That(result.AnchoredPositions.Count, Is.EqualTo(5));
+            AssertPosition(result, 0, new Vector2(-165f, 155f));
+            AssertPosition(result, 1, new Vector2(0f, 155f));
+            AssertPosition(result, 2, new Vector2(165f, 155f));
+            AssertPosition(result, 3, new Vector2(-82.5f, -155f));
+            AssertPosition(result, 4, new Vector2(82.5f, -155f));
+        }
+
+        [Test]
+        public void Calculate_WithAsymmetricPadding_CentersInsideAvailableArea()
+        {
+            BottleGridLayoutResult result = calculator.Calculate(
+                new Vector2(100f, 100f),
+                1,
+                1,
+                1f,
+                Vector2.zero,
+                new RectOffset(20, 0, 10, 30));
+
+            Assert.That(result.CellSize, Is.EqualTo(new Vector2(60f, 60f)));
+            AssertPosition(result, 0, new Vector2(10f, 10f));
         }
 
         [Test]
@@ -140,6 +161,21 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation.Layout
                     1f,
                     new Vector2(2f, 2f),
                     new RectOffset(1, 1, 1, 1)));
+        }
+
+        private static void AssertPosition(
+            BottleGridLayoutResult result,
+            int bottleIndex,
+            Vector2 expectedPosition)
+        {
+            Vector2 actualPosition = result.AnchoredPositions[bottleIndex];
+
+            Assert.That(
+                actualPosition.x,
+                Is.EqualTo(expectedPosition.x).Within(0.001f));
+            Assert.That(
+                actualPosition.y,
+                Is.EqualTo(expectedPosition.y).Within(0.001f));
         }
     }
 }

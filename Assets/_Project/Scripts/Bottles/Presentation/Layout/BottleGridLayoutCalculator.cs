@@ -56,9 +56,54 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout
                     "The bottle grid does not fit inside its container.");
             }
 
+            Vector2[] anchoredPositions = CalculateAnchoredPositions(
+                bottleCount,
+                bestColumnCount,
+                bestCellSize,
+                spacing,
+                padding);
+
             return new BottleGridLayoutResult(
                 bestColumnCount,
-                bestCellSize);
+                bestCellSize,
+                anchoredPositions);
+        }
+
+        private static Vector2[] CalculateAnchoredPositions(
+            int bottleCount,
+            int columnCount,
+            Vector2 cellSize,
+            Vector2 spacing,
+            RectOffset padding)
+        {
+            int rowCount = Mathf.CeilToInt((float)bottleCount / columnCount);
+            float gridHeight = cellSize.y * rowCount + spacing.y * (rowCount - 1);
+
+            Vector2 contentCenter = new Vector2((padding.left - padding.right) * 0.5f, (padding.bottom - padding.top) * 0.5f);
+
+            Vector2[] anchoredPositions = new Vector2[bottleCount];
+
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            {
+                int firstBottleIndex = rowIndex * columnCount;
+                int bottlesInRow = Mathf.Min(columnCount, bottleCount - firstBottleIndex);
+
+                float rowWidth = cellSize.x * bottlesInRow + spacing.x * (bottlesInRow - 1);
+                float firstBottleX = contentCenter.x - rowWidth * 0.5f + cellSize.x * 0.5f;
+
+                float bottleY = contentCenter.y + gridHeight * 0.5f - cellSize.y * 0.5f - rowIndex * (cellSize.y + spacing.y);
+
+                for (int columnIndex = 0; columnIndex < bottlesInRow; columnIndex++)
+                {
+                    int bottleIndex = firstBottleIndex + columnIndex;
+
+                    float bottleX = firstBottleX + columnIndex * (cellSize.x + spacing.x);
+
+                    anchoredPositions[bottleIndex] = new Vector2(bottleX, bottleY);
+                }
+            }
+
+            return anchoredPositions;
         }
 
         private static void ValidateArguments(
