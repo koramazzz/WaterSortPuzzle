@@ -202,6 +202,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             Assert.That(completionSparkle.isPaused, Is.False);
         }
 
+        [Test]
+        public void Refresh_AfterCompletionAnimation_NotifiesSubscribers()
+        {
+            BottleState state = CreateBottleState(
+                4,
+                PartiallyFilledSingleColorBottleJson);
+            bool completionFinished = false;
+            view.Initialize(state, colorPalette);
+            view.CompletionAnimationFinished += () =>
+                completionFinished = true;
+
+            state.AddLiquid("red");
+            view.Refresh();
+
+            Assert.That(completionFinished, Is.False);
+
+            DOTween.Complete(capTransform);
+
+            Assert.That(completionFinished, Is.True);
+        }
+
         [TestCase(EmptyBottleJson)]
         [TestCase(VisibleBottleJson)]
         public void Initialize_WithIncompleteBottle_HidesCap(string json)

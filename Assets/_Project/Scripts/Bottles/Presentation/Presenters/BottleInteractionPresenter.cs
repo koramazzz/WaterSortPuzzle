@@ -1,4 +1,5 @@
 using System;
+using WaterSortPuzzle.Audio;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 {
@@ -9,6 +10,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         private BottleView selectedSourceView;
 
         public event Action PourCompleted;
+        public event Action<SoundEffectId> SoundEffectRequested;
 
         public void Initialize(BottleCollectionView bottleCollectionView)
         {
@@ -32,24 +34,38 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 if (selectedSourceView != null)
                 {
                     selectedSourceView.AnimateSelection();
+                    RequestSoundEffect(SoundEffectId.BottleSelected);
+                }
+                else
+                {
+                    RequestSoundEffect(SoundEffectId.InvalidMove);
                 }
 
                 return;
             }
 
             BottleView sourceView = selectedSourceView;
+            bool selectionCancelled = ReferenceEquals(sourceView, clickedBottleView);
             int pouredLiquidCount = interactionService.Select(clickedBottleView.State);
             selectedSourceView = null;
             sourceView.AnimateDeselection();
 
             if (pouredLiquidCount == 0)
             {
+                RequestSoundEffect(selectionCancelled
+                    ? SoundEffectId.BottleReleased
+                    : SoundEffectId.InvalidMove);
                 return;
             }
 
             sourceView.Refresh();
-            clickedBottleView.Refresh();
             PourCompleted?.Invoke();
+            clickedBottleView.Refresh();
+        }
+
+        private void RequestSoundEffect(SoundEffectId soundEffectId)
+        {
+            SoundEffectRequested?.Invoke(soundEffectId);
         }
     }
 }

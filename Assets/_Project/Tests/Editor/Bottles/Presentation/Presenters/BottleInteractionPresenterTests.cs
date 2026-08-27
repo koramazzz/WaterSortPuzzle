@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WaterSortPuzzle.Animations;
+using WaterSortPuzzle.Audio;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout;
 using WaterSortPuzzle.Gameplay.Levels;
@@ -22,6 +23,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private BottleCollectionView collectionView;
         private LevelState levelState;
         private BottleInteractionPresenter presenter;
+        private List<SoundEffectId> requestedSoundEffects;
 
         [SetUp]
         public void SetUp()
@@ -55,6 +57,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             collectionView.Initialize(levelState.Bottles);
 
             presenter = new BottleInteractionPresenter();
+            requestedSoundEffects = new List<SoundEffectId>();
+            presenter.SoundEffectRequested += requestedSoundEffects.Add;
             presenter.Initialize(collectionView);
         }
 
@@ -96,7 +100,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
-        public void BottleClicks_WithInvalidDestination_DoNotRaisePourCompleted()
+        public void BottleClicks_WhenSelectionIsCancelled_DoNotRaisePourCompleted()
         {
             int completedPourCount = 0;
             presenter.PourCompleted += () => completedPourCount++;
@@ -106,6 +110,58 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             sourceView.OnPointerClick(new PointerEventData(null));
 
             Assert.That(completedPourCount, Is.Zero);
+        }
+
+        [Test]
+        public void BottleClick_WithSelectableSource_RequestsSelectionSound()
+        {
+            GetBottleView(0).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[] { SoundEffectId.BottleSelected }));
+        }
+
+        [Test]
+        public void BottleClick_WithEmptySource_RequestsInvalidMoveSound()
+        {
+            GetBottleView(1).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[] { SoundEffectId.InvalidMove }));
+        }
+
+        [Test]
+        public void BottleClicks_WhenSelectionIsCancelled_RequestReleasedSound()
+        {
+            BottleView sourceView = GetBottleView(0);
+
+            sourceView.OnPointerClick(new PointerEventData(null));
+            sourceView.OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.BottleReleased
+                }));
+        }
+
+        [Test]
+        public void BottleClicks_WithInvalidDestination_RequestInvalidMoveSound()
+        {
+            GetBottleView(0).OnPointerClick(new PointerEventData(null));
+            GetBottleView(2).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.InvalidMove
+                }));
         }
 
         [Test]
@@ -227,6 +283,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             },
             {
               ""liquidIdsBottomToTop"": [],
+              ""hiddenLiquidIndices"": []
+            },
+            {
+              ""liquidIdsBottomToTop"": [""red""],
+              ""hiddenLiquidIndices"": []
+            },
+            {
+              ""liquidIdsBottomToTop"": [""blue""],
               ""hiddenLiquidIndices"": []
             }
           ]

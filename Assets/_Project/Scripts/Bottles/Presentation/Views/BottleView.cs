@@ -22,6 +22,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         private LiquidColorPalette colorPalette;
 
         public event Action<BottleView> Clicked;
+        public event Action CompletionAnimationFinished;
 
         public BottleState State => bottleState;
 
@@ -43,7 +44,7 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             if (bottleState.IsCompleted)
             {
-                completionAnimator.PlayCompletion();
+                completionAnimator.PlayCompletion(() => CompletionAnimationFinished?.Invoke());
                 return;
             }
 

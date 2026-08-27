@@ -63,6 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Progress.Presentation.PlayerResourcesHudController
   resourcesHudView: {fileID: 6149229679883694685}
   hudAnimator: {fileID: 6121517715540741120}
+  soundEffectRequests: {fileID: 11400000, guid: 8f3999d21af0b43e3b183c3711a01482, type: 2}
 --- !u!114 &6149229679883694685
 MonoBehaviour:
   m_ObjectHideFlags: 0

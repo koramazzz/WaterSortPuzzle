@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using NUnit.Framework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
 using WaterSortPuzzle.Animations;
+using WaterSortPuzzle.Audio;
 using WaterSortPuzzle.Configuration;
 using WaterSortPuzzle.Progress;
 using WaterSortPuzzle.Progress.Presentation;
@@ -12,12 +14,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
 {
     public sealed class PlayerResourcesHudControllerTests
     {
-        private const string GoldKey =
-            "WaterSortPuzzle.Progress.Gold";
-        private const string LivesKey =
-            "WaterSortPuzzle.Progress.Lives";
-        private const string NextLifeTimestampKey =
-            "WaterSortPuzzle.Progress.NextLifeTimestamp";
+        private const string GoldKey = "WaterSortPuzzle.Progress.Gold";
+        private const string LivesKey = "WaterSortPuzzle.Progress.Lives";
+        private const string NextLifeTimestampKey = "WaterSortPuzzle.Progress.NextLifeTimestamp";
 
         private bool hadGold;
         private bool hadLives;
@@ -37,6 +36,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
         private RectTransform lifeHudTransform;
         private HudFeedbackAnimator hudAnimator;
         private PlayerResourcesHudController controller;
+        private SoundEffectRequestChannel soundEffectRequests;
+        private List<SoundEffectId> requestedSoundEffects;
 
         [SetUp]
         public void SetUp()
@@ -46,6 +47,10 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
 
             controllerObject = new GameObject("PlayerResourcesHud");
             controllerObject.SetActive(false);
+
+            soundEffectRequests = ScriptableObject.CreateInstance<SoundEffectRequestChannel>();
+            requestedSoundEffects = new List<SoundEffectId>();
+            soundEffectRequests.Requested += requestedSoundEffects.Add;
 
             PlayerResourcesHudView view =
                 controllerObject.AddComponent<PlayerResourcesHudView>();
@@ -83,6 +88,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
                 .objectReferenceValue = view;
             serializedController.FindProperty("hudAnimator")
                 .objectReferenceValue = hudAnimator;
+            serializedController.FindProperty("soundEffectRequests")
+                .objectReferenceValue = soundEffectRequests;
             serializedController.ApplyModifiedPropertiesWithoutUndo();
 
             controllerObject.SetActive(true);
@@ -95,6 +102,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
             Object.DestroyImmediate(goldTextObject);
             Object.DestroyImmediate(lifeCountTextObject);
             Object.DestroyImmediate(lifeTimeTextObject);
+            Object.DestroyImmediate(soundEffectRequests);
 
             RestorePlayerPrefs();
         }
@@ -165,6 +173,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
                 Is.EqualTo(GameBalance.MinimumLives));
             Assert.That(DOTween.IsTweening(lifeHudTransform), Is.True);
             Assert.That(DOTween.IsTweening(goldHudTransform), Is.False);
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.InsufficientResource
+                }));
         }
 
         [Test]
@@ -193,6 +207,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
             Assert.That(LoadSavedResources().Gold, Is.EqualTo(50));
             Assert.That(DOTween.IsTweening(goldHudTransform), Is.True);
             Assert.That(DOTween.IsTweening(lifeHudTransform), Is.False);
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.InsufficientResource
+                }));
         }
 
         [Test]
@@ -208,6 +228,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Progress.Presentation
                 Is.EqualTo(GameBalance.MinimumLives.ToString()));
             Assert.That(DOTween.IsTweening(lifeHudTransform), Is.True);
             Assert.That(DOTween.IsTweening(goldHudTransform), Is.False);
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.InsufficientResource
+                }));
         }
 
         private void SavePlayerPrefs()

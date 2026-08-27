@@ -1,3 +1,4 @@
+using System;
 using Coffee.UIExtensions;
 using UnityEngine;
 
@@ -14,10 +15,16 @@ namespace WaterSortPuzzle.Animations
             StopCompletionSparkle();
         }
 
-        public void PlayCompletion()
+        public void PlayCompletion(Action completed = null)
         {
             StopCompletionSparkle();
-            capAnimator.PlayClosing(completionSparkle.Play);
+            capAnimator.PlayClosing(() => Complete(completed));
+        }
+
+        private void Complete(Action completed)
+        {
+            completionSparkle.Play();
+            completed?.Invoke();
         }
 
         private void StopCompletionSparkle()

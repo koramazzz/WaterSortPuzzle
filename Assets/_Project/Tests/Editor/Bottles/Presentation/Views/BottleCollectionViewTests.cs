@@ -119,6 +119,38 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
+        public void Initialize_WhenBottleCompletionFinishes_NotifiesSubscribers()
+        {
+            LevelState levelState = CreateLevelState();
+            view.Initialize(levelState.Bottles);
+            BottleState completedBottle = levelState.Bottles[1];
+            BottleView completedBottleView = collectionObject
+                .transform
+                .GetChild(1)
+                .GetComponent<BottleView>();
+            int notificationCount = 0;
+            view.BottleCompletionAnimationFinished += () =>
+                notificationCount++;
+
+            completedBottle.AddLiquid("blue");
+            completedBottle.AddLiquid("blue");
+            completedBottleView.Refresh();
+
+            BottleCapAnimator capAnimator =
+                completedBottleView.GetComponentInChildren<BottleCapAnimator>(true);
+            Assert.That(capAnimator, Is.Not.Null);
+            SerializedObject serializedCapAnimator =
+                new SerializedObject(capAnimator);
+            RectTransform capVisual =
+                (RectTransform)serializedCapAnimator
+                    .FindProperty("capVisual")
+                    .objectReferenceValue;
+            DOTween.Complete(capVisual);
+
+            Assert.That(notificationCount, Is.EqualTo(1));
+        }
+
+        [Test]
         public void AddBottle_CreatesViewAndAnimatesUpdatedLayout()
         {
             LevelState levelState = CreateLevelState();

@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WaterSortPuzzle.Audio;
 using WaterSortPuzzle.Configuration;
 using WaterSortPuzzle.Gameplay.Bottles;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation;
@@ -25,6 +26,9 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
         [Header("Gameplay")]
         [SerializeField] private BottleCollectionView bottleCollectionView;
         [SerializeField] private PlayerResourcesHudController resourcesHud;
+
+        [Header("Audio")]
+        [SerializeField] private SoundEffectRequestChannel soundEffectRequests;
 
         [Header("Navigation")]
         [SerializeField] private string mainSceneName;
@@ -68,11 +72,14 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             winGoldReward = levelRewardCalculator.CalculateGoldReward(levelState.Difficulty);
             bottleCollectionView.Initialize(levelState.Bottles);
             bottleInteractionPresenter.PourCompleted += HandlePourCompleted;
+            bottleInteractionPresenter.SoundEffectRequested += soundEffectRequests.Request;
+            bottleCollectionView.BottleCompletionAnimationFinished += HandleBottleCompletionAnimationFinished;
             bottleInteractionPresenter.Initialize(bottleCollectionView);
         }
 
         private void HandlePourCompleted()
         {
+            soundEffectRequests.Request(SoundEffectId.ValidPour);
             LevelOutcome evaluatedOutcome = levelOutcomeEvaluator.Evaluate(levelState);
 
             if (evaluatedOutcome == currentOutcome)
@@ -83,6 +90,11 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             ApplyOutcome(evaluatedOutcome);
         }
 
+        private void HandleBottleCompletionAnimationFinished()
+        {
+            soundEffectRequests.Request(SoundEffectId.CapClosed);
+        }
+
         private void ApplyOutcome(LevelOutcome outcome)
         {
             currentOutcome = outcome;
@@ -91,10 +103,12 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             {
                 case LevelOutcome.Completed:
                     CompleteLevel();
+                    soundEffectRequests.Request(SoundEffectId.LevelCompleted);
                     break;
 
                 case LevelOutcome.Failed:
                     FailLevel();
+                    soundEffectRequests.Request(SoundEffectId.LevelFailed);
                     break;
 
                 default:
@@ -131,6 +145,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             BottleState addedBottle = levelState.AddEmptyBottle();
             bottleCollectionView.AddBottle(addedBottle);
             bottleAdditionProgress.RecordBottleAdded();
+            soundEffectRequests.Request(SoundEffectId.BottleAdded);
             currentOutcome = LevelOutcome.InProgress;
             OutcomeChanged?.Invoke(currentOutcome);
         }

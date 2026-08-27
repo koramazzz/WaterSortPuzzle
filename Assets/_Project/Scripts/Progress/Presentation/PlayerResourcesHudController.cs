@@ -1,5 +1,6 @@
 using UnityEngine;
 using WaterSortPuzzle.Animations;
+using WaterSortPuzzle.Audio;
 using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Progress.Presentation
@@ -10,6 +11,7 @@ namespace WaterSortPuzzle.Progress.Presentation
 
         [SerializeField] private PlayerResourcesHudView resourcesHudView;
         [SerializeField] private HudFeedbackAnimator hudAnimator;
+        [SerializeField] private SoundEffectRequestChannel soundEffectRequests;
 
         private readonly PlayerResourcesService resourcesService =
             new PlayerResourcesService(new PlayerPrefsPlayerResourcesStore());
@@ -66,6 +68,7 @@ namespace WaterSortPuzzle.Progress.Presentation
             if (!hasAvailableLife)
             {
                 hudAnimator.PlayInsufficient(PlayerResourceType.Life);
+                soundEffectRequests.Request(SoundEffectId.InsufficientResource);
             }
 
             return hasAvailableLife;
@@ -83,9 +86,7 @@ namespace WaterSortPuzzle.Progress.Presentation
             return resources;
         }
 
-        private void PlayTransactionFeedback(
-            bool succeeded,
-            PlayerResourceType resourceType)
+        private void PlayTransactionFeedback(bool succeeded, PlayerResourceType resourceType)
         {
             if (succeeded)
             {
@@ -94,6 +95,7 @@ namespace WaterSortPuzzle.Progress.Presentation
             }
 
             hudAnimator.PlayInsufficient(resourceType);
+            soundEffectRequests.Request(SoundEffectId.InsufficientResource);
         }
 
         private void RefreshHudOnSchedule()

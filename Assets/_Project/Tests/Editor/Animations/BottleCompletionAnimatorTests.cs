@@ -51,6 +51,20 @@ namespace WaterSortPuzzle.Tests.EditMode.Animations
         }
 
         [Test]
+        public void PlayCompletion_AfterCapCloses_NotifiesCompletion()
+        {
+            bool completed = false;
+
+            animator.PlayCompletion(() => completed = true);
+
+            Assert.That(completed, Is.False);
+
+            DOTween.Complete(capTransform);
+
+            Assert.That(completed, Is.True);
+        }
+
+        [Test]
         public void Hide_DuringCompletion_HidesCapAndStopsCompletionSparkle()
         {
             animator.PlayCompletion();

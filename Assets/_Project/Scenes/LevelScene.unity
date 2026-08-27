@@ -741,6 +741,7 @@ MonoBehaviour:
   levelTitleFormat: Level {0}
   bottleCollectionView: {fileID: 2031834027}
   resourcesHud: {fileID: 991322707}
+  soundEffectRequests: {fileID: 11400000, guid: 8f3999d21af0b43e3b183c3711a01482, type: 2}
   mainSceneName: MainScene
 --- !u!114 &410616520
 MonoBehaviour:
