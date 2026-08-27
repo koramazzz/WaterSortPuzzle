@@ -18,31 +18,28 @@ MonoBehaviour:
     volumeScale: 1
   - id: 1
     clip: {fileID: 8300000, guid: 52c85ee99fa1849fab9acd6b802d011e, type: 3}
-    volumeScale: 1
+    volumeScale: 0.3
   - id: 2
     clip: {fileID: 8300000, guid: 51ddff859016d473da764870753a8827, type: 3}
-    volumeScale: 1
+    volumeScale: 0.2
   - id: 3
     clip: {fileID: 8300000, guid: 979781175882d49d989125b5c244bcf7, type: 3}
-    volumeScale: 0.55
+    volumeScale: 0.1
   - id: 4
     clip: {fileID: 8300000, guid: 0229ad966dea544ba9c3e89318fec52c, type: 3}
-    volumeScale: 1
+    volumeScale: 0.4
   - id: 5
     clip: {fileID: 8300000, guid: b540abcaa2d374daaba49d6fc8dc1ea7, type: 3}
     volumeScale: 1
   - id: 6
     clip: {fileID: 8300000, guid: 9cc4939d0ce9c402da36a216b5f6a648, type: 3}
-    volumeScale: 1
+    volumeScale: 0.6
   - id: 7
     clip: {fileID: 8300000, guid: d3b92942282de4f1e81dd8bac26b1587, type: 3}
-    volumeScale: 1
+    volumeScale: 0.6
   - id: 8
-    clip: {fileID: 8300000, guid: 7641e6af7f4dc4c4ea1d307536f77a69, type: 3}
-    volumeScale: 1
-  - id: 9
     clip: {fileID: 8300000, guid: da4eac0882b814e87a79c0f7cb94caa3, type: 3}
-    volumeScale: 1
-  - id: 10
+    volumeScale: 0.4
+  - id: 9
     clip: {fileID: 8300000, guid: b5bdfbe1ad7cf4c19b10196a316cac07, type: 3}
-    volumeScale: 1
+    volumeScale: 0.4
