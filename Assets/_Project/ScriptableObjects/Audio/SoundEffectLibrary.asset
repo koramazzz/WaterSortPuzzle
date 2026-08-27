@@ -24,7 +24,7 @@ MonoBehaviour:
     volumeScale: 1
   - id: 3
     clip: {fileID: 8300000, guid: 979781175882d49d989125b5c244bcf7, type: 3}
-    volumeScale: 1
+    volumeScale: 0.55
   - id: 4
     clip: {fileID: 8300000, guid: 0229ad966dea544ba9c3e89318fec52c, type: 3}
     volumeScale: 1
@@ -38,20 +38,11 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: d3b92942282de4f1e81dd8bac26b1587, type: 3}
     volumeScale: 1
   - id: 8
-    clip: {fileID: 8300000, guid: 9a0cfd29e170148db87a47a1801d5cca, type: 3}
-    volumeScale: 1
-  - id: 9
     clip: {fileID: 8300000, guid: 7641e6af7f4dc4c4ea1d307536f77a69, type: 3}
     volumeScale: 1
-  - id: 10
-    clip: {fileID: 8300000, guid: f8bef20c17d554af5bedc7d194690488, type: 3}
-    volumeScale: 1
-  - id: 11
-    clip: {fileID: 8300000, guid: 3a130020cd70f42b5a1939c3443a33b4, type: 3}
-    volumeScale: 1
-  - id: 12
+  - id: 9
     clip: {fileID: 8300000, guid: da4eac0882b814e87a79c0f7cb94caa3, type: 3}
     volumeScale: 1
-  - id: 13
+  - id: 10
     clip: {fileID: 8300000, guid: b5bdfbe1ad7cf4c19b10196a316cac07, type: 3}
     volumeScale: 1

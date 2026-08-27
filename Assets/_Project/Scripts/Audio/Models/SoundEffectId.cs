@@ -10,10 +10,7 @@ namespace WaterSortPuzzle.Audio
         CapClosed,
         LevelCompleted,
         LevelFailed,
-        GoldEarned,
         LifeRestored,
-        GoldSpent,
-        LifeConsumed,
         InsufficientResource,
         BottleAdded
     }
