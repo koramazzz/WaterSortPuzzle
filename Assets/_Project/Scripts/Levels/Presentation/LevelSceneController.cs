@@ -29,6 +29,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         [Header("Audio")]
         [SerializeField] private SoundEffectRequestChannel soundEffectRequests;
+        [SerializeField] private MusicRequestChannel musicRequests;
 
         [Header("Navigation")]
         [SerializeField] private string mainSceneName;
@@ -115,6 +116,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
                     throw new ArgumentOutOfRangeException(nameof(outcome), outcome, null);
             }
 
+            musicRequests.RequestPause();
             OutcomeChanged?.Invoke(outcome);
         }
 
@@ -147,6 +149,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             bottleAdditionProgress.RecordBottleAdded();
             soundEffectRequests.Request(SoundEffectId.BottleAdded);
             currentOutcome = LevelOutcome.InProgress;
+            musicRequests.RequestResume();
             OutcomeChanged?.Invoke(currentOutcome);
         }
 

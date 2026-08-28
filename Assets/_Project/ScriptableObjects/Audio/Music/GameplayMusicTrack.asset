@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb07ef984e2704725a0cc4588baadfa0, type: 3}
+  m_Name: GameplayMusicTrack
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Audio.MusicTrack
+  clip: {fileID: 8300000, guid: 56eb3dec2f96d44c6959f7008658f50f, type: 3}
+  volumeScale: 0.05
