@@ -956,7 +956,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Audio.SoundEffectPlayer
   requestChannel: {fileID: 11400000, guid: 8f3999d21af0b43e3b183c3711a01482, type: 2}
-  settingsChannel: {fileID: 0}
+  settingsChannel: {fileID: 11400000, guid: 3196209fdb9e24c05a71f6c177b2fee2, type: 2}
   soundEffectLibrary: {fileID: 11400000, guid: 2dd3c7b5f46eb4f94bfbc8326fddee51, type: 2}
   audioSource: {fileID: 1072135216}
 --- !u!1 &1282731536
@@ -1260,7 +1260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Audio.MusicPlayer
   requestChannel: {fileID: 11400000, guid: 083e5be67065b43a4a65aa2cd1d13e6d, type: 2}
-  settingsChannel: {fileID: 0}
+  settingsChannel: {fileID: 11400000, guid: 3196209fdb9e24c05a71f6c177b2fee2, type: 2}
   audioSource: {fileID: 1378364481}
   fadeDuration: 0.2
 --- !u!1 &1675471620
@@ -1413,9 +1413,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 253682724}
     m_Modifications:
+    - target: {fileID: 605899479352858220, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 605899479352858220, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1085973347863927681, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
       propertyPath: m_Name
       value: SettingsUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 2807348934228091517, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2807348934228091517, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2807348934228091517, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067467282923744916, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5067467282923744916, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7064928518693209938, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
       propertyPath: m_Pivot.x
@@ -1495,6 +1523,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7064928518693209938, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7739460273180234879, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7739460273180234879, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7739460273180234879, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8964475601955647073, guid: 821552cb47f2348a99ef033e7f4f99b4, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

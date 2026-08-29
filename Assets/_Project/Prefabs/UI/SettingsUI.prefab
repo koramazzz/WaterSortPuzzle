@@ -46,6 +46,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7064928518693209938}
+  - component: {fileID: 3933637248736667654}
   m_Layer: 5
   m_Name: SettingsUI
   m_TagString: Untagged
@@ -74,6 +75,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3933637248736667654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085973347863927681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e2bf93d17c93cfe8052a3747fb1d56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Audio.SettingsPopupController
+  settingsPopup: {fileID: 8964475601955647073}
+  settingsButton: {fileID: 8156772543994513002}
+  closeButton: {fileID: 3637880915497356311}
+  musicToggleButton: {fileID: 5930894185739711546}
+  musicSlider: {fileID: 7735857159873477539}
+  soundEffectToggleButton: {fileID: 7665964391941463983}
+  soundEffectSlider: {fileID: 663385609036706107}
+  settingsChannel: {fileID: 11400000, guid: 3196209fdb9e24c05a71f6c177b2fee2, type: 2}
+  audibleIconColor: {r: 1, g: 1, b: 1, a: 1}
+  mutedIconColor: {r: 1, g: 1, b: 1, a: 0.45}
 --- !u!1 &1466178661278410133
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -555,7 +578,7 @@ RectTransform:
   m_Father: {fileID: 3913099888560049698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 80, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -630,7 +653,7 @@ RectTransform:
   m_Father: {fileID: 1347465668859136482}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 80, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1104,8 +1127,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4086208151959706724}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 120, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1208,7 +1231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1412,8 +1435,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4948237808877482773}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 120, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1472,7 +1495,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6141771396325230466
 RectTransform:
   m_ObjectHideFlags: 0

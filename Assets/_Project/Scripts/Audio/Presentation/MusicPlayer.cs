@@ -7,6 +7,7 @@ namespace WaterSortPuzzle.Audio
     public sealed class MusicPlayer : MonoBehaviour
     {
         [SerializeField] private MusicRequestChannel requestChannel;
+        [SerializeField] private AudioSettingsChannel settingsChannel;
         [SerializeField] private AudioSource audioSource;
         [SerializeField, Min(0f)] private float fadeDuration;
 
@@ -14,6 +15,8 @@ namespace WaterSortPuzzle.Audio
         private MusicTrack requestedTrack;
         private Coroutine transition;
         private bool isPaused;
+        private float volumeMultiplier = PlayerAudioSettings.DefaultVolume;
+        private float fadeFactor = 1f;
 
         private void Awake()
         {
@@ -25,6 +28,12 @@ namespace WaterSortPuzzle.Audio
             requestChannel.Requested += Play;
             requestChannel.PauseRequested += Pause;
             requestChannel.ResumeRequested += Resume;
+
+            if (settingsChannel != null)
+            {
+                settingsChannel.Changed += ApplySettings;
+                ApplySettings(settingsChannel.Current);
+            }
         }
 
         private void OnDisable()
@@ -32,6 +41,11 @@ namespace WaterSortPuzzle.Audio
             requestChannel.Requested -= Play;
             requestChannel.PauseRequested -= Pause;
             requestChannel.ResumeRequested -= Resume;
+
+            if (settingsChannel != null)
+            {
+                settingsChannel.Changed -= ApplySettings;
+            }
         }
 
         public void Play(MusicTrack musicTrack)
@@ -100,16 +114,17 @@ namespace WaterSortPuzzle.Audio
         {
             if (audioSource.isPlaying)
             {
-                yield return FadeTo(0f);
+                yield return FadeFactorTo(0f);
             }
 
             audioSource.Stop();
             audioSource.clip = musicTrack.Clip;
-            audioSource.volume = 0f;
             currentTrack = musicTrack;
+            fadeFactor = 0f;
+            ApplyOutputVolume();
             audioSource.Play();
 
-            yield return FadeTo(musicTrack.VolumeScale);
+            yield return FadeFactorTo(1f);
             transition = null;
         }
 
@@ -117,7 +132,7 @@ namespace WaterSortPuzzle.Audio
         {
             if (audioSource.isPlaying)
             {
-                yield return FadeTo(0f);
+                yield return FadeFactorTo(0f);
                 audioSource.Pause();
             }
 
@@ -133,32 +148,56 @@ namespace WaterSortPuzzle.Audio
                 audioSource.Play();
             }
 
-            yield return FadeTo(currentTrack.VolumeScale);
+            yield return FadeFactorTo(1f);
             transition = null;
         }
 
-        private IEnumerator FadeTo(float targetVolume)
+        private IEnumerator FadeFactorTo(float targetFactor)
         {
             if (Mathf.Approximately(fadeDuration, 0f))
             {
-                audioSource.volume = targetVolume;
+                fadeFactor = targetFactor;
+                ApplyOutputVolume();
                 yield break;
             }
 
-            float initialVolume = audioSource.volume;
+            float initialFactor = fadeFactor;
             float elapsedTime = 0f;
 
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime += Time.unscaledDeltaTime;
-                audioSource.volume = Mathf.Lerp(
-                    initialVolume,
-                    targetVolume,
+                fadeFactor = Mathf.Lerp(
+                    initialFactor,
+                    targetFactor,
                     Mathf.Clamp01(elapsedTime / fadeDuration));
+                ApplyOutputVolume();
                 yield return null;
             }
 
-            audioSource.volume = targetVolume;
+            fadeFactor = targetFactor;
+            ApplyOutputVolume();
+        }
+
+        private void ApplySettings(PlayerAudioSettings settings)
+        {
+            SetVolume(settings.MusicVolume);
+        }
+
+        public void SetVolume(float volume)
+        {
+            volumeMultiplier = Mathf.Clamp01(volume);
+            ApplyOutputVolume();
+        }
+
+        private void ApplyOutputVolume()
+        {
+            if (currentTrack == null)
+            {
+                return;
+            }
+
+            audioSource.volume = currentTrack.VolumeScale * volumeMultiplier * fadeFactor;
         }
     }
 }

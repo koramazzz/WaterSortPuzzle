@@ -779,7 +779,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a68ae25fbc2c4651982898e09e6b7d0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Audio.SceneMusicCue
   requestChannel: {fileID: 11400000, guid: 083e5be67065b43a4a65aa2cd1d13e6d, type: 2}
   musicTrack: {fileID: 11400000, guid: c8c0975e23d524c9eb87b2da9eedd5d4, type: 2}
@@ -1471,7 +1471,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1321386333}
+    m_TransformParent: {fileID: 1042618322}
     m_Modifications:
     - target: {fileID: 573513787687852453, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
       propertyPath: m_Name
@@ -1543,7 +1543,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1502302923263215337, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -810
       objectReference: {fileID: 0}
     - target: {fileID: 1502302923263215337, guid: d5c09d13393814dbc8bac640a5291f7d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1618,11 +1618,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1330557900}
+  - {fileID: 2018571841}
   m_Father: {fileID: 1321386333}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -5}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1112536376
@@ -2148,7 +2149,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 740235424}
-  - {fileID: 2018571841}
   - {fileID: 1042618322}
   - {fileID: 2031834026}
   - {fileID: 1811069440}
