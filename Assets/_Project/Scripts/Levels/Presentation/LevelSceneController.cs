@@ -174,6 +174,16 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             ReloadLevelScene();
         }
 
+        public void AbandonLevel()
+        {
+            if (currentOutcome == LevelOutcome.InProgress)
+            {
+                resourcesHud.TryConsumeLife();
+            }
+
+            ReturnToMainMenu();
+        }
+
         public void ReturnToMainMenu()
         {
             SceneManager.LoadScene(mainSceneName);
