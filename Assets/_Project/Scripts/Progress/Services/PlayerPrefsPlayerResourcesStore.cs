@@ -5,15 +5,11 @@ using WaterSortPuzzle.Configuration;
 
 namespace WaterSortPuzzle.Progress
 {
-    public sealed class PlayerPrefsPlayerResourcesStore :
-        IPlayerResourcesStore
+    public sealed class PlayerPrefsPlayerResourcesStore : IPlayerResourcesStore
     {
-        private const string GoldKey =
-            "WaterSortPuzzle.Progress.Gold";
-        private const string LivesKey =
-            "WaterSortPuzzle.Progress.Lives";
-        private const string NextLifeTimestampKey =
-            "WaterSortPuzzle.Progress.NextLifeTimestamp";
+        private const string GoldKey = "WaterSortPuzzle.Progress.Gold";
+        private const string LivesKey = "WaterSortPuzzle.Progress.Lives";
+        private const string NextLifeTimestampKey = "WaterSortPuzzle.Progress.NextLifeTimestamp";
 
         public PlayerResourcesSaveData Load()
         {
@@ -24,11 +20,10 @@ namespace WaterSortPuzzle.Progress
                     GameBalance.InitialGold));
 
             int lives = Mathf.Clamp(
-                PlayerPrefs.GetInt(
-                    LivesKey,
-                    GameBalance.MaximumLives),
+                PlayerPrefs.GetInt(LivesKey, GameBalance.MaximumLives),
                 GameBalance.MinimumLives,
                 GameBalance.MaximumLives);
+
             long nextLifeTimestamp = LoadNextLifeTimestamp();
 
             return new PlayerResourcesSaveData(

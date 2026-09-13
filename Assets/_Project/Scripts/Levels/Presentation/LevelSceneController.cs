@@ -108,7 +108,6 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
                     break;
 
                 case LevelOutcome.Failed:
-                    FailLevel();
                     soundEffectRequests.Request(SoundEffectId.LevelFailed);
                     break;
 
@@ -125,11 +124,6 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
             completedLevelCount += CompletedLevelCountIncrement;
             progressStore.SaveCompletedLevelCount(completedLevelCount, levelCount);
             resourcesHud.RewardGold(WinGoldReward);
-        }
-
-        private void FailLevel()
-        {
-            resourcesHud.TryConsumeLife();
         }
 
         public void AddBottle()
@@ -166,7 +160,7 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         public void RetryLevel()
         {
-            if (!resourcesHud.CheckLifeAvailability())
+            if (!TryForfeitUnfinishedAttempt())
             {
                 return;
             }
@@ -176,17 +170,18 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         public void AbandonLevel()
         {
-            if (currentOutcome == LevelOutcome.InProgress)
-            {
-                resourcesHud.TryConsumeLife();
-            }
-
             ReturnToMainMenu();
         }
 
         public void ReturnToMainMenu()
         {
+            TryForfeitUnfinishedAttempt();
             SceneManager.LoadScene(mainSceneName);
+        }
+
+        private bool TryForfeitUnfinishedAttempt()
+        {
+            return currentOutcome == LevelOutcome.Completed || resourcesHud.TryConsumeLife();
         }
 
         private void ReloadLevelScene()
