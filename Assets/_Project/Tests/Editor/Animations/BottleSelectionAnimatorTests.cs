@@ -54,5 +54,19 @@ namespace WaterSortPuzzle.Tests.EditMode.Animations
                 bottleTransform.anchoredPosition.y,
                 Is.EqualTo(20f).Within(0.001f));
         }
+
+        [Test]
+        public void CompleteSelection_FinishesMovementAndPreservesRestingPosition()
+        {
+            Vector2 restingPosition = bottleTransform.anchoredPosition;
+
+            animator.PlaySelection();
+            animator.CompleteSelection();
+
+            Assert.That(
+                bottleTransform.anchoredPosition.y,
+                Is.EqualTo(70f).Within(0.001f));
+            Assert.That(animator.RestingPosition, Is.EqualTo(restingPosition));
+        }
     }
 }

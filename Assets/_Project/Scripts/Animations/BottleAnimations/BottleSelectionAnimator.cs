@@ -10,20 +10,27 @@ namespace WaterSortPuzzle.Animations
         [SerializeField] private Ease selectionEase;
 
         private Tween selectionTween;
-        private float restingPositionY;
+        private Vector2 restingPosition;
+
+        public Vector2 RestingPosition => restingPosition;
 
         public void PlaySelection()
         {
             RectTransform bottleTransform = (RectTransform)transform;
-            restingPositionY = bottleTransform.anchoredPosition.y;
-            float selectedPositionY = restingPositionY + bottleTransform.rect.height * selectionLiftRatio;
+            restingPosition = bottleTransform.anchoredPosition;
+            float selectedPositionY = restingPosition.y + bottleTransform.rect.height * selectionLiftRatio;
 
             AnimatePositionY(bottleTransform, selectedPositionY);
         }
 
         public void PlayDeselection()
         {
-            AnimatePositionY((RectTransform)transform, restingPositionY);
+            AnimatePositionY((RectTransform)transform, restingPosition.y);
+        }
+
+        public void CompleteSelection()
+        {
+            selectionTween?.Complete();
         }
 
         private void AnimatePositionY(
