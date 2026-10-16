@@ -13,33 +13,19 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         [SerializeField, Min(0f)] private float surfaceAngleMultiplier;
         [SerializeField] private HiddenLiquidGraphic hiddenLiquidGraphic;
 
+        private readonly List<Vector2> layerPolygon = new List<Vector2>();
         private readonly List<Vector2> clippingScratch = new List<Vector2>();
 
         private Color[] layerColors = Array.Empty<Color>();
         private float[] layerFillAmounts = Array.Empty<float>();
-        private bool[] hiddenLayers = Array.Empty<bool>();
-
-        private List<Vector2>[] layerGeometry = Array.Empty<List<Vector2>>();
-        private bool[] layerUsesTriangleStrip = Array.Empty<bool>();
-
         private float[] surfaceWaveOffsets = Array.Empty<float>();
         private Vector2[] surfaceWaveStripPositions = Array.Empty<Vector2>();
-
-        private float bottleAngle;
         private float surfaceAngle;
         private LiquidSurfaceWave surfaceWave;
         private float pouringBoundsMaximumY;
         private bool isPouring;
-        private bool isLayerGeometryDirty = true;
 
         internal float SurfaceAngle => surfaceAngle;
-
-        internal float BottleAngle => bottleAngle;
-
-        internal int LayerCount => layerFillAmounts.Length;
-        internal float ReferenceLayerHeight => LayerCount == 0
-            ? 0f
-            : rectTransform.rect.height / LayerCount;
 
         public void SetLayers(
             IReadOnlyList<Color> colorsBottomToTop,
@@ -65,39 +51,47 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 colorsBottomToTop.Count != hiddenLayersBottomToTop.Count)
             {
                 throw new ArgumentException(
-                    "Liquid colors, fill amounts, and hidden states must have matching counts.");
+                    "Liquid colors, fill amounts, and hidden states must have " +
+                    "matching counts.");
             }
 
             if (hiddenLiquidGraphic == null)
             {
-                throw new InvalidOperationException("A hidden liquid graphic is required.");
+                throw new InvalidOperationException(
+                    "A hidden liquid graphic is required.");
             }
 
             EnsureLayerCapacity(colorsBottomToTop.Count);
 
-            for (int layerIndex = 0; layerIndex < colorsBottomToTop.Count; layerIndex++)
+            for (int layerIndex = 0;
+                 layerIndex < colorsBottomToTop.Count;
+                 layerIndex++)
             {
                 layerColors[layerIndex] = colorsBottomToTop[layerIndex];
-                layerFillAmounts[layerIndex] = Mathf.Clamp01(fillAmountsBottomToTop[layerIndex]);
-                hiddenLayers[layerIndex] = hiddenLayersBottomToTop[layerIndex];
+                layerFillAmounts[layerIndex] = Mathf.Clamp01(
+                    fillAmountsBottomToTop[layerIndex]);
             }
 
-            InvalidateLayerGeometry();
+            hiddenLiquidGraphic.SetLayers(
+                fillAmountsBottomToTop,
+                hiddenLayersBottomToTop);
+            SetVerticesDirty();
         }
 
         public void SetBottleAngle(float angle)
         {
             float targetSurfaceAngle = angle * surfaceAngleMultiplier;
 
-            if (Mathf.Approximately(bottleAngle, angle) &&
-                Mathf.Approximately(surfaceAngle, targetSurfaceAngle))
+            if (Mathf.Approximately(surfaceAngle, targetSurfaceAngle))
             {
                 return;
             }
 
-            bottleAngle = angle;
             surfaceAngle = targetSurfaceAngle;
-            InvalidateLayerGeometry();
+            hiddenLiquidGraphic?.SetBottlePose(
+                angle,
+                targetSurfaceAngle);
+            SetVerticesDirty();
         }
 
         public void BeginPour(Vector3 mouthWorldPosition)
@@ -106,7 +100,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 .InverseTransformPoint(mouthWorldPosition)
                 .y;
             isPouring = true;
-            InvalidateLayerGeometry();
+            hiddenLiquidGraphic?.BeginPour(mouthWorldPosition);
+            SetVerticesDirty();
         }
 
         public void EndPour()
@@ -117,7 +112,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
 
             isPouring = false;
-            InvalidateLayerGeometry();
+            hiddenLiquidGraphic?.EndPour();
+            SetVerticesDirty();
         }
 
         public void SetSurfaceWave(
@@ -127,9 +123,26 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             float cycleCount,
             float phase)
         {
+            if (widthRatio < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(widthRatio));
+            }
+
+            if (height < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height));
+            }
+
+            if (cycleCount < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cycleCount));
+            }
+
+            float clampedCenterRatio = Mathf.Clamp01(centerRatio);
+            float clampedWidthRatio = Mathf.Clamp01(widthRatio);
             LiquidSurfaceWave targetSurfaceWave = new LiquidSurfaceWave(
-                centerRatio,
-                widthRatio,
+                clampedCenterRatio,
+                clampedWidthRatio,
                 height,
                 cycleCount,
                 phase);
@@ -140,7 +153,10 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
 
             surfaceWave = targetSurfaceWave;
-            InvalidateLayerGeometry();
+            hiddenLiquidGraphic?.SetSurfaceWave(
+                surfaceSegmentCount,
+                surfaceWave);
+            SetVerticesDirty();
         }
 
         public void ClearSurfaceWave()
@@ -151,119 +167,62 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
 
             surfaceWave = default;
-            InvalidateLayerGeometry();
-        }
-
-        internal bool IsLayerHidden(int layerIndex)
-        {
-            return hiddenLayers[layerIndex];
-        }
-
-        internal IReadOnlyList<Vector2> GetLayerGeometry(int layerIndex, out bool usesTriangleStrip)
-        {
-            EnsureLayerGeometry();
-            usesTriangleStrip = layerUsesTriangleStrip[layerIndex];
-            return layerGeometry[layerIndex];
+            hiddenLiquidGraphic?.ClearSurfaceWave();
+            SetVerticesDirty();
         }
 
         protected override void OnPopulateMesh(VertexHelper vertexHelper)
         {
             vertexHelper.Clear();
-            EnsureLayerGeometry();
-
-            for (int layerIndex = 0; layerIndex < layerGeometry.Length; layerIndex++)
-            {
-                IReadOnlyList<Vector2> positions = layerGeometry[layerIndex];
-
-                if (layerUsesTriangleStrip[layerIndex])
-                {
-                    AddTriangleStrip(vertexHelper, positions, layerColors[layerIndex]);
-                    continue;
-                }
-
-                AddPolygon(vertexHelper, positions, layerColors[layerIndex]);
-            }
-        }
-
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            InvalidateLayerGeometry();
-        }
-
-        private void InvalidateLayerGeometry()
-        {
-            isLayerGeometryDirty = true;
-            SetVerticesDirty();
-            hiddenLiquidGraphic?.RefreshFrom(this);
-        }
-
-        private void EnsureLayerGeometry()
-        {
-            if (!isLayerGeometryDirty)
-            {
-                return;
-            }
-
-            ClearLayerGeometry();
 
             if (layerFillAmounts.Length == 0)
             {
-                isLayerGeometryDirty = false;
                 return;
             }
 
-            Rect referenceBounds = rectTransform.rect;
-
-            if (referenceBounds.width <= 0f || referenceBounds.height <= 0f)
-            {
-                isLayerGeometryDirty = false;
-                return;
-            }
-
-            Rect renderingBounds = isPouring
-                ? LiquidSurfaceGeometry.ExtendTop(referenceBounds, pouringBoundsMaximumY)
-                : referenceBounds;
-
-            float relativeSurfaceAngle = Mathf.Clamp(-surfaceAngle,
+            float relativeSurfaceAngle = Mathf.Clamp(
+                -surfaceAngle,
                 -LiquidSurfaceGeometry.MaximumSurfaceAngle,
-                 LiquidSurfaceGeometry.MaximumSurfaceAngle);
-
-            float surfaceSlope = Mathf.Tan(relativeSurfaceAngle * Mathf.Deg2Rad);
-
-            int surfaceLayerIndex = FindSurfaceLayerIndex();
-
+                LiquidSurfaceGeometry.MaximumSurfaceAngle);
+            float surfaceSlope = Mathf.Tan(
+                relativeSurfaceAngle * Mathf.Deg2Rad);
             float cumulativeFillAmount = 0f;
+            int surfaceLayerIndex = FindSurfaceLayerIndex();
+            Rect referenceBounds = rectTransform.rect;
+            Rect renderingBounds = GetRenderingBounds(referenceBounds);
 
-            for (int layerIndex = 0; layerIndex < layerFillAmounts.Length; layerIndex++)
+            for (int layerIndex = 0;
+                 layerIndex < layerFillAmounts.Length;
+                 layerIndex++)
             {
                 float layerFillAmount = layerFillAmounts[layerIndex];
-
-                float lowerFillRatio = CalculateRenderingFillRatio(
-                    referenceBounds,
-                    renderingBounds,
-                    cumulativeFillAmount);
-
-                cumulativeFillAmount += layerFillAmount;
-
-                float upperFillRatio = CalculateRenderingFillRatio(
-                    referenceBounds,
-                    renderingBounds,
-                    cumulativeFillAmount);
 
                 if (Mathf.Approximately(layerFillAmount, 0f))
                 {
                     continue;
                 }
 
+                float lowerFillRatio =
+                    LiquidSurfaceGeometry.CalculateAreaPreservingFillRatio(
+                        referenceBounds,
+                        renderingBounds,
+                        cumulativeFillAmount / layerFillAmounts.Length);
+                cumulativeFillAmount += layerFillAmount;
+                float upperFillRatio =
+                    LiquidSurfaceGeometry.CalculateAreaPreservingFillRatio(
+                        referenceBounds,
+                        renderingBounds,
+                        cumulativeFillAmount / layerFillAmounts.Length);
+
                 if (layerIndex == surfaceLayerIndex && HasSurfaceWave())
                 {
-                    PrepareWavyLayerGeometry(
-                        layerIndex,
+                    AddWavySurfaceLayer(
+                        vertexHelper,
                         renderingBounds,
                         surfaceSlope,
                         lowerFillRatio,
-                        upperFillRatio);
+                        upperFillRatio,
+                        layerColors[layerIndex]);
                     continue;
                 }
 
@@ -272,38 +231,77 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                     surfaceSlope,
                     lowerFillRatio,
                     upperFillRatio,
-                    layerGeometry[layerIndex],
+                    layerPolygon,
                     clippingScratch);
+                AddPolygon(
+                    vertexHelper,
+                    layerPolygon,
+                    layerColors[layerIndex]);
             }
-
-            isLayerGeometryDirty = false;
         }
 
-        private void ClearLayerGeometry()
+        private void AddWavySurfaceLayer(
+            VertexHelper vertexHelper,
+            Rect bounds,
+            float surfaceSlope,
+            float lowerFillRatio,
+            float upperFillRatio,
+            Color color)
         {
-            for (int layerIndex = 0; layerIndex < layerGeometry.Length; layerIndex++)
+            EnsureSurfaceWaveCapacity();
+            LiquidSurfaceGeometry.BuildWavyLayerStrip(
+                bounds,
+                surfaceSlope,
+                lowerFillRatio,
+                upperFillRatio,
+                surfaceSegmentCount,
+                surfaceWave,
+                surfaceWaveOffsets,
+                surfaceWaveStripPositions);
+            int firstVertexIndex = vertexHelper.currentVertCount;
+
+            for (int segmentIndex = 0;
+                 segmentIndex <= surfaceSegmentCount;
+                 segmentIndex++)
             {
-                layerGeometry[layerIndex].Clear();
-                layerUsesTriangleStrip[layerIndex] = false;
-            }
-        }
+                int lowerPositionIndex = segmentIndex * 2;
+                AddVertex(
+                    vertexHelper,
+                    surfaceWaveStripPositions[lowerPositionIndex],
+                    color);
+                AddVertex(
+                    vertexHelper,
+                    surfaceWaveStripPositions[lowerPositionIndex + 1],
+                    color);
 
-        private float CalculateRenderingFillRatio(
-            Rect referenceBounds,
-            Rect renderingBounds,
-            float cumulativeFillAmount)
-        {
-            return LiquidSurfaceGeometry.CalculateAreaPreservingFillRatio(
-                referenceBounds,
-                renderingBounds,
-                cumulativeFillAmount / layerFillAmounts.Length);
+                if (segmentIndex == 0)
+                {
+                    continue;
+                }
+
+                int currentLowerVertex =
+                    firstVertexIndex + segmentIndex * 2;
+                int previousLowerVertex = currentLowerVertex - 2;
+                vertexHelper.AddTriangle(
+                    previousLowerVertex,
+                    currentLowerVertex + 1,
+                    previousLowerVertex + 1);
+                vertexHelper.AddTriangle(
+                    previousLowerVertex,
+                    currentLowerVertex,
+                    currentLowerVertex + 1);
+            }
         }
 
         private int FindSurfaceLayerIndex()
         {
-            for (int layerIndex = layerFillAmounts.Length - 1; layerIndex >= 0; layerIndex--)
+            for (int layerIndex = layerFillAmounts.Length - 1;
+                 layerIndex >= 0;
+                 layerIndex--)
             {
-                if (!Mathf.Approximately(layerFillAmounts[layerIndex], 0f))
+                if (!Mathf.Approximately(
+                        layerFillAmounts[layerIndex],
+                        0f))
                 {
                     return layerIndex;
                 }
@@ -314,37 +312,17 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
         private bool HasSurfaceWave()
         {
-            return surfaceSegmentCount >= 2 && surfaceWave.IsVisible;
+            return surfaceSegmentCount >= 2 &&
+                surfaceWave.IsVisible;
         }
 
-        private void PrepareWavyLayerGeometry(
-            int layerIndex,
-            Rect bounds,
-            float surfaceSlope,
-            float lowerFillRatio,
-            float upperFillRatio)
+        private Rect GetRenderingBounds(Rect referenceBounds)
         {
-            EnsureSurfaceWaveCapacity();
-
-            LiquidSurfaceGeometry.BuildWavyLayerStrip(
-                bounds,
-                surfaceSlope,
-                lowerFillRatio,
-                upperFillRatio,
-                surfaceSegmentCount,
-                surfaceWave,
-                surfaceWaveOffsets,
-                surfaceWaveStripPositions);
-
-            List<Vector2> positions = layerGeometry[layerIndex];
-
-            int positionCount = (surfaceSegmentCount + 1) * 2;
-            for (int positionIndex = 0; positionIndex < positionCount; positionIndex++)
-            {
-                positions.Add(surfaceWaveStripPositions[positionIndex]);
-            }
-
-            layerUsesTriangleStrip[layerIndex] = true;
+            return isPouring
+                ? LiquidSurfaceGeometry.ExtendTop(
+                    referenceBounds,
+                    pouringBoundsMaximumY)
+                : referenceBounds;
         }
 
         private void EnsureLayerCapacity(int layerCount)
@@ -356,15 +334,6 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             layerColors = new Color[layerCount];
             layerFillAmounts = new float[layerCount];
-            hiddenLayers = new bool[layerCount];
-
-            layerGeometry = new List<Vector2>[layerCount];
-            layerUsesTriangleStrip = new bool[layerCount];
-
-            for (int layerIndex = 0; layerIndex < layerCount; layerIndex++)
-            {
-                layerGeometry[layerIndex] = new List<Vector2>();
-            }
         }
 
         private void EnsureSurfaceWaveCapacity()
@@ -382,50 +351,41 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
         private static void AddPolygon(
             VertexHelper vertexHelper,
-            IReadOnlyList<Vector2> positions,
+            IReadOnlyList<Vector2> polygon,
             Color color)
         {
-            if (positions.Count < 3)
+            if (polygon.Count < 3)
             {
                 return;
             }
 
-            int firstVertexIndex = AddVertices(vertexHelper, positions, color);
-
-            LiquidMeshTopology.AddPolygonTriangles(vertexHelper, firstVertexIndex, positions.Count);
-        }
-
-        private static void AddTriangleStrip(
-            VertexHelper vertexHelper,
-            IReadOnlyList<Vector2> positions,
-            Color color)
-        {
-            if (positions.Count < 4)
-            {
-                return;
-            }
-
-            int firstVertexIndex = AddVertices(vertexHelper, positions, color);
-
-            LiquidMeshTopology.AddTriangleStripTriangles(vertexHelper, firstVertexIndex, positions.Count);
-        }
-
-        private static int AddVertices(
-            VertexHelper vertexHelper,
-            IReadOnlyList<Vector2> positions,
-            Color color)
-        {
             int firstVertexIndex = vertexHelper.currentVertCount;
 
-            for (int positionIndex = 0; positionIndex < positions.Count; positionIndex++)
+            for (int vertexIndex = 0;
+                 vertexIndex < polygon.Count;
+                 vertexIndex++)
             {
-                AddVertex(vertexHelper, positions[positionIndex], color);
+                UIVertex vertex = UIVertex.simpleVert;
+                vertex.position = polygon[vertexIndex];
+                vertex.color = color;
+                vertexHelper.AddVert(vertex);
             }
 
-            return firstVertexIndex;
+            for (int vertexIndex = 1;
+                 vertexIndex < polygon.Count - 1;
+                 vertexIndex++)
+            {
+                vertexHelper.AddTriangle(
+                    firstVertexIndex,
+                    firstVertexIndex + vertexIndex,
+                    firstVertexIndex + vertexIndex + 1);
+            }
         }
 
-        private static void AddVertex(VertexHelper vertexHelper, Vector2 position, Color color)
+        private static void AddVertex(
+            VertexHelper vertexHelper,
+            Vector2 position,
+            Color color)
         {
             UIVertex vertex = UIVertex.simpleVert;
             vertex.position = position;

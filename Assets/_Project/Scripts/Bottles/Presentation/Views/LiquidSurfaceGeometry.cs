@@ -9,6 +9,61 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         private const int BoundarySearchIterationCount = 24;
         internal const float MaximumSurfaceAngle = 89.9f;
 
+        public static float CalculateSpillAngle(Rect bottleBounds, Rect liquidBounds, float fillRatio)
+        {
+            if (liquidBounds.width <= 0f || liquidBounds.height <= 0f)
+            {
+                throw new ArgumentException(
+                    "Liquid bounds must have a positive size.",
+                    nameof(liquidBounds));
+            }
+
+            if (bottleBounds.yMax < liquidBounds.yMax)
+            {
+                throw new ArgumentException(
+                    "Liquid bounds cannot extend above the bottle mouth.",
+                    nameof(liquidBounds));
+            }
+
+            float clampedFillRatio = Mathf.Clamp01(fillRatio);
+
+            if (Mathf.Approximately(clampedFillRatio, 0f))
+            {
+                return 90f;
+            }
+
+            float width = liquidBounds.width;
+            float height = liquidBounds.height;
+            float topGap = bottleBounds.yMax - liquidBounds.yMax;
+            float mouthHeightFromBottom = topGap + height;
+            float targetArea = width * height * clampedFillRatio;
+            float triangularAreaLimit =
+                0.5f * width * height *
+                (mouthHeightFromBottom + topGap) /
+                mouthHeightFromBottom;
+
+            float surfaceSlope;
+
+            if (targetArea <= triangularAreaLimit)
+            {
+                surfaceSlope = height * (topGap + 0.5f * height) /
+                    targetArea;
+            }
+            else
+            {
+                float areaDifference =
+                    mouthHeightFromBottom * width - targetArea;
+                float discriminant =
+                    areaDifference * areaDifference -
+                    width * width * topGap * topGap;
+                surfaceSlope =
+                    (areaDifference + Mathf.Sqrt(Mathf.Max(0f, discriminant))) /
+                    (width * width);
+            }
+
+            return Mathf.Atan(surfaceSlope) * Mathf.Rad2Deg;
+        }
+
         public static Rect ExtendTop(Rect bounds, float maximumY)
         {
             return Rect.MinMaxRect(
@@ -23,20 +78,29 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             Rect renderingBounds,
             float referenceFillRatio)
         {
-            if (referenceBounds.width <= 0f || referenceBounds.height <= 0f)
+            if (referenceBounds.width <= 0f ||
+                referenceBounds.height <= 0f)
             {
-                throw new ArgumentException("Reference bounds must have a positive size.", nameof(referenceBounds));
+                throw new ArgumentException(
+                    "Reference bounds must have a positive size.",
+                    nameof(referenceBounds));
             }
 
-            if (renderingBounds.width <= 0f || renderingBounds.height <= 0f)
+            if (renderingBounds.width <= 0f ||
+                renderingBounds.height <= 0f)
             {
-                throw new ArgumentException("Rendering bounds must have a positive size.", nameof(renderingBounds));
+                throw new ArgumentException(
+                    "Rendering bounds must have a positive size.",
+                    nameof(renderingBounds));
             }
 
-            float referenceArea = referenceBounds.width * referenceBounds.height;
-            float renderingArea = renderingBounds.width * renderingBounds.height;
-
-            return Mathf.Clamp01(referenceFillRatio) * referenceArea / renderingArea;
+            float referenceArea =
+                referenceBounds.width * referenceBounds.height;
+            float renderingArea =
+                renderingBounds.width * renderingBounds.height;
+            return Mathf.Clamp01(referenceFillRatio) *
+                referenceArea /
+                renderingArea;
         }
 
         public static void BuildLayerPolygon(
@@ -57,23 +121,35 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 throw new ArgumentNullException(nameof(scratch));
             }
 
-            float lowerBoundary = CalculateBoundaryIntercept(bounds, surfaceSlope, lowerFillRatio);
-            float upperBoundary = CalculateBoundaryIntercept(bounds, surfaceSlope, upperFillRatio);
+            float lowerBoundary = CalculateBoundaryIntercept(
+                bounds,
+                surfaceSlope,
+                lowerFillRatio);
+            float upperBoundary = CalculateBoundaryIntercept(
+                bounds,
+                surfaceSlope,
+                upperFillRatio);
 
             polygon.Clear();
-
             polygon.Add(new Vector2(bounds.xMin, bounds.yMin));
             polygon.Add(new Vector2(bounds.xMax, bounds.yMin));
             polygon.Add(new Vector2(bounds.xMax, bounds.yMax));
             polygon.Add(new Vector2(bounds.xMin, bounds.yMax));
 
             scratch.Clear();
-
-            ClipAgainstBoundary(polygon, scratch, surfaceSlope, upperBoundary, true);
-
+            ClipAgainstBoundary(
+                polygon,
+                scratch,
+                surfaceSlope,
+                upperBoundary,
+                true);
             polygon.Clear();
-
-            ClipAgainstBoundary(scratch, polygon, surfaceSlope, lowerBoundary, false);
+            ClipAgainstBoundary(
+                scratch,
+                polygon,
+                surfaceSlope,
+                lowerBoundary,
+                false);
         }
 
         public static void BuildWavyLayerStrip(
@@ -100,68 +176,82 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                     nameof(waveOffsets));
             }
 
-            if (stripPositions == null || stripPositions.Length < sampleCount * 2)
+            if (stripPositions == null ||
+                stripPositions.Length < sampleCount * 2)
             {
                 throw new ArgumentException(
-                    "Strip positions must contain two values per surface sample.",
+                    "Strip positions must contain two values per surface " +
+                    "sample.",
                     nameof(stripPositions));
             }
 
-            float lowerIntercept = CalculateBoundaryIntercept(bounds, surfaceSlope, lowerFillRatio);
-            float upperIntercept = CalculateBoundaryIntercept(bounds, surfaceSlope, upperFillRatio);
+            float lowerIntercept = CalculateBoundaryIntercept(
+                bounds,
+                surfaceSlope,
+                lowerFillRatio);
+            float upperIntercept = CalculateBoundaryIntercept(
+                bounds,
+                surfaceSlope,
+                upperFillRatio);
+            float averageWaveOffset = CalculateWaveOffsets(
+                segmentCount,
+                surfaceWave,
+                waveOffsets);
+            float waveScale = CalculateWaveScale(
+                bounds,
+                surfaceSlope,
+                lowerIntercept,
+                upperIntercept,
+                segmentCount,
+                waveOffsets,
+                averageWaveOffset);
 
-            float averageWaveOffset = CalculateWaveOffsets(segmentCount, surfaceWave, waveOffsets);
-
-            for (int segmentIndex = 0; segmentIndex <= segmentCount; segmentIndex++)
+            for (int segmentIndex = 0;
+                 segmentIndex <= segmentCount;
+                 segmentIndex++)
             {
-                float segmentProgress = segmentIndex / (float)segmentCount;
-
-                float positionX = Mathf.Lerp(bounds.xMin, bounds.xMax, segmentProgress);
-
+                float segmentProgress =
+                    segmentIndex / (float)segmentCount;
+                float positionX = Mathf.Lerp(
+                    bounds.xMin,
+                    bounds.xMax,
+                    segmentProgress);
                 float lowerPositionY = Mathf.Clamp(
                     surfaceSlope * positionX + lowerIntercept,
                     bounds.yMin,
                     bounds.yMax);
-
                 float upperPositionY = Mathf.Clamp(
                     surfaceSlope * positionX + upperIntercept,
                     bounds.yMin,
                     bounds.yMax);
-
-                int lowerPositionIndex = segmentIndex * 2;
-                stripPositions[lowerPositionIndex] = new Vector2(positionX, lowerPositionY);
-                stripPositions[lowerPositionIndex + 1] = new Vector2(positionX, upperPositionY);
-            }
-
-            float waveScale = CalculateWaveScale(
-                segmentCount,
-                stripPositions,
-                waveOffsets,
-                averageWaveOffset);
-
-            for (int segmentIndex = 0; segmentIndex <= segmentCount; segmentIndex++)
-            {
-                int lowerPositionIndex = segmentIndex * 2;
-                Vector2 upperPosition = stripPositions[lowerPositionIndex + 1];
-                upperPosition.y +=
+                upperPositionY +=
                     (waveOffsets[segmentIndex] - averageWaveOffset) *
                     waveScale;
-                upperPosition.y = Mathf.Max(
-                    stripPositions[lowerPositionIndex].y,
-                    upperPosition.y);
-                stripPositions[lowerPositionIndex + 1] = upperPosition;
+                upperPositionY = Mathf.Max(
+                    lowerPositionY,
+                    upperPositionY);
+                int lowerPositionIndex = segmentIndex * 2;
+                stripPositions[lowerPositionIndex] =
+                    new Vector2(positionX, lowerPositionY);
+                stripPositions[lowerPositionIndex + 1] =
+                    new Vector2(positionX, upperPositionY);
             }
         }
 
-        internal static float CalculateBoundaryIntercept(Rect bounds, float surfaceSlope, float fillRatio)
+        internal static float CalculateBoundaryIntercept(
+            Rect bounds,
+            float surfaceSlope,
+            float fillRatio)
         {
             float clampedFillRatio = Mathf.Clamp01(fillRatio);
-
             float slopeAtMinimumX = surfaceSlope * bounds.xMin;
             float slopeAtMaximumX = surfaceSlope * bounds.xMax;
-
-            float lowerIntercept = bounds.yMin - Mathf.Max(slopeAtMinimumX, slopeAtMaximumX);
-            float upperIntercept = bounds.yMax - Mathf.Min(slopeAtMinimumX, slopeAtMaximumX);
+            float lowerIntercept = bounds.yMin - Mathf.Max(
+                slopeAtMinimumX,
+                slopeAtMaximumX);
+            float upperIntercept = bounds.yMax - Mathf.Min(
+                slopeAtMinimumX,
+                slopeAtMaximumX);
 
             if (Mathf.Approximately(clampedFillRatio, 0f))
             {
@@ -175,11 +265,16 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             float targetArea = bounds.width * bounds.height * clampedFillRatio;
 
-            for (int iteration = 0; iteration < BoundarySearchIterationCount; iteration++)
+            for (int iteration = 0;
+                 iteration < BoundarySearchIterationCount;
+                 iteration++)
             {
-                float candidateIntercept = (lowerIntercept + upperIntercept) * 0.5f;
-
-                float candidateArea = CalculateAreaBelowLine(bounds, surfaceSlope, candidateIntercept);
+                float candidateIntercept =
+                    (lowerIntercept + upperIntercept) * 0.5f;
+                float candidateArea = CalculateAreaBelowLine(
+                    bounds,
+                    surfaceSlope,
+                    candidateIntercept);
 
                 if (candidateArea < targetArea)
                 {
@@ -194,26 +289,45 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             return (lowerIntercept + upperIntercept) * 0.5f;
         }
 
-        private static float CalculateAreaBelowLine(Rect bounds, float surfaceSlope, float intercept)
+        private static float CalculateAreaBelowLine(
+            Rect bounds,
+            float surfaceSlope,
+            float intercept)
         {
             if (Mathf.Approximately(surfaceSlope, 0f))
             {
-                float filledHeight = Mathf.Clamp(intercept - bounds.yMin, 0f, bounds.height);
+                float filledHeight = Mathf.Clamp(
+                    intercept - bounds.yMin,
+                    0f,
+                    bounds.height);
                 return bounds.width * filledHeight;
             }
 
-            float areaAtMaximumX = CalculateAreaPrimitive(bounds.xMax, bounds, surfaceSlope, intercept);
-            float areaAtMinimumX = CalculateAreaPrimitive(bounds.xMin, bounds, surfaceSlope, intercept);
-
+            float areaAtMaximumX = CalculateAreaPrimitive(
+                bounds.xMax,
+                bounds,
+                surfaceSlope,
+                intercept);
+            float areaAtMinimumX = CalculateAreaPrimitive(
+                bounds.xMin,
+                bounds,
+                surfaceSlope,
+                intercept);
             return areaAtMaximumX - areaAtMinimumX;
         }
 
-        private static float CalculateAreaPrimitive(float x, Rect bounds, float surfaceSlope, float intercept)
+        private static float CalculateAreaPrimitive(
+            float x,
+            Rect bounds,
+            float surfaceSlope,
+            float intercept)
         {
-            float heightAboveBottom = surfaceSlope * x + intercept - bounds.yMin;
+            float heightAboveBottom =
+                surfaceSlope * x + intercept - bounds.yMin;
             float heightAboveTop = heightAboveBottom - bounds.height;
-
-            return (PositiveSquare(heightAboveBottom) - PositiveSquare(heightAboveTop)) / (2f * surfaceSlope);
+            return (PositiveSquare(heightAboveBottom) -
+                    PositiveSquare(heightAboveTop)) /
+                (2f * surfaceSlope);
         }
 
         private static float CalculateWaveOffsets(
@@ -223,14 +337,15 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         {
             float weightedOffsetTotal = 0f;
 
-            for (int segmentIndex = 0; segmentIndex <= segmentCount; segmentIndex++)
+            for (int segmentIndex = 0;
+                 segmentIndex <= segmentCount;
+                 segmentIndex++)
             {
                 float positionRatio = segmentIndex / (float)segmentCount;
-
                 float waveOffset = surfaceWave.CalculateOffset(positionRatio);
                 waveOffsets[segmentIndex] = waveOffset;
-
-                float sampleWeight = segmentIndex == 0 || segmentIndex == segmentCount
+                float sampleWeight = segmentIndex == 0 ||
+                    segmentIndex == segmentCount
                     ? 0.5f
                     : 1f;
                 weightedOffsetTotal += waveOffset * sampleWeight;
@@ -240,27 +355,47 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         }
 
         private static float CalculateWaveScale(
+            Rect bounds,
+            float surfaceSlope,
+            float lowerIntercept,
+            float upperIntercept,
             int segmentCount,
-            Vector2[] stripPositions,
             float[] waveOffsets,
             float averageWaveOffset)
         {
             float waveScale = 1f;
 
-            for (int segmentIndex = 0; segmentIndex <= segmentCount; segmentIndex++)
+            for (int segmentIndex = 0;
+                 segmentIndex <= segmentCount;
+                 segmentIndex++)
             {
-                float centeredWaveOffset = waveOffsets[segmentIndex] - averageWaveOffset;
+                float centeredWaveOffset =
+                    waveOffsets[segmentIndex] - averageWaveOffset;
 
                 if (centeredWaveOffset >= 0f)
                 {
                     continue;
                 }
 
-                int lowerPositionIndex = segmentIndex * 2;
+                float segmentProgress =
+                    segmentIndex / (float)segmentCount;
+                float positionX = Mathf.Lerp(
+                    bounds.xMin,
+                    bounds.xMax,
+                    segmentProgress);
+                float lowerPositionY = Mathf.Clamp(
+                    surfaceSlope * positionX + lowerIntercept,
+                    bounds.yMin,
+                    bounds.yMax);
+                float upperPositionY = Mathf.Clamp(
+                    surfaceSlope * positionX + upperIntercept,
+                    bounds.yMin,
+                    bounds.yMax);
                 float availableLiquidHeight =
-                    stripPositions[lowerPositionIndex + 1].y -
-                    stripPositions[lowerPositionIndex].y;
-                waveScale = Mathf.Min(waveScale, availableLiquidHeight / -centeredWaveOffset);
+                    upperPositionY - lowerPositionY;
+                waveScale = Mathf.Min(
+                    waveScale,
+                    availableLiquidHeight / -centeredWaveOffset);
             }
 
             return Mathf.Clamp01(waveScale);
@@ -285,25 +420,33 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
 
             Vector2 previous = input[input.Count - 1];
-
-            float previousDistance = CalculateBoundaryDistance(previous, slope, intercept);
-
-            bool previousInside = keepBelow ? previousDistance <= 0f : previousDistance >= 0f;
+            float previousDistance = CalculateBoundaryDistance(
+                previous,
+                slope,
+                intercept);
+            bool previousInside = keepBelow
+                ? previousDistance <= 0f
+                : previousDistance >= 0f;
 
             for (int index = 0; index < input.Count; index++)
             {
                 Vector2 current = input[index];
-
-                float currentDistance = CalculateBoundaryDistance(current, slope, intercept);
-
-                bool currentInside = keepBelow ? currentDistance <= 0f : currentDistance >= 0f;
+                float currentDistance = CalculateBoundaryDistance(
+                    current,
+                    slope,
+                    intercept);
+                bool currentInside = keepBelow
+                    ? currentDistance <= 0f
+                    : currentDistance >= 0f;
 
                 if (currentInside != previousInside)
                 {
                     float intersectionProgress = previousDistance /
                         (previousDistance - currentDistance);
-
-                    output.Add(Vector2.LerpUnclamped(previous, current, intersectionProgress));
+                    output.Add(Vector2.LerpUnclamped(
+                        previous,
+                        current,
+                        intersectionProgress));
                 }
 
                 if (currentInside)
@@ -317,7 +460,10 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
         }
 
-        private static float CalculateBoundaryDistance(Vector2 point, float slope, float intercept)
+        private static float CalculateBoundaryDistance(
+            Vector2 point,
+            float slope,
+            float intercept)
         {
             return point.y - (slope * point.x + intercept);
         }

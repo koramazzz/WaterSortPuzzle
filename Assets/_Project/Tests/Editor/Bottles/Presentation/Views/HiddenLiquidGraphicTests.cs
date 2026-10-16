@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +13,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         private const float Height = 200f;
 
         private GameObject graphicObject;
-        private BottleLiquidGraphic liquidGraphic;
         private HiddenLiquidGraphic graphic;
         private Texture2D texture;
         private Sprite sprite;
@@ -21,27 +21,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         public void SetUp()
         {
             graphicObject = new GameObject(
-                "Bottle Liquid",
-                typeof(RectTransform),
-                typeof(CanvasRenderer),
-                typeof(BottleLiquidGraphic));
-            RectTransform rectTransform =
-                graphicObject.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(Width, Height);
-            liquidGraphic =
-                graphicObject.GetComponent<BottleLiquidGraphic>();
-            GameObject hiddenGraphicObject = new GameObject(
                 "Hidden Liquid",
                 typeof(RectTransform),
                 typeof(CanvasRenderer),
                 typeof(HiddenLiquidGraphic));
-            hiddenGraphicObject.transform.SetParent(
-                graphicObject.transform,
-                false);
-            hiddenGraphicObject.GetComponent<RectTransform>().sizeDelta =
-                new Vector2(Width, Height);
-            graphic =
-                hiddenGraphicObject.GetComponent<HiddenLiquidGraphic>();
+            RectTransform rectTransform =
+                graphicObject.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(Width, Height);
+            graphic = graphicObject.GetComponent<HiddenLiquidGraphic>();
             texture = new Texture2D(2, 2);
             sprite = Sprite.Create(
                 texture,
@@ -53,16 +40,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             serializedGraphic.FindProperty("hiddenLiquidSprite")
                 .objectReferenceValue = sprite;
             serializedGraphic.ApplyModifiedPropertiesWithoutUndo();
-
-            SerializedObject serializedLiquidGraphic =
-                new SerializedObject(liquidGraphic);
-            serializedLiquidGraphic.FindProperty("surfaceSegmentCount")
-                .intValue = 16;
-            serializedLiquidGraphic.FindProperty("surfaceAngleMultiplier")
-                .floatValue = 1f;
-            serializedLiquidGraphic.FindProperty("hiddenLiquidGraphic")
-                .objectReferenceValue = graphic;
-            serializedLiquidGraphic.ApplyModifiedPropertiesWithoutUndo();
         }
 
         [TearDown]
@@ -79,10 +56,10 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         public void SetBottleAngle_PreservesHiddenLiquidVolume(
             float bottleAngle)
         {
-            SetLayers(
+            graphic.SetLayers(
                 new[] { 1f, 1f, 0f, 0f },
                 new[] { false, true, false, false });
-            liquidGraphic.SetBottleAngle(bottleAngle);
+            graphic.SetBottlePose(bottleAngle, bottleAngle);
 
             Mesh mesh = RenderGraphic();
 
@@ -102,7 +79,7 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         [Test]
         public void SetLayers_WithVisibleLiquid_DoesNotRenderOverlay()
         {
-            SetLayers(
+            graphic.SetLayers(
                 new[] { 1f, 1f },
                 new[] { false, false });
 
@@ -119,14 +96,23 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
-        public void SetBottleAngle_KeepsHiddenSpriteScaleStable()
+        public void SetLayers_WithDifferentCountsThrows()
         {
-            SetLayers(
+            Assert.Throws<ArgumentException>(() =>
+                graphic.SetLayers(
+                    new[] { 1f },
+                    Array.Empty<bool>()));
+        }
+
+        [Test]
+        public void SetBottlePose_KeepsHiddenSpriteScaleStable()
+        {
+            graphic.SetLayers(
                 new[] { 1f, 1f, 0f, 0f },
                 new[] { false, true, false, false });
-            liquidGraphic.SetBottleAngle(0f);
+            graphic.SetBottlePose(0f, 0f);
             Mesh uprightMesh = RenderGraphic();
-            liquidGraphic.SetBottleAngle(70f);
+            graphic.SetBottlePose(70f, 70f);
             Mesh tiltedMesh = RenderGraphic();
 
             try
@@ -148,16 +134,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 UnityEngine.Object.DestroyImmediate(uprightMesh);
                 UnityEngine.Object.DestroyImmediate(tiltedMesh);
             }
-        }
-
-        private void SetLayers(
-            float[] fillAmounts,
-            bool[] hiddenLayers)
-        {
-            liquidGraphic.SetLayers(
-                new Color[fillAmounts.Length],
-                fillAmounts,
-                hiddenLayers);
         }
 
         private Mesh RenderGraphic()

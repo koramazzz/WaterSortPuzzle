@@ -357,27 +357,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             }
         }
 
-        [TestCase(-0.1f, 1f, 1f, "widthRatio")]
-        [TestCase(1f, -0.1f, 1f, "height")]
-        [TestCase(1f, 1f, -0.1f, "cycleCount")]
-        public void SetSurfaceWave_WithNegativeShapeValueThrows(
-            float widthRatio,
-            float height,
-            float cycleCount,
-            string parameterName)
-        {
-            ArgumentOutOfRangeException exception =
-                Assert.Throws<ArgumentOutOfRangeException>(() =>
-                    graphic.SetSurfaceWave(
-                        0.5f,
-                        widthRatio,
-                        height,
-                        cycleCount,
-                        0f));
-
-            Assert.That(exception.ParamName, Is.EqualTo(parameterName));
-        }
-
         [Test]
         public void SetSurfaceWave_WithFullBottlePreservesVolumeAndWave()
         {
