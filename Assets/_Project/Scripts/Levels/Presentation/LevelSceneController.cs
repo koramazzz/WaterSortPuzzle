@@ -80,7 +80,6 @@ namespace WaterSortPuzzle.Gameplay.Levels.Presentation
 
         private void HandlePourCompleted()
         {
-            soundEffectRequests.Request(SoundEffectId.ValidPour);
             LevelOutcome evaluatedOutcome = levelOutcomeEvaluator.Evaluate(levelState);
 
             if (evaluatedOutcome == currentOutcome)

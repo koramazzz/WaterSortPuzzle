@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using DG.Tweening;
 using NUnit.Framework;
 using UnityEditor;
@@ -18,7 +19,12 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
     public sealed class BottleInteractionPresenterTests
     {
         private const float SelectionLiftRatio = 0.25f;
+        private const float PourTravelDuration = 1f;
+        private const float StreamEnterDuration = 0.2f;
+        private const float TransferDurationPerLiquid = 0.25f;
+        private const float StreamExitDuration = 0.15f;
 
+        private GameObject rootObject;
         private GameObject collectionObject;
         private BottleCollectionView collectionView;
         private LevelState levelState;
@@ -28,11 +34,16 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         [SetUp]
         public void SetUp()
         {
+            rootObject = new GameObject(
+                "Gameplay Root",
+                typeof(RectTransform));
             collectionObject = new GameObject(
                 "Bottle Collection",
                 typeof(RectTransform),
                 typeof(BottleCollectionView),
-                typeof(BottleGridLayout));
+                typeof(BottleGridLayout),
+                typeof(LiquidTransferAnimator));
+            collectionObject.transform.SetParent(rootObject.transform, false);
             collectionView = collectionObject.GetComponent<BottleCollectionView>();
 
             BottleGridLayout bottleGridLayout =
@@ -45,11 +56,13 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
 
             SerializedObject serializedView = new SerializedObject(collectionView);
             serializedView.FindProperty("bottlePrefab").objectReferenceValue =
-                FindSinglePrefabComponent<BottleView>();
+                CreateBottlePrefabForTest();
             serializedView.FindProperty("colorPalette").objectReferenceValue =
                 FindSingleAsset<LiquidColorPalette>();
             serializedView.FindProperty("bottleGridLayout").objectReferenceValue =
                 bottleGridLayout;
+            serializedView.FindProperty("liquidTransferAnimator")
+                .objectReferenceValue = ConfigureLiquidTransferAnimator();
             serializedView.ApplyModifiedPropertiesWithoutUndo();
 
             LevelData levelData = JsonUtility.FromJson<LevelData>(LevelJson);
@@ -65,7 +78,8 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(collectionObject);
+            DOTween.Kill(collectionObject);
+            UnityEngine.Object.DestroyImmediate(rootObject);
         }
 
         [Test]
@@ -77,14 +91,20 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             sourceView.OnPointerClick(new PointerEventData(null));
             destinationView.OnPointerClick(new PointerEventData(null));
 
+            DOTween.Complete(collectionObject, true);
+
             Assert.That(
                 levelState.Bottles[0].LiquidIdsBottomToTop,
                 Is.EqualTo(new[] { "red" }));
             Assert.That(
                 levelState.Bottles[1].LiquidIdsBottomToTop,
                 Is.EqualTo(new[] { "blue" }));
-            Assert.That(GetSlotFromBottom(sourceView, 1).enabled, Is.False);
-            Assert.That(GetSlotFromBottom(destinationView, 0).enabled, Is.True);
+            Assert.That(
+                GetRenderedFillRatio(sourceView),
+                Is.EqualTo(0.5f).Within(0.001f));
+            Assert.That(
+                GetRenderedFillRatio(destinationView),
+                Is.EqualTo(0.5f).Within(0.001f));
         }
 
         [Test]
@@ -96,7 +116,42 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             GetBottleView(0).OnPointerClick(new PointerEventData(null));
             GetBottleView(1).OnPointerClick(new PointerEventData(null));
 
+            Assert.That(completedPourCount, Is.Zero);
+
+            DOTween.Complete(collectionObject, true);
+
             Assert.That(completedPourCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void BottleClicks_DuringPour_AnimateLiquidVolumes()
+        {
+            BottleView sourceView = GetBottleView(0);
+            BottleView destinationView = GetBottleView(1);
+
+            sourceView.OnPointerClick(new PointerEventData(null));
+            destinationView.OnPointerClick(new PointerEventData(null));
+            float elapsedPourTime = StreamEnterDuration +
+                TransferDurationPerLiquid * 0.5f;
+            DOTween.Goto(
+                collectionObject,
+                PourTravelDuration + elapsedPourTime);
+            float sourceTransferProgress = elapsedPourTime /
+                (StreamEnterDuration + TransferDurationPerLiquid);
+            float destinationTransferProgress =
+                TransferDurationPerLiquid * 0.5f /
+                (TransferDurationPerLiquid + StreamExitDuration);
+            float expectedSourceFillRatio =
+                (2f - sourceTransferProgress) / 2f;
+            float expectedDestinationFillRatio =
+                destinationTransferProgress / 2f;
+
+            Assert.That(
+                GetRenderedFillRatio(sourceView),
+                Is.EqualTo(expectedSourceFillRatio).Within(0.001f));
+            Assert.That(
+                GetRenderedFillRatio(destinationView),
+                Is.EqualTo(expectedDestinationFillRatio).Within(0.001f));
         }
 
         [Test]
@@ -165,6 +220,119 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
+        public void BottleClicks_WithValidDestination_RequestValidPourSound()
+        {
+            GetBottleView(0).OnPointerClick(new PointerEventData(null));
+            GetBottleView(1).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[] { SoundEffectId.BottleSelected }));
+
+            DOTween.Complete(collectionObject, true);
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.ValidPour
+                }));
+        }
+
+        [Test]
+        public void BottleClick_DuringPourAnimationIsIgnored()
+        {
+            GetBottleView(0).OnPointerClick(new PointerEventData(null));
+            GetBottleView(1).OnPointerClick(new PointerEventData(null));
+
+            GetBottleView(2).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[] { SoundEffectId.BottleSelected }));
+
+            DOTween.Complete(collectionObject, true);
+            GetBottleView(2).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.ValidPour,
+                    SoundEffectId.BottleSelected
+                }));
+        }
+
+        [Test]
+        public void BottleClicks_WhenPourIsCanceled_ReleasesInputAndRefreshesViews()
+        {
+            BottleView sourceView = GetBottleView(0);
+            BottleView destinationView = GetBottleView(1);
+
+            sourceView.OnPointerClick(new PointerEventData(null));
+            destinationView.OnPointerClick(new PointerEventData(null));
+            DOTween.Goto(collectionObject, PourTravelDuration * 0.5f);
+
+            InvokeOnDisable(
+                collectionObject.GetComponent<LiquidTransferAnimator>());
+
+            Assert.That(
+                GetRenderedFillRatio(sourceView),
+                Is.EqualTo(0.5f).Within(0.001f));
+            Assert.That(
+                GetRenderedFillRatio(destinationView),
+                Is.EqualTo(0.5f).Within(0.001f));
+
+            GetBottleView(2).OnPointerClick(new PointerEventData(null));
+
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.BottleSelected
+                }));
+        }
+
+        [Test]
+        public void BottleClicks_WhenAnimationSetupFails_ReleasesInputAndRestoresSource()
+        {
+            BottleView sourceView = GetBottleView(0);
+            BottleView destinationView = GetBottleView(1);
+            RectTransform sourceTransform =
+                (RectTransform)sourceView.transform;
+            float restingPositionY = sourceTransform.anchoredPosition.y;
+            SerializedObject serializedView =
+                new SerializedObject(collectionView);
+            serializedView.FindProperty("colorPalette").objectReferenceValue =
+                null;
+            serializedView.ApplyModifiedPropertiesWithoutUndo();
+
+            sourceView.OnPointerClick(new PointerEventData(null));
+
+            Assert.Throws<NullReferenceException>(() =>
+                destinationView.OnPointerClick(new PointerEventData(null)));
+
+            sourceView
+                .GetComponent<BottleSelectionAnimator>()
+                .CompleteSelection();
+            Assert.That(
+                sourceTransform.anchoredPosition.y,
+                Is.EqualTo(restingPositionY).Within(0.001f));
+
+            GetBottleView(2).OnPointerClick(new PointerEventData(null));
+            Assert.That(
+                requestedSoundEffects,
+                Is.EqualTo(new[]
+                {
+                    SoundEffectId.BottleSelected,
+                    SoundEffectId.BottleSelected
+                }));
+        }
+
+        [Test]
         public void Initialize_WithNullCollection_ThrowsArgumentNullException()
         {
             BottleInteractionPresenter presenter = new BottleInteractionPresenter();
@@ -206,15 +374,36 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 .GetComponent<BottleView>();
         }
 
-        private static Image GetSlotFromBottom(
-            BottleView bottleView,
-            int liquidIndex)
+        private BottleView CreateBottlePrefabForTest()
         {
-            Transform liquidContainer = bottleView
-                .GetComponentInChildren<VerticalLayoutGroup>()
-                .transform;
-            int childIndex = liquidContainer.childCount - liquidIndex - 1;
-            return liquidContainer.GetChild(childIndex).GetComponent<Image>();
+            BottleView projectPrefab = FindSinglePrefabComponent<BottleView>();
+            BottleView testPrefab = UnityEngine.Object.Instantiate(
+                projectPrefab,
+                rootObject.transform,
+                false);
+            testPrefab.name = "Bottle Test Prefab";
+
+            BottleLiquidGraphic liquidGraphic =
+                testPrefab.GetComponentInChildren<BottleLiquidGraphic>();
+            Assert.That(liquidGraphic, Is.Not.Null);
+
+            BottlePourAnimator pourAnimator =
+                testPrefab.GetComponent<BottlePourAnimator>();
+
+            if (pourAnimator == null)
+            {
+                pourAnimator = testPrefab.gameObject.AddComponent<BottlePourAnimator>();
+            }
+
+            ConfigureBottlePourAnimator(pourAnimator, liquidGraphic);
+
+            SerializedObject serializedView = new SerializedObject(testPrefab);
+            serializedView.FindProperty("liquidGraphic").objectReferenceValue =
+                liquidGraphic;
+            serializedView.FindProperty("pourAnimator").objectReferenceValue =
+                pourAnimator;
+            serializedView.ApplyModifiedPropertiesWithoutUndo();
+            return testPrefab;
         }
 
         private static void ConfigureSelectionAnimation(BottleView bottleView)
@@ -226,6 +415,144 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 SelectionLiftRatio;
             serializedAnimator.FindProperty("selectionDuration").floatValue = 1f;
             serializedAnimator.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private LiquidTransferAnimator ConfigureLiquidTransferAnimator()
+        {
+            GameObject streamObject = new GameObject(
+                "Pour Stream",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(PourStreamGraphic),
+                typeof(PourStreamView));
+            streamObject.transform.SetParent(rootObject.transform, false);
+            RectTransform streamTransform =
+                streamObject.GetComponent<RectTransform>();
+            streamTransform.sizeDelta = new Vector2(1000f, 1000f);
+            PourStreamGraphic streamGraphic =
+                streamObject.GetComponent<PourStreamGraphic>();
+            SerializedObject serializedStreamGraphic =
+                new SerializedObject(streamGraphic);
+            serializedStreamGraphic.FindProperty("segmentCount").intValue = 8;
+            serializedStreamGraphic.FindProperty("destinationWidthRatio")
+                .floatValue = 0.5f;
+            serializedStreamGraphic.FindProperty("sourceTangentLengthRatio")
+                .floatValue = 0.3f;
+            serializedStreamGraphic.FindProperty(
+                    "destinationTangentLengthRatio")
+                .floatValue = 0.2f;
+            serializedStreamGraphic.FindProperty(
+                    "lateralWaveAmplitudeRatio")
+                .floatValue = 0.65f;
+            serializedStreamGraphic.FindProperty("lateralWaveCycleCount")
+                .floatValue = 1.25f;
+            serializedStreamGraphic.FindProperty("widthVariationRatio")
+                .floatValue = 0.16f;
+            serializedStreamGraphic.ApplyModifiedPropertiesWithoutUndo();
+
+            PourStreamView streamView =
+                streamObject.GetComponent<PourStreamView>();
+            SerializedObject serializedStreamView =
+                new SerializedObject(streamView);
+            serializedStreamView.FindProperty("streamGraphic")
+                .objectReferenceValue = streamGraphic;
+            serializedStreamView.ApplyModifiedPropertiesWithoutUndo();
+            streamObject.SetActive(false);
+
+            LiquidTransferAnimator transferAnimator =
+                collectionObject.GetComponent<LiquidTransferAnimator>();
+            SerializedObject serializedAnimator =
+                new SerializedObject(transferAnimator);
+            serializedAnimator.FindProperty("mouthVerticalGapRatio")
+                .floatValue = 0.2f;
+            serializedAnimator.FindProperty("mouthHorizontalGapRatio")
+                .floatValue = 0.2f;
+            serializedAnimator.FindProperty("streamEnterDuration").floatValue =
+                StreamEnterDuration;
+            serializedAnimator.FindProperty("transferDurationPerLiquid")
+                .floatValue = TransferDurationPerLiquid;
+            serializedAnimator.FindProperty("streamExitDuration").floatValue =
+                StreamExitDuration;
+            serializedAnimator.FindProperty("streamWidthRatio").floatValue = 0.1f;
+            serializedAnimator.FindProperty("streamFlowCyclesPerSecond")
+                .floatValue = 2.2f;
+            serializedAnimator.FindProperty("pourEase").enumValueIndex =
+                (int)Ease.Linear;
+            serializedAnimator.FindProperty("streamView").objectReferenceValue =
+                streamView;
+            serializedAnimator.ApplyModifiedPropertiesWithoutUndo();
+            return transferAnimator;
+        }
+
+        private static void ConfigureBottlePourAnimator(
+            BottlePourAnimator pourAnimator,
+            BottleLiquidGraphic liquidGraphic)
+        {
+            SerializedObject serializedAnimator =
+                new SerializedObject(pourAnimator);
+            serializedAnimator.FindProperty("liquidGraphic")
+                .objectReferenceValue = liquidGraphic;
+            serializedAnimator.FindProperty("travelDuration").floatValue =
+                PourTravelDuration;
+            serializedAnimator.FindProperty("travelArcHeightRatio").floatValue =
+                0.25f;
+            serializedAnimator.FindProperty("travelEase").enumValueIndex =
+                (int)Ease.Linear;
+            serializedAnimator.FindProperty("returnDuration").floatValue = 1f;
+            serializedAnimator.FindProperty("returnArcHeightRatio").floatValue =
+                0.1f;
+            serializedAnimator.FindProperty("returnEase").enumValueIndex =
+                (int)Ease.Linear;
+            serializedAnimator.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static float GetRenderedFillRatio(BottleView bottleView)
+        {
+            BottleLiquidGraphic liquidGraphic =
+                bottleView.GetComponentInChildren<BottleLiquidGraphic>();
+            liquidGraphic.Rebuild(CanvasUpdate.PreRender);
+            Mesh mesh = UnityEngine.Object.Instantiate(
+                liquidGraphic.canvasRenderer.GetMesh());
+
+            try
+            {
+                Rect bounds = liquidGraphic.rectTransform.rect;
+                return CalculateMeshArea(mesh) / (bounds.width * bounds.height);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+            }
+        }
+
+        private static void InvokeOnDisable(LiquidTransferAnimator target)
+        {
+            MethodInfo onDisable = typeof(LiquidTransferAnimator).GetMethod(
+                "OnDisable",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+            Assert.That(onDisable, Is.Not.Null);
+            onDisable.Invoke(target, null);
+        }
+
+        private static float CalculateMeshArea(Mesh mesh)
+        {
+            Vector3[] vertices = mesh.vertices;
+            int[] triangles = mesh.triangles;
+            float area = 0f;
+
+            for (int triangleIndex = 0;
+                 triangleIndex < triangles.Length;
+                 triangleIndex += 3)
+            {
+                Vector3 first = vertices[triangles[triangleIndex]];
+                Vector3 second = vertices[triangles[triangleIndex + 1]];
+                Vector3 third = vertices[triangles[triangleIndex + 2]];
+                area += Mathf.Abs(Vector3.Cross(second - first, third - first).z) *
+                    0.5f;
+            }
+
+            return area;
         }
 
         private static T FindSingleAsset<T>() where T : UnityEngine.Object

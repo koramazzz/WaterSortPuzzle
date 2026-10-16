@@ -7,7 +7,9 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
     {
         private readonly BottleInteractionService interactionService = new BottleInteractionService();
 
+        private BottleCollectionView bottleCollectionView;
         private BottleView selectedSourceView;
+        private bool isPourAnimationPlaying;
 
         public event Action PourCompleted;
         public event Action<SoundEffectId> SoundEffectRequested;
@@ -19,11 +21,17 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
                 throw new ArgumentNullException(nameof(bottleCollectionView));
             }
 
+            this.bottleCollectionView = bottleCollectionView;
             bottleCollectionView.BottleClicked += HandleBottleClicked;
         }
 
         private void HandleBottleClicked(BottleView clickedBottleView)
         {
+            if (isPourAnimationPlaying)
+            {
+                return;
+            }
+
             if (interactionService.SelectedSource == null)
             {
                 interactionService.Select(clickedBottleView.State);
@@ -45,22 +53,50 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
             }
 
             BottleView sourceView = selectedSourceView;
+            int sourceLiquidCountBefore = sourceView.State.LiquidCount;
+            int destinationLiquidCountBefore = clickedBottleView.State.LiquidCount;
             bool selectionCancelled = ReferenceEquals(sourceView, clickedBottleView);
             int pouredLiquidCount = interactionService.Select(clickedBottleView.State);
             selectedSourceView = null;
-            sourceView.AnimateDeselection();
 
             if (pouredLiquidCount == 0)
             {
+                sourceView.AnimateDeselection();
                 RequestSoundEffect(selectionCancelled
                     ? SoundEffectId.BottleReleased
                     : SoundEffectId.InvalidMove);
                 return;
             }
 
-            sourceView.Refresh();
+            isPourAnimationPlaying = true;
+            try
+            {
+                bottleCollectionView.AnimatePour(
+                    sourceView,
+                    clickedBottleView,
+                    sourceLiquidCountBefore,
+                    destinationLiquidCountBefore,
+                    pouredLiquidCount,
+                    () => RequestSoundEffect(SoundEffectId.ValidPour),
+                    CompletePour,
+                    CancelPour);
+            }
+            catch
+            {
+                CancelPour();
+                throw;
+            }
+        }
+
+        private void CompletePour()
+        {
+            isPourAnimationPlaying = false;
             PourCompleted?.Invoke();
-            clickedBottleView.Refresh();
+        }
+
+        private void CancelPour()
+        {
+            isPourAnimationPlaying = false;
         }
 
         private void RequestSoundEffect(SoundEffectId soundEffectId)

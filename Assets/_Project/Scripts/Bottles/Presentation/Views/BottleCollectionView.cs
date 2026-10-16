@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+using WaterSortPuzzle.Animations;
 using WaterSortPuzzle.Gameplay.Bottles.Presentation.Layout;
 
 namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
@@ -10,6 +12,8 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
         [SerializeField] private BottleView bottlePrefab;
         [SerializeField] private LiquidColorPalette colorPalette;
         [SerializeField] private BottleGridLayout bottleGridLayout;
+        [FormerlySerializedAs("pourAnimator")]
+        [SerializeField] private LiquidTransferAnimator liquidTransferAnimator;
 
         public event Action<BottleView> BottleClicked;
         public event Action BottleCompletionAnimationFinished;
@@ -38,6 +42,107 @@ namespace WaterSortPuzzle.Gameplay.Bottles.Presentation
 
             BottleView bottleView = CreateBottleView(bottleState);
             bottleGridLayout.AnimateBottleAddition((RectTransform)bottleView.transform);
+        }
+
+        public void AnimatePour(
+            BottleView source,
+            BottleView destination,
+            int sourceLiquidCountBefore,
+            int destinationLiquidCountBefore,
+            int pouredLiquidCount,
+            Action pourStarted,
+            Action completed,
+            Action canceled = null)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            bool cancellationHandled = false;
+
+            void RefreshViews()
+            {
+                source.Refresh();
+                destination.Refresh();
+            }
+
+            void CancelPour()
+            {
+                if (cancellationHandled)
+                {
+                    return;
+                }
+
+                cancellationHandled = true;
+
+                try
+                {
+                    RefreshViews();
+                }
+                finally
+                {
+                    canceled?.Invoke();
+                }
+            }
+
+            try
+            {
+                Color liquidColor = colorPalette.GetColor(
+                    destination.State.TopLiquidId);
+                LiquidTransferAnimationRequest request =
+                    new LiquidTransferAnimationRequest(
+                        source.PourAnimator,
+                        destination.PourAnimator,
+                        source.PrepareForPour(),
+                        source.GetLiquidBounds(),
+                        destination.GetLiquidBounds(),
+                        source.State.Capacity,
+                        sourceLiquidCountBefore,
+                        destinationLiquidCountBefore,
+                        pouredLiquidCount,
+                        liquidColor);
+                liquidTransferAnimator.Play(
+                    request,
+                    pourStarted,
+                    (sourceProgress, destinationProgress) =>
+                    {
+                        source.ShowPourOutProgress(
+                            sourceLiquidCountBefore,
+                            pouredLiquidCount,
+                            sourceProgress);
+                        destination.ShowPourInProgress(
+                            destinationLiquidCountBefore,
+                            pouredLiquidCount,
+                            liquidColor,
+                            destinationProgress);
+                    },
+                    destination.PlayLiquidImpact,
+                    RefreshViews,
+                    completed,
+                    CancelPour);
+            }
+            catch
+            {
+                try
+                {
+                    if (!cancellationHandled)
+                    {
+                        source.AnimateDeselection();
+                    }
+                }
+                finally
+                {
+                    CancelPour();
+                }
+
+                throw;
+            }
         }
 
         private void HandleBottleClicked(BottleView bottleView)

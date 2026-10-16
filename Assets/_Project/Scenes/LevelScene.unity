@@ -696,6 +696,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 291101928}
   m_CullTransparentMesh: 1
+--- !u!1 &347050858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 347050859}
+  - component: {fileID: 347050860}
+  m_Layer: 5
+  m_Name: PourStream
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &347050859
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347050858}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1828907027}
+  m_Father: {fileID: 1321386333}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &347050860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347050858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1eccb8827085463bbf2eb32d9e6e9cc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.PourStreamView
+  streamGraphic: {fileID: 1828907029}
 --- !u!1 &410616517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2152,6 +2202,7 @@ RectTransform:
   - {fileID: 740235424}
   - {fileID: 1042618322}
   - {fileID: 2031834026}
+  - {fileID: 347050859}
   - {fileID: 1811069440}
   - {fileID: 43810998}
   m_Father: {fileID: 0}
@@ -2985,6 +3036,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811069449}
   m_CullTransparentMesh: 1
+--- !u!1 &1828907026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1828907027}
+  - component: {fileID: 1828907029}
+  - component: {fileID: 1828907028}
+  m_Layer: 5
+  m_Name: StreamGraphic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1828907027
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828907026}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 347050859}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1828907028
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828907026}
+  m_CullTransparentMesh: 1
+--- !u!114 &1828907029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828907026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 303930fbcb9f548b9be1e9297bea22f1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.PourStreamGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  segmentCount: 48
+  destinationWidthRatio: 0.55
+  sourceTangentLengthRatio: 0.52
+  destinationTangentLengthRatio: 0.18
+  lateralWaveAmplitudeRatio: 0.65
+  lateralWaveCycleCount: 1.25
+  widthVariationRatio: 0.16
 --- !u!1 &2009080487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3158,6 +3281,7 @@ GameObject:
   - component: {fileID: 2031834027}
   - component: {fileID: 2031834028}
   - component: {fileID: 2031834029}
+  - component: {fileID: 2031834030}
   m_Layer: 5
   m_Name: BottleContainer
   m_TagString: Untagged
@@ -3199,6 +3323,7 @@ MonoBehaviour:
   bottlePrefab: {fileID: 7812480537929102209, guid: 6b39812f2936b4307ac9cc4ec4294664, type: 3}
   colorPalette: {fileID: 11400000, guid: 5c74b59b2fc2a40ac8a2f34fa1b8c07a, type: 2}
   bottleGridLayout: {fileID: 2031834028}
+  liquidTransferAnimator: {fileID: 2031834030}
 --- !u!114 &2031834028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3234,6 +3359,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.BottleGridLayoutAnimator
   additionDuration: 0.35
   additionEase: 9
+--- !u!114 &2031834030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031834025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b18af0be4443d6a5e125086bf332db, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.LiquidTransferAnimator
+  mouthVerticalGapRatio: 0.18
+  mouthHorizontalGapRatio: 0.12
+  streamEnterDuration: 0.12
+  transferDurationPerLiquid: 0.42
+  streamExitDuration: 0.14
+  pourEase: 1
+  streamWidthRatio: 0.1
+  streamFlowCyclesPerSecond: 2.2
+  streamView: {fileID: 347050860}
 --- !u!1001 &2113432234
 PrefabInstance:
   m_ObjectHideFlags: 0

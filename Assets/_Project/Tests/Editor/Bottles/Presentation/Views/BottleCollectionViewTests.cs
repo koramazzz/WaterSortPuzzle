@@ -86,8 +86,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                     bottleTransform.GetComponent<BottleView>(),
                     Is.Not.Null);
                 Assert.That(
-                    bottleTransform.GetComponentsInChildren<LiquidSlotView>(true),
-                    Has.Length.EqualTo(levelState.BottleCapacity));
+                    bottleTransform
+                        .GetComponentInChildren<BottleLiquidGraphic>(),
+                    Is.Not.Null);
             }
 
             Vector2 initialBottleSize = new Vector2(50f, 100f);
