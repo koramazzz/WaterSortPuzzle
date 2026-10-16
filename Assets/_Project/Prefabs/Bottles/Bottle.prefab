@@ -114,6 +114,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5630545446090740336}
+  - {fileID: 9200000000000000002}
   m_Father: {fileID: 245989324070598529}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -172,6 +173,72 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 0
+--- !u!1 &9200000000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9200000000000000002}
+  - component: {fileID: 9200000000000000003}
+  - component: {fileID: 9200000000000000004}
+  m_Layer: 5
+  m_Name: HiddenLiquidGraphic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9200000000000000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9200000000000000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 437395999685254622}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.02}
+  m_AnchorMax: {x: 1, y: 0.75}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &9200000000000000003
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9200000000000000001}
+  m_CullTransparentMesh: 1
+--- !u!114 &9200000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9200000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e35076f247c4b1f8d1230cbb4f185aa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.HiddenLiquidGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  hiddenLiquidSprite: {fileID: 21300000, guid: 9c6aa761ea4d4a0bb825baac9242e9e7, type: 3}
 --- !u!1 &3595489060444023904
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +340,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5630545446090740336}
-  - component: {fileID: 8811916708772899763}
+  - component: {fileID: 2347320593644886854}
+  - component: {fileID: 7210823416991479354}
   m_Layer: 5
   m_Name: LiquidContainer
   m_TagString: Untagged
@@ -300,7 +368,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8811916708772899763
+--- !u!114 &2347320593644886854
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -309,23 +377,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 5452896965942591386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 1
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_Script: {fileID: 11500000, guid: f7f85236d5bfa4c5388a897b708b8a9f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.BottleLiquidGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  surfaceSegmentCount: 24
+  surfaceAngleMultiplier: 0.5
+  hiddenLiquidGraphic: {fileID: 9200000000000000004}
+--- !u!222 &7210823416991479354
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5452896965942591386}
+  m_CullTransparentMesh: 1
 --- !u!1 &5818744913970343977
 GameObject:
   m_ObjectHideFlags: 0
@@ -5295,6 +5368,41 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!1 &9100000000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9100000000000000002}
+  m_Layer: 5
+  m_Name: PourMouth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9100000000000000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9100000000000000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 245989324070598529}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.28, y: 0.97}
+  m_AnchorMax: {x: 0.72, y: 0.97}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7535786716179343195
 GameObject:
   m_ObjectHideFlags: 0
@@ -5307,6 +5415,7 @@ GameObject:
   - component: {fileID: 7812480537929102209}
   - component: {fileID: 2054254541094945620}
   - component: {fileID: 6995523770788095522}
+  - component: {fileID: 5815792767393195959}
   - component: {fileID: 6998802510842357335}
   - component: {fileID: 6307376787433622030}
   m_Layer: 5
@@ -5331,6 +5440,7 @@ RectTransform:
   - {fileID: 437395999685254622}
   - {fileID: 1108253697329277288}
   - {fileID: 8829423473734409504}
+  - {fileID: 9100000000000000002}
   - {fileID: 7867798294233434664}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5352,9 +5462,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Gameplay.Bottles.Presentation.BottleView
   liquidContainer: {fileID: 5630545446090740336}
-  liquidSlotPrefab: {fileID: 243542876677306787, guid: 6bca7278469ef427e81a2a3f9842f9ae, type: 3}
+  liquidGraphic: {fileID: 2347320593644886854}
   completionAnimator: {fileID: 6995523770788095522}
   selectionAnimator: {fileID: 2054254541094945620}
+  pourAnimator: {fileID: 5815792767393195959}
 --- !u!114 &2054254541094945620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5384,6 +5495,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.BottleCompletionAnimator
   capAnimator: {fileID: 8066622288806795390}
   completionSparkle: {fileID: 2993228586933583513}
+--- !u!114 &5815792767393195959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7535786716179343195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b93effb55bf4f4ba9c595ffeaf9364, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSortPuzzle.Animations.BottlePourAnimator
+  liquidGraphic: {fileID: 2347320593644886854}
+  mouthOpening: {fileID: 9100000000000000002}
+  travelDuration: 0.28
+  travelArcHeightRatio: 0.22
+  travelEase: 9
+  returnDuration: 0.3
+  returnArcHeightRatio: 0.12
+  returnEase: 10
+  impactWaveHeightRatio: 0.06
+  impactWaveWidthRatio: 0.5
+  impactWaveDuration: 0.75
+  impactWaveCycleCount: 1.25
+  impactWaveEase: 1
+  interactionWaveHeightRatio: 0.025
+  interactionWaveWidthRatio: 0.65
+  interactionWaveDuration: 0.45
+  interactionWaveCycleCount: 0.75
+  interactionWaveEase: 4
 --- !u!222 &6998802510842357335
 CanvasRenderer:
   m_ObjectHideFlags: 0

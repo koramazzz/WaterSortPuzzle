@@ -17,12 +17,14 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
     {
         private GameObject bottleObject;
         private RectTransform liquidContainer;
+        private BottleLiquidGraphic liquidGraphic;
+        private HiddenLiquidGraphic hiddenLiquidGraphic;
+        private Texture2D hiddenLiquidTexture;
+        private Sprite hiddenLiquidSprite;
         private GameObject capVisual;
         private RectTransform capTransform;
         private BottleCompletionAnimator completionAnimator;
         private UIParticle completionSparkle;
-        private GameObject slotPrefabObject;
-        private LiquidSlotView slotPrefab;
         private LiquidColorPalette colorPalette;
         private BottleView view;
 
@@ -33,9 +35,52 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
 
             GameObject containerObject = new GameObject(
                 "Liquid Container",
-                typeof(RectTransform));
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(BottleLiquidGraphic));
             containerObject.transform.SetParent(bottleObject.transform);
             liquidContainer = containerObject.GetComponent<RectTransform>();
+            liquidContainer.sizeDelta = new Vector2(100f, 200f);
+            liquidGraphic = containerObject.GetComponent<BottleLiquidGraphic>();
+
+            GameObject hiddenGraphicObject = new GameObject(
+                "Hidden Liquid Graphic",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(HiddenLiquidGraphic));
+            hiddenGraphicObject.transform.SetParent(
+                bottleObject.transform,
+                false);
+            RectTransform hiddenGraphicTransform =
+                hiddenGraphicObject.GetComponent<RectTransform>();
+            hiddenGraphicTransform.sizeDelta = liquidContainer.sizeDelta;
+            hiddenLiquidGraphic =
+                hiddenGraphicObject.GetComponent<HiddenLiquidGraphic>();
+            hiddenLiquidTexture = new Texture2D(2, 2);
+            hiddenLiquidSprite = Sprite.Create(
+                hiddenLiquidTexture,
+                new Rect(0f, 0f, 2f, 2f),
+                new Vector2(0.5f, 0.5f));
+
+            SerializedObject serializedHiddenGraphic =
+                new SerializedObject(hiddenLiquidGraphic);
+            serializedHiddenGraphic.FindProperty("hiddenLiquidSprite")
+                .objectReferenceValue = hiddenLiquidSprite;
+            serializedHiddenGraphic.ApplyModifiedPropertiesWithoutUndo();
+
+            SerializedObject serializedLiquidGraphic =
+                new SerializedObject(liquidGraphic);
+            serializedLiquidGraphic.FindProperty("hiddenLiquidGraphic")
+                .objectReferenceValue = hiddenLiquidGraphic;
+            serializedLiquidGraphic.ApplyModifiedPropertiesWithoutUndo();
+
+            BottlePourAnimator pourAnimator =
+                bottleObject.AddComponent<BottlePourAnimator>();
+            SerializedObject serializedPourAnimator =
+                new SerializedObject(pourAnimator);
+            serializedPourAnimator.FindProperty("liquidGraphic")
+                .objectReferenceValue = liquidGraphic;
+            serializedPourAnimator.ApplyModifiedPropertiesWithoutUndo();
 
             capVisual = new GameObject(
                 "Cap Visual",
@@ -74,17 +119,18 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
                 .objectReferenceValue = completionSparkle;
             serializedCompletionAnimator.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateLiquidSlotPrefab();
             colorPalette = CreateColorPalette();
             view = bottleObject.AddComponent<BottleView>();
 
             SerializedObject serializedView = new SerializedObject(view);
             serializedView.FindProperty("liquidContainer").objectReferenceValue =
                 liquidContainer;
-            serializedView.FindProperty("liquidSlotPrefab").objectReferenceValue =
-                slotPrefab;
+            serializedView.FindProperty("liquidGraphic").objectReferenceValue =
+                liquidGraphic;
             serializedView.FindProperty("completionAnimator").objectReferenceValue =
                 completionAnimator;
+            serializedView.FindProperty("pourAnimator").objectReferenceValue =
+                pourAnimator;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -92,20 +138,9 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         public void TearDown()
         {
             UnityEngine.Object.DestroyImmediate(bottleObject);
-            UnityEngine.Object.DestroyImmediate(slotPrefabObject);
             UnityEngine.Object.DestroyImmediate(colorPalette);
-        }
-
-        [TestCase(1)]
-        [TestCase(3)]
-        [TestCase(5)]
-        public void Initialize_WithCapacity_CreatesMatchingSlotCount(int capacity)
-        {
-            BottleState state = CreateBottleState(capacity, EmptyBottleJson);
-
-            view.Initialize(state, colorPalette);
-
-            Assert.That(liquidContainer.childCount, Is.EqualTo(capacity));
+            UnityEngine.Object.DestroyImmediate(hiddenLiquidSprite);
+            UnityEngine.Object.DestroyImmediate(hiddenLiquidTexture);
         }
 
         [Test]
@@ -135,50 +170,27 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
         }
 
         [Test]
-        public void Initialize_WithLiquids_DisplaysSlotsBottomToTop()
+        public void Initialize_WithLiquids_RendersVisibleAndHiddenLiquids()
         {
-            const int capacity = 4;
-            BottleState state = CreateBottleState(capacity, FilledBottleJson);
+            BottleState state = CreateBottleState(4, FilledBottleJson);
 
             view.Initialize(state, colorPalette);
 
-            LiquidSlotView bottomSlot = GetSlotFromBottom(0, capacity);
-            LiquidSlotView visibleSlot = GetSlotFromBottom(1, capacity);
-            LiquidSlotView emptyTopSlot = GetSlotFromBottom(3, capacity);
-
-            Assert.That(bottomSlot.GetComponent<Image>().enabled, Is.False);
-            Assert.That(
-                bottomSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
-                Is.True);
-
-            Assert.That(visibleSlot.GetComponent<Image>().color, Is.EqualTo(Color.blue));
-            Assert.That(visibleSlot.GetComponent<Image>().enabled, Is.True);
-            Assert.That(
-                visibleSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
-                Is.False);
-
-            Assert.That(emptyTopSlot.GetComponent<Image>().enabled, Is.False);
-            Assert.That(
-                emptyTopSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
-                Is.False);
+            Assert.That(RenderedHiddenLiquidHasGeometry(), Is.True);
+            Assert.That(RenderedLiquidContainsColor(Color.blue), Is.True);
         }
 
         [Test]
-        public void Refresh_AfterRemovingLiquid_UpdatesFreedSlot()
+        public void Refresh_AfterRemovingLiquid_UpdatesLiquidGraphic()
         {
-            const int capacity = 4;
-            BottleState state = CreateBottleState(capacity, VisibleBottleJson);
+            BottleState state = CreateBottleState(4, VisibleBottleJson);
             view.Initialize(state, colorPalette);
 
             state.RemoveTopLiquid();
             view.Refresh();
 
-            LiquidSlotView freedSlot = GetSlotFromBottom(1, capacity);
-
-            Assert.That(freedSlot.GetComponent<Image>().enabled, Is.False);
-            Assert.That(
-                freedSlot.transform.Find("Hidden Visual").gameObject.activeSelf,
-                Is.False);
+            Assert.That(RenderedLiquidContainsColor(Color.red), Is.True);
+            Assert.That(RenderedLiquidContainsColor(Color.blue), Is.False);
         }
 
         [Test]
@@ -259,28 +271,6 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             Assert.That(clickedView, Is.SameAs(view));
         }
 
-        private void CreateLiquidSlotPrefab()
-        {
-            slotPrefabObject = new GameObject(
-                "Liquid Slot",
-                typeof(RectTransform),
-                typeof(CanvasRenderer),
-                typeof(Image),
-                typeof(LiquidSlotView));
-
-            GameObject hiddenVisual = new GameObject("Hidden Visual");
-            hiddenVisual.transform.SetParent(slotPrefabObject.transform);
-            hiddenVisual.SetActive(false);
-
-            slotPrefab = slotPrefabObject.GetComponent<LiquidSlotView>();
-            SerializedObject serializedSlot = new SerializedObject(slotPrefab);
-            serializedSlot.FindProperty("liquidImage").objectReferenceValue =
-                slotPrefabObject.GetComponent<Image>();
-            serializedSlot.FindProperty("hiddenVisual").objectReferenceValue =
-                hiddenVisual;
-            serializedSlot.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         private static LiquidColorPalette CreateColorPalette()
         {
             LiquidColorPalette palette =
@@ -307,12 +297,44 @@ namespace WaterSortPuzzle.Tests.EditMode.Gameplay.Bottles.Presentation
             entry.FindPropertyRelative("color").colorValue = color;
         }
 
-        private LiquidSlotView GetSlotFromBottom(int liquidIndex, int capacity)
+        private bool RenderedLiquidContainsColor(Color expectedColor)
         {
-            int childIndex = capacity - liquidIndex - 1;
-            return liquidContainer
-                .GetChild(childIndex)
-                .GetComponent<LiquidSlotView>();
+            liquidGraphic.Rebuild(CanvasUpdate.PreRender);
+            Mesh mesh = UnityEngine.Object.Instantiate(
+                liquidGraphic.canvasRenderer.GetMesh());
+
+            try
+            {
+                foreach (Color color in mesh.colors)
+                {
+                    if (color == expectedColor)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+            }
+        }
+
+        private bool RenderedHiddenLiquidHasGeometry()
+        {
+            hiddenLiquidGraphic.Rebuild(CanvasUpdate.PreRender);
+            Mesh mesh = UnityEngine.Object.Instantiate(
+                hiddenLiquidGraphic.canvasRenderer.GetMesh());
+
+            try
+            {
+                return mesh.vertexCount > 0;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+            }
         }
 
         private static BottleState CreateBottleState(int capacity, string json)
